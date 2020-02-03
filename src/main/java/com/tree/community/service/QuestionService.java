@@ -108,6 +108,7 @@ public class QuestionService {
         QuestionExample example1 = new QuestionExample();
         example1.createCriteria()
                 .andCreatorEqualTo(userId);
+        example1.setOrderByClause("gmt_create desc");
         List<Question> questions = questionMapper.selectByExampleWithRowbounds(example1,new RowBounds(offset,size));
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
