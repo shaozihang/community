@@ -61,7 +61,7 @@ public class QuestionService {
         paginationDTO.setPagination(totalPage,page);
 
         //分页
-        Integer offset = size*(page-1);
+        Integer offset = page < 1 ? 0 : size*(page-1);
         questionQueryDTO.setPage(offset);
         questionQueryDTO.setSize(size);
         List<Question> questions = questionExtMapper.selectBySearch(questionQueryDTO);
@@ -104,7 +104,7 @@ public class QuestionService {
         paginationDTO.setPagination(totalPage,page);
 
         //分页
-        Integer offset = size*(page-1);
+        Integer offset = page < 1 ? 0 : size*(page-1);
         QuestionExample example1 = new QuestionExample();
         example1.createCriteria()
                 .andCreatorEqualTo(userId);

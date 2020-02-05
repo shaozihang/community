@@ -51,7 +51,7 @@ public class NotificationService {
         paginationDTO.setPagination(totalPage,page);
 
         //分页
-        Integer offset = size*(page-1);
+        Integer offset = page < 1 ? 0 : size*(page-1);
         NotificationExample example = new NotificationExample();
         example.createCriteria()
                 .andReceiverEqualTo(userId);
