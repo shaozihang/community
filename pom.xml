@@ -65,9 +65,9 @@
         </dependency>
 
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.199</version>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.37</version>
         </dependency>
 
         <dependency>
@@ -106,17 +106,17 @@
             <plugin>
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-maven-plugin</artifactId>
-                <version>6.2.0</version>
+                <version>5.2.4</version>
                 <configuration>
-                    <url>jdbc:h2:D://H2/community</url>
-                    <user>sa</user>
-                    <password>123</password>
+                    <url>jdbc:mysql://10.9.69.152:3306/tree</url>
+                    <user>root</user>
+                    <password>hm13585658530</password>
                 </configuration>
                 <dependencies>
                     <dependency>
-                        <groupId>com.h2database</groupId>
-                        <artifactId>h2</artifactId>
-                        <version>1.4.199</version>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>5.1.37</version>
                     </dependency>
                 </dependencies>
             </plugin>
