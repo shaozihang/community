@@ -19,8 +19,11 @@
   <select id="countBySearch" parameterType="com.tree.community.dto.QuestionQueryDTO" resultType="java.lang.Integer">
     select count(*) from question
      <where>
-       <if test="search != null">
+       <if test="search != null and search != ''">
          and title regexp #{search}
+       </if>
+       <if test="tag != null and tag != ''">
+         and tag regexp #{tag}
        </if>
      </where>
   </select>
@@ -28,8 +31,11 @@
   <select id="selectBySearch" parameterType="com.tree.community.dto.QuestionQueryDTO" resultMap="BaseResultMap">
     select * from question
     <where>
-      <if test="search != null">
+      <if test="search != null and search != ''">
         and title regexp #{search}
+      </if>
+      <if test="tag != null and tag != ''">
+        and tag regexp #{tag}
       </if>
     </where>
     order by gmt_create desc limit #{page},#{size}
