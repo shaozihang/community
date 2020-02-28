@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+
+<div th:fragment="navTwo" class="tree-panel tree-column">
+    <div class="layui-container">
+        <ul class="layui-clear">
+            <li class="layui-this"><a href="/">首页</a></li>
+            <li><a href="/?column=1">提问</a></li>
+            <li><a href="/?column=2">分享<span class="layui-badge-dot"></span></a></li>
+            <li><a href="/?column=3">建议</a></li>
+            <li><a href="/?column=4">讨论</a></li>
+            <li><a href="/?column=5">公告</a></li>
+            <li><a href="/?column=6">动态</a></li>
+            <li><a href="/?column=9">其它</a></li>
+            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="tree-mid"></span></li>
+            <!-- 用户登录后显示 -->
+            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block" th:if="${session.user!=null}">
+                <a href="/profile/questions">我发表的贴</a>
+            </li>
+            <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block" th:if="${session.user!=null}">
+                <a href="/profile/questions">我收藏的贴</a>
+            </li>
+        </ul>
+        <div class="tree-column-right layui-hide-xs">
+            <span class="tree-search" onclick="search()"><i class="layui-icon layui-icon-search"></i></span>
+            <a href="/publish" class="layui-btn">发表新帖</a>
+        </div>
+        <div class="layui-hide-sm layui-show-xs-block" style="margin-top: -10px; padding-bottom: 10px; text-align: center;">
+            <a href="/publish" class="layui-btn">发表新帖</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -13,7 +13,7 @@
     <result column="tag" jdbcType="VARCHAR" property="tag" />
   </resultMap>
   <select id="selectRelated" parameterType="com.tree.community.model.Question" resultMap="BaseResultMap">
-    select * from question where id != #{id} and tag regexp #{tag}
+    select * from question where id != #{id} and tag regexp #{tag} order by comment_count desc,gmt_create desc limit 10
   </select>
 
   <select id="countBySearch" parameterType="com.tree.community.dto.QuestionQueryDTO" resultType="java.lang.Integer">

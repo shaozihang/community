@@ -111,6 +111,11 @@ public class QuestionService {
                 .andCreatorEqualTo(userId);
         example1.setOrderByClause("gmt_create desc");
         List<Question> questions = questionMapper.selectByExampleWithRowbounds(example1,new RowBounds(offset,size));
+
+        if(questions.size() == 0){
+            return paginationDTO;
+        }
+
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for (Question question : questions) {
@@ -144,16 +149,11 @@ public class QuestionService {
             questionMapper.insertSelective(question);
         }else{
             //更新
-            Question updateQuestion = new Question();
-            updateQuestion.setGmtModified(System.currentTimeMillis());
-            updateQuestion.setTitle(question.getTitle());
-            updateQuestion.setDescription(question.getDescription());
-            updateQuestion.setTag(question.getTag());
-
+            question.setGmtModified(System.currentTimeMillis());
             QuestionExample example = new QuestionExample();
             example.createCriteria()
                     .andIdEqualTo(question.getId());
-            int updated = questionMapper.updateByExampleSelective(updateQuestion, example);
+            int updated = questionMapper.updateByExampleSelective(question, example);
             if(updated != 1){
                 throw new CustomizeException(CustomizeErrorCode.QUESTION_NOT_FOUND);
             }
@@ -177,12 +177,6 @@ public class QuestionService {
         question.setTag(replace);
 
         List<Question> questions = questionExtMapper.selectRelated(question);
-        /*List<QuestionDTO> questionDtos = questions.stream().map(q -> {
-            QuestionDTO dto = new QuestionDTO();
-            BeanUtils.copyProperties(q,dto);
-            return dto;
-        }).collect(Collectors.toList());*/
-
         return questions;
     }
 }

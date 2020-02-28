@@ -34,5 +34,8 @@
         <table tableName="question" domainObjectName="Question" ></table>
         <table tableName="comment" domainObjectName="Comment" ></table>
         <table tableName="notification" domainObjectName="Notification" ></table>
+        <table tableName="useroauths" domainObjectName="Useroauths" ></table>
+        <table tableName="role" domainObjectName="Role" ></table>
+        <table tableName="user_role" domainObjectName="UserRole" ></table>
     </context>
 </generatorConfiguration>

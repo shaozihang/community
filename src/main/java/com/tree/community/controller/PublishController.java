@@ -2,6 +2,7 @@ package com.tree.community.controller;
 
 import com.tree.community.cache.TagCache;
 import com.tree.community.dto.QuestionDTO;
+import com.tree.community.dto.ResultDTO;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
 import com.tree.community.service.QuestionService;
@@ -9,11 +10,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @Controller
 public class PublishController {
@@ -38,41 +38,19 @@ public class PublishController {
         return "publish";
     }
 
-    @PostMapping("/publish")
-    public String doPublish(Question question, HttpServletRequest request, Model model){
-
-        model.addAttribute("title",question.getTitle());
-        model.addAttribute("description",question.getDescription());
-        model.addAttribute("tag",question.getTag());
-        model.addAttribute("tags", TagCache.get());
-        if(question.getTitle()==null||question.getTitle()==""){
-            model.addAttribute("error","标题不能为空！");
-            return "publish";
-        }
-        if(question.getDescription()==null||question.getDescription()==""){
-            model.addAttribute("error","问题补充不能为空！");
-            return "publish";
-        }
-        if(question.getTag()==null||question.getTag()==""){
-            model.addAttribute("error","标签不能为空！");
-            return "publish";
-        }
-
+    @RequestMapping(value = "/publish",method = RequestMethod.POST)
+    @ResponseBody
+    public Object doPublish(@RequestBody  Question question, HttpServletRequest request){
         String invalid = TagCache.filterInvalid(question.getTag());
         if(StringUtils.isNoneBlank(invalid)){
-            model.addAttribute("error","输入非法标签:" + invalid);
-            return "publish";
+            return ResultDTO.errorOf(2016,"输入非法标签:" + invalid);
         }
 
 
         User user = (User) request.getSession().getAttribute("user");
-        if(user==null){
-            model.addAttribute("error","用户未登录");
-            return "publish";
-        }
         question.setCreator(user.getId());
         question.setId(question.getId());
         questionService.createOrUpdate(question);
-        return "redirect:/";
+        return ResultDTO.okOf();
     }
 }

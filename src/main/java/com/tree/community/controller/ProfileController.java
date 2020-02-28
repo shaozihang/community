@@ -30,19 +30,16 @@ public class ProfileController {
 
 
         User user = (User) request.getSession().getAttribute("user");
-        if(user==null){
-            return "redirect:/";
-        }
 
         if("questions".equals(action)){
             PaginationDTO paginationDTO = questionService.list(user.getId(), page, size);
+            model.addAttribute("sectionName","帖子管理_树洞社区");
             model.addAttribute("section","questions");
-            model.addAttribute("sectionName","我的提问");
             model.addAttribute("pagination",paginationDTO);
         }else {
             PaginationDTO paginationDTO = notificationService.list(user.getId(),page,size);
+            model.addAttribute("sectionName","我的消息_树洞社区");
             model.addAttribute("section","replies");
-            model.addAttribute("sectionName","最新回复");
             model.addAttribute("pagination",paginationDTO);
         }
 

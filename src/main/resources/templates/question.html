@@ -3,35 +3,92 @@
 <head>
     <title th:text="${question.title}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
     <link rel="stylesheet" th:href="@{/css/editormd.preview.min.css}">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_2z3xfp60efw.css">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}" type="application/javascript"></script>
+    <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script th:src="@{/js/moment.js}"></script>
     <script th:src="@{/js/comment.js}"></script>
     <script th:src="@{/js/editormd.min.js}" type="application/javascript"></script>
     <script th:src="@{/js/lib/marked.min.js}"></script>
     <script th:src="@{/js/lib/prettify.min.js}"></script>
+    <script type="application/javascript">
+        layui.use('element',function () {
+            var element = layui.element;
+        });
+
+        function search() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                layer.open({
+                    type: 1,
+                    area:'500px',
+                    title: false,
+                    closeBtn: 0,
+                    shadeClose: true,
+                    skin: 'tree-layer-search',
+                    content: '<form action="/"><input autocomplete="off" placeholder="搜索内容，回车跳转" type="text" name="search"></form>'
+                });
+            });
+        }
+    </script>
 </head>
 <body>
 <div th:replace="navigation :: nav"></div>
-<div class="container-fluid main profile">
-    <div class="row">
+<div class="layui-hide-xs"><div th:replace="navTwo :: navTwo"></div></div>
+<div class="layui-container">
+    <div class="layui-row layui-col-space15">
         <!--左边主要内容-->
-        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
+        <div class="layui-col-md8 content detail">
             <!--正文-->
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h4 class="question-title"><span th:text="${question.title}"></span></h4>
-                <span class="text-desc">
-                作者：<span th:text="${question.user.name}"></span> |
-                发布时间：<span th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm')}"></span> |
-                阅读数：<span th:text="${question.viewCount}"></span>
-                </span>
-                <!-- 内容-->
-                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" id="question-view">
+            <div class="tree-panel detail-box">
+                <h1 th:text="${question.title}"></h1>
+                <div class="tree-detail-info">
+                    <!-- <span class="layui-badge">审核中</span> -->
+                    <a class="layui-badge layui-bg-green">其它</a>
+                    <span class="layui-badge" style="background-color: #999;">未结</span>
+                    <!-- <span class="layui-badge" style="background-color: #5FB878;">已结</span> -->
+                    <div class="tree-admin-box" data-id="123" th:if="${session.user!=null && session.user.id==question.user.id}">
+                        <span class="layui-btn layui-btn-xs">删除</span>
+                        <span class="layui-btn layui-btn-xs">置顶</span>
+                        <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span> -->
+                        <span class="layui-btn layui-btn-xs">加精</span>
+                        <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
+                    </div>
+                    <span class="tree-list-nums">
+                        <a href="#comment"><i class="iconfont icon-pinglun1" title="回复"></i><span th:text="${question.commentCount}"></span></a>
+                        <i class="iconfont icon-liulan2" title="浏览" style="font-size: 22px;top: 3px;"></i><span th:text="${question.viewCount}"></span>
+                    </span>
+                </div>
+                <div class="detail-about">
+                    <a class="tree-avatar" href="/user/123">
+                        <img th:src="${question.user.avatarUrl}">
+                    </a>
+                    <div class="tree-detail-user">
+                        <a href="/user/123" class="tree-link">
+                            <cite th:text="${question.user.nickName}"></cite>
+                            <i class="layui-badge tree-badge-vip layui-bg-gray">LV2</i>
+                        </a>
+                        <span th:text="${#dates.format(question.gmtModified,'yyyy-MM-dd HH:mm')}"></span>更新
+                    </div>
+                    <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
+                        <span style="padding-right: 10px; color: #FF7200">
+                            有任何问题点击QQ号加站长询问：<a target="_blank" th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}">2435663184</a>
+                        </span>
+                        <span class="layui-btn layui-btn-xs jie-admin" th:if="${session.user!=null && session.user.id==question.user.id}">
+                            <a th:href="@{'/publish/'+${question.id}}" style="margin-left: -5px;">
+                                <i class="layui-icon layui-icon-edit"></i>编辑
+                            </a>
+                        </span>
+                        <span data-id="126" onclick="like_question(this)" class="layui-btn layui-btn-xs layui-btn-warm">
+                            <i class="layui-icon layui-icon-star"></i>收藏(<span id="questionlikecount-126">0</span>)
+                        </span>
+                    </div>
+                </div>
+                <div style="margin-top: 20px;margin-bottom: 20px" class="layui-text layui-table" id="question-view">
                     <textarea style="display: none" th:text="${question.description}"></textarea>
                 </div>
                 <script type="text/javascript">
@@ -39,131 +96,103 @@
                         editormd.markdownToHTML("question-view",{});
                     });
                 </script>
-                <!--标签-->
-                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <span class="label label-info question-tag" th:each="tag:${question.tag.split(',')}">
-                        <span class="glyphicon glyphicon-tags"></span>
-                        <span th:text="${tag}"></span>
+                <div style="margin-top: 10px">
+                    相关标签：
+                    <span class="layui-badge-rim" th:each="tag:${question.tag.split(',')}" style="margin-right: 3px;margin-top: 3px">
+                        <a th:href="@{/(page=1,tag=${tag})}" th:text="${tag}"></a>
                     </span>
-                </div>
-                <!--编辑-->
-                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                    <a th:href="@{'/publish/'+${question.id}}" class="community-menu" th:if="${session.user!=null && session.user.id==question.user.id}">
-                        <span class="glyphicon glyphicon-pencil" aria-hidden="true">编辑</span>
-                    </a>
                 </div>
             </div>
             <!--回复-->
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h4>
-                    <span th:text="${question.commentCount}"></span> 个回复
-                </h4>
-                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comment-sp">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comments" th:each="comment : ${comments}">
-                    <div class="media">
-                        <div class="media-left">
-                            <a href="#">
-                                <img class="media-object img-rounded" th:src="${comment.user.avatarUrl}">
-                            </a>
-                        </div>
-                        <div class="media-body" th:id="'comment-body-'+${comment.id}">
-                            <h5 class="media-heading">
-                                <span th:text="${comment.user.name}"></span>
-                            </h5>
-                            <div th:text="${comment.content}"></div>
-                            <div class="menu">
-                                <span class="glyphicon glyphicon-thumbs-up icon"></span>
-                                <span class="icon" th:data-id="${comment.id}" onclick="collapseComments(this)">
-                                    <span class="glyphicon glyphicon-comment" ></span>
-                                    <span th:text="${comment.commentCount}"></span>
-                                </span>
-                                <span class="pull-right" th:text="${#dates.format(comment.gmtCreate,'yyyy-MM-dd')}"></span>
-                            </div>
-                            <!--二级评论-->
-                            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 collapse sub-comments" th:id="${'comment-'+comment.id}">
-                                <!--<div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comments" th:each="comment : ${comments}">-->
-                                    <!--<div class="media">-->
-                                        <!--<div class="media-left">-->
-                                                <!--<img class="media-object img-rounded" th:src="${comment.user.avatarUrl}">-->
-                                        <!--</div>-->
-                                        <!--<div class="media-body">-->
-                                            <!--<h5 class="media-heading" th:text="${comment.user.name}">-->
-                                            <!--</h5>-->
-                                            <!--<div th:text="${comment.content}"></div>-->
-                                            <!--<div class="menu">-->
-                                                <!--<span class="pull-right" th:text="${#dates.format(comment.gmtCreate,'yyyy-MM-dd')}"></span>-->
-                                            <!--</div>-->
-                                        <!--</div>-->
-                                    <!--</div>-->
-                                <!--</div>-->
-                                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                                    <input type="text" class="form-control" placeholder="评论一下..." th:id="'input-'+${comment.id}">
-                                    <button type="button" class="btn btn-success pull-right" onclick="comment(this)" th:data-id="${comment.id}">评论</button>
+            <div class="tree-panel detail-box btn-hover">
+                <fieldset class="layui-elem-field layui-field-title" style="text-align: center;">
+                    <legend th:text="${question.commentCount+'个回复'}"></legend>
+                </fieldset>
+                <div class="comments">
+                    <ul class="jieda" id="jieda">
+                        <li id="comment-body-224" class="jieda-daan" th:each="comment : ${comments}">
+                            <div class="detail-about detail-about-reply">
+                                <a class="tree-avatar" href="/user/123">
+                                    <img th:src="${comment.user.avatarUrl}">
+                                </a>
+                                <div class="tree-detail-user">
+                                    <a href="/user/123" class="tree-link">
+                                        <cite th:text="${comment.user.nickName}"></cite>
+                                        <i class="layui-badge tree-badge-vip layui-bg-gray">LV2</i>
+                                    </a>
+                                </div>
+                                <div class="detail-hits">
+                                    <span th:text="${#dates.format(comment.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                            <div class="detail-body jieda-body" th:text="${comment.content}"></div>
+                            <div class="jieda-reply">
+                                <span class="jieda-zan" id="thumbicon-224">
+                                    <i class="iconfont icon-zan2" data-id="224" onclick="like_comment(this)"></i>
+                                    <em id="likecount-224" class="zanok">0</em>
+                                </span>
+                                <span class="icon" th:data-id="${comment.id}" onclick="collapseComments(this)">
+                                    <i class="iconfont icon-huifu"></i>
+                                    <em th:text="${comment.commentCount}"></em>
+                                </span>
+                                <div class="jieda-admin">
+                                    <span type="edit">编辑</span>
+                                    <span type="del" style="padding-right: 10px">删除</span>
+                                </div>
+                            </div>
+                            <!--二级评论-->
+                            <div class="sub-comments layui-hide" th:id="${'comment-'+comment.id}">
+                                <div>
+                                    <input type="text" class="form-control layui-input" placeholder="评论一下..." th:id="'input-'+${comment.id}">
+                                    <button type="button" class="layui-btn  rightbtn" onclick="comment(this)" th:data-id="${comment.id}">回复</button>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
-            </div>
-
-            <!--回复输入框-->
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h4>提交回复</h4>
-                <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comment-sp">
-                <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 comment-section">
-                    <div class="media">
-                        <div class="media-left">
-                            <a href="#">
-                                <img class="media-object img-rounded"
-                                     th:src="${session.user != null ? session.user.avatarUrl : '/images/default-avatar.png'}">
-                            </a>
-                        </div>
-                        <div class="media-body">
-                            <h5 class="media-heading">
-                                <span th:text="${session.user != null ? session.user.name : '匿名用户'}"></span>
-                            </h5>
+                <!--回复输入框-->
+                <div class="layui-form layui-form-pane">
+                    <input type="hidden" id="question_id" th:value="${question.id}">
+                    <div class="layui-form-item layui-form-text">
+                        <div class="layui-input-block">
+                            <textarea id="questionComment" class="layui-textarea" rows="6" placeholder="我来说两句..."></textarea>
                         </div>
                     </div>
-                    <input type="hidden" id="question_id" th:value="${question.id}">
-                    <textarea class="form-control comment-content" rows="6"></textarea>
-                    <button type="button" class="btn btn-success btn-comment" onclick="post()">回复</button>
+                    <div class="layui-form-item">
+                        <button type="button" class="layui-btn" onclick="post()">评论</button>
+                    </div>
                 </div>
             </div>
         </div>
         <!--右边信息块-->
-        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h4>发起人</h4>
-                <div class="media">
-                    <div class="media-left">
-                        <a href="#">
-                            <img class="media-object img-rounded" th:src="${question.user.avatarUrl}">
-                        </a>
-                    </div>
-                    <div class="media-body">
-                        <h5 class="media-heading">
-                            <span th:text="${question.user.name}"></span>
-                        </h5>
-                    </div>
+        <div class="layui-col-md4">
+            <!--相关帖子-->
+            <dl class="tree-panel tree-list-one" th:if="${relatedQuestions.size() != 0}">
+                <dt class="tree-panel-title">相关帖子</dt>
+                <dd th:each="related:${relatedQuestions}">
+                    <a th:href="@{'/question/'+ ${related.id}}" th:text="${related.title}"></a>
+                    <span>
+                        <i class="iconfont icon-pinglun1" style="margin-right: 2px;top: 1px;"></i><span th:text="${related.commentCount}"></span>
+                    </span>
+                </dd>
+            </dl>
+            <!--微信号-->
+            <div class="tree-panel">
+                <div class="tree-panel-title">站长微信</div>
+                <div class="tree-panel-main">
+                    <img src="/images/wechat.png" style="max-width: 100%;"/>
                 </div>
             </div>
-            <!--微信号-->
-            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h4>站长微信</h4>
-                <img src="/images/wechat.png" class="img-thumbnail question-wechat"/>
-            </div>
-            <!--相关问题-->
-            <hr class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <h4>相关问题</h4>
-                <ul class="question-related">
-                    <li th:each="related:${relatedQuestions}">
-                        <a th:href="@{'/question/'+ ${related.id}}" th:text="${related.title}"></a>
-                    </li>
-                </ul>
+            <!--友情链接-->
+            <div class="tree-panel tree-link">
+                <h3 class="tree-panel-title">友情链接</h3>
+                <dl class="tree-panel-main">
+                    <dd><a href="#">树洞社区</a></dd>
+                    <dd><a href="https://treedon.cn/" target="_blank">TreeDonForum</a></dd>
+                    <dd><a th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}" target="_blank">联系站长</a></dd>
+                    <dd><a href="" target="_blank">社区源码</a></dd>
+                    <dd><a th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}" target="_blank" class="tree-link">申请友链</a></dd>
+                </dl>
             </div>
         </div>
     </div>

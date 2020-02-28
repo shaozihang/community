@@ -26,7 +26,7 @@ public class HotTagTasks {
     @Scheduled(fixedRate = 1000 * 60 * 60 * 4)
     public void hotTagSchedule(){
         int offset = 0;
-        int limit = 5;
+        int limit = 10;
         List<Question> list = new ArrayList<>();
 
         Map<String, Integer> priorities = new HashMap<>();

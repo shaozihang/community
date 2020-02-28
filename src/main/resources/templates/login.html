@@ -1,0 +1,253 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="登录"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/css/community.css}">
+    <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
+    <script type="application/javascript">
+        window.onload=function () {
+            var url=window.location.href;                    //获取当前页面的url
+            if(url.indexOf("?")!=-1){                        //判断是否存在参数
+                url = url.replace(/(\?|#)[^'"]*/, '');           //去除参数
+                window.history.replaceState({},0,url);
+            }
+        };
+
+        layui.use('element',function () {
+            var element = layui.element;
+        });
+
+        function type(value) {
+            if(value == 1){
+                $(".login-ul span:first").addClass("login-active");
+                $(".login-ul span:last").removeClass("login-active");
+                $(".login-a").removeClass("layui-hide");
+                $(".login-b").addClass("layui-hide");
+            }else if(value == 2){
+                $(".login-ul span:last").addClass("login-active");
+                $(".login-ul span:first").removeClass("login-active");
+                $(".login-b").removeClass("layui-hide");
+                $(".login-a").addClass("layui-hide");
+            }
+        }
+
+        function checkPassword() {
+            var check = false;
+            var password = $("#password").val();
+            if(password == null || password == ""){
+                $("#password").next().html("请输入密码");
+                check = false;
+            }else{
+                $("#password").next().html("");
+                check = true;
+            }
+            return check;
+        }
+
+        function checkPhone(value) {
+            var check = false;
+            var phone = $("#"+value+"").val();
+            var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
+            if(phone == null || phone == ""){
+                $("#"+value+"").next().html("请输入注册时用的手机号");
+                check = false;
+            }else if(regExp.test(phone) == false){
+                $("#"+value+"").next().html("请输入正确的手机号");
+                check = false;
+            }else{
+                $("#"+value+"").next().html("");
+                check = true;
+            }
+            return check;
+        }
+
+        function checkCode() {
+            var check = false;
+            var code = $("#code").val();
+            if(code == null || code == ""){
+                $("#code").parent().next().html("请输入验证码");
+                check = false;
+            }else{
+                $("#code").parent().next().html("");
+                check = true;
+            }
+            return check;
+        }
+
+        var countdown=60;
+        function getCode(value) {
+            var obj = $("#el-code-button");
+            var span = obj.children();
+            var phoneB = $("#phoneB").val();
+            var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
+            if(phoneB == null || phoneB == ""){
+                $("#phoneB").next().html("请输入手机号");
+            }else if(regExp.test(phoneB) == false){
+                $("#phoneB").next().html("请输入正确的手机号");
+            }else{
+                $.ajax({
+                    type:"post",
+                    url:"/getCode/"+value,
+                    contentType:"application/json",
+                    data: phoneB,
+                    success:function (result) {
+                        if(result.code == 200){
+                            settime(obj,span);
+                        }else{
+                            $("#phoneB").next().html(result.message);
+                        }
+                    },
+                    dataType:"json"
+                });
+            }
+
+        }
+
+        function settime(obj,span) { //发送验证码倒计时
+            if (countdown == 0) {
+                obj.attr('disabled',false);
+                span.html("获取验证码");
+                countdown = 60;
+                return;
+            } else {
+                obj.attr('disabled',true);
+                span.html("" + countdown + "s后重新获取");
+                countdown--;
+            }
+            setTimeout(function(){
+                settime(obj,span);
+            },1000)
+        }
+
+        //记住密码功能
+        var flag = 1;
+        function remember(){
+            var remFlag = $("input[type='checkbox']").is(':checked');
+            if(remFlag==true){
+                flag = 1;
+            }else{
+                flag = 0;
+            }
+        }
+
+        function check() {
+            var check = false;
+            var phone;
+            var type;
+            if(checkPhone('phoneA') && checkPassword()){
+                phone = $("#phoneA").val();
+                type = 1;
+                check = true;
+            }else if(checkPhone('phoneB') && checkCode()){
+                phone = $("#phoneB").val();
+                type = 2;
+                check = true;
+            }
+            var password = $("#password").val();
+            var code = $("#code").val();
+            var oauthsId = $("#oauthsId").val();
+            var oauthsType = $("#oauthsType").val();
+            if(check == true){
+                $.ajax({
+                    type:"post",
+                    url:"/loginUser/"+type,
+                    contentType:"application/json",
+                    data:JSON.stringify({
+                        "password":password,
+                        "phone":phone,
+                        "code":code,
+                        "flag":flag,
+                        "oauthsId":oauthsId,
+                        "oauthsType":oauthsType
+                    }),
+                    success:function (result) {
+                        if(result.code == 200){
+                            window.location.href="/success?info=登录成功";
+                        }else{
+                            if(result.code == 2015){
+                                $("#password").next().html(result.message);
+                            }else{
+                                $("#code").parent().next().html(result.message);
+                            }
+                        }
+                    },
+                    dataType:"json"
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+<div th:replace="navigation :: nav"></div>
+<div class="layui-container tree-marginTop" style="background: white">
+    <div class="layui-row">
+        <div class="register-main">
+            <div class="title-line">
+                <span class="tit">登录</span>
+            </div>
+            <div class="register-container">
+                <form id="loginForm" method="post">
+                    <div class="form-group" style="margin-bottom: 15px">
+                        <div class="login-ul">
+                            <span class="login-active"><a href="javascript:type(1)">密码登录</a></span>
+                            <span><a href="javascript:type(2)">短信登录</a></span>
+                        </div>
+                    </div>
+                    <div class="login-a">
+                        <div class="form-group">
+                            <input type="text" class="el-input" id="phoneA" name="phone" placeholder="你的手机号" autocomplete="off" onkeyup="checkPhone('phoneA')">
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="el-input" id="password" name="password" placeholder="密码" autocomplete="off" onkeyup="checkPassword()">
+                            <p class="error-message"></p>
+                        </div>
+                    </div>
+                    <div class="login-b layui-hide">
+                        <div class="form-group">
+                            <input type="text" class="el-input" id="phoneB" name="phone" placeholder="填写常用手机号" autocomplete="off" onkeyup="checkPhone('phoneB')">
+                            <p class="error-message"></p>
+                        </div>
+                        <div class="form-group">
+                            <div class="el-code">
+                                <input type="text" class="el-input" id="code" name="code" placeholder="请输入短信验证码" autocomplete="off" onkeyup="checkCode()">
+                                <button type="button" class="btn-login el-code-button" onclick="getCode(2)" id="el-code-button"><span>点击获取</span></button>
+                            </div>
+                            <p class="error-message"></p>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 5px;">
+                        <label for="remember-me" style="font-weight: normal;font-size: 12px;cursor: pointer;">
+                            <input id="remember-me" name="remember-me" type="checkbox" checked="checked" onclick="remember()" style="vertical-align: text-bottom;cursor: pointer;">
+                            记住我
+                            <span class="remember-me-span">不是自己的电脑上不要勾选此项</span>
+                        </label>
+                        <div style="display: inline-block;float: right;font-size: 12px">
+                            <a th:href="@{/findpassword}" class="forget-password">忘记密码?</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <a href="javascript:check()" class="btn-login el-button" th:text="${oauthsType==null?'登录':'授权并登录'}"></a>
+                        <a th:href="@{/register}" class="btn-register el-button">注册</a>
+                    </div>
+                    <div class="form-group other-way-login">
+                        <span>其他方式登录：</span>
+                        <a class="github-login" title="GitHub授权登录"
+                           th:href="@{https://github.com/login/oauth/authorize(client_id='a7984ce94e8e4c8c796d',redirect_uri=${#httpServletRequest.getRequestURL()+'Callback'},scope='user',state=1)}"><img src="/images/github.png"></a>
+                        <a class="qq-login" title="qq授权登录"><img src="/images/QQ.png"></a>
+                        <a class="weixin-login" title="微信授权登录"><img src="/images/weixin.png"></a>
+                    </div>
+                    <input id="oauthsId" hidden="hidden" th:value="${oauthsId}">
+                    <input id="oauthsType" hidden="hidden" th:value="${oauthsType}">
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:replace="footer :: foot"></div>
+</body>
+</html>

@@ -25,9 +25,6 @@ public class NotificationController {
 
 
         User user = (User) request.getSession().getAttribute("user");
-        if(user==null){
-            return "redirect:/";
-        }
 
         NotificationDTO notificationDTO = notificationService.read(id,user);
 

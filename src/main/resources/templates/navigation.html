@@ -4,48 +4,45 @@
 
 <body>
 
-<div th:fragment="nav">
-    <nav class="navbar navbar-default">
-        <div class="container-fluid">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-                    <span class="sr-only">树洞社区</span>
-                </button>
-                <a class="navbar-brand" href="/">树洞社区</a>
-            </div>
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-                <form class="navbar-form navbar-left" action="/" method="get">
-                    <div class="form-group">
-                        <input type="text" class="form-control" name="search" placeholder="搜索问题">
-                    </div>
-                    <button type="submit" class="btn btn-default">搜索</button>
-                </form>
-                <ul class="nav navbar-nav navbar-right">
-                    <li th:if="${session.user!=null}">
-                        <a href="/publish">提问</a>
-                    </li>
-                    <li><a href="/profile/replies">通知 <span class="badge" th:text="${session.unreadCount}"></span></a></li>
-                    <li class="dropdown" th:if="${session.user!=null}">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
-                           aria-expanded="false">
-                            <span th:text="${session.user.getName()}"></span>
-                            <span class="caret"></span>
-                        </a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/profile/questions">我的问题</a></li>
-                            <!--<li><a href="#">个人资料</a></li>-->
-                            <li><a href="/logout">退出登录</a></li>
-                        </ul>
-                    </li>
-                    <li th:if="${session.user==null}">
-                        <a th:href="@{https://github.com/login/oauth/authorize(client_id='a7984ce94e8e4c8c796d',redirect_uri=${#httpServletRequest.getRequestURL()+'callback'},scope='user',state=1)}">登录</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+<div th:fragment="nav" class="layui-header tree-bg-black">
+    <div class="layui-container">
+        <a class="tree-logo" href="/">
+            <img src="/images/logo.png" alt="树洞社区" style="height: 40px;">
+        </a>
+        <ul class="layui-nav tree-nav layui-hide-xs">
+            <li class="layui-nav-item layui-this"><a href="/"><i class="layui-icon layui-icon-home"></i>主页</a></li>
+            <li class="layui-nav-item"><a href=""><i class="layui-icon layui-icon-read"></i>看看</a></li>
+            <li class="layui-nav-item"><a href="https://github.com/shaozihang/community"><i class="layui-icon layui-icon-fonts-code"></i>源码</a></li>
+        </ul>
+        <ul class="layui-nav tree-nav-user">
+            <li class="layui-nav-item" th:if="${session.user==null}"><a href="/login">登录</a></li>
+            <li class="layui-nav-item" th:if="${session.user==null}"><a href="/register">注册</a></li>
+            <!--登录后的状态-->
+            <li class="layui-nav-item tree-hide-sm" style="margin-right: 20px" th:if="${session.user!=null}">
+                <a href="/profile/replies" th:if="${session.unreadCount>0}">有新消息
+                    <span class="layui-badge" th:text="${session.unreadCount}"></span>
+                </a>
+            </li>
+            <li class="layui-nav-item" th:if="${session.user!=null}">
+                <a class="tree-nav-avatar niter-avatar" href="javascript:;">
+                    <cite th:text="${session.user.nickName}"></cite>
+                    <img th:src="${session.user.avatarUrl}">
+                </a>
+                <dl class="layui-nav-child tree-anim">
+                    <dd style="top: 4px;"><a href="/profile/replies">
+                        <i class="layui-icon layui-icon-notice"></i>我的消息<span class="layui-badge-dot" th:if="${session.unreadCount>0}"></span></a>
+                    </dd>
+                    <dd><a href="/user/123"><i class="layui-icon layui-icon-home"></i>我的主页</a></dd>
+                    <hr style="margin: 5px 0;">
+                    <dd><a href="/profile/questions"><i class="layui-icon layui-icon-tabs"></i>帖子管理</a></dd>
+                    <dd><a href="/user/set/account"><i class="layui-icon layui-icon-friends"></i>账户中心</a></dd>
+                    <dd><a href="/user/set/info"><i class="layui-icon layui-icon-set-sm"></i>基本设置</a></dd>
+                    <hr style="margin: 5px 0;">
+                    <dd><a href="/logout" style="text-align: center;">退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
 </div>
-
 </body>
-
 </html>

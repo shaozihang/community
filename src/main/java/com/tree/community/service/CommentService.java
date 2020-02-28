@@ -50,13 +50,11 @@ public class CommentService {
             if(dbComment == null){
                 return ResultDTO.errorOf(2003,"回复的评论不存在了，要不换个试试？");
             }
-            commentMapper.insertSelective(comment);
-
             Question question = questionMapper.selectByPrimaryKey(dbComment.getParentId());
             if(question == null){
-                return ResultDTO.errorOf(2004,"回复的提问不存在了，要不换个试试？");
+                return ResultDTO.errorOf(2004,"回复的帖子不存在了，要不换个试试？");
             }
-
+            commentMapper.insertSelective(comment);
             //增加评论的那条评论的评论数
             Comment parentComment = new Comment();
             parentComment.setId(comment.getParentId());
@@ -64,19 +62,19 @@ public class CommentService {
             commentExtMapper.incCommentCount(parentComment);
 
             //创建通知
-            createNotify(comment, dbComment.getCommentator(), commentator.getName(), question.getTitle(), NotificationTypeEnum.REPLY_COMMENT, question.getId());
+            createNotify(comment, dbComment.getCommentator(), commentator.getNickName(), question.getTitle(), NotificationTypeEnum.REPLY_COMMENT, question.getId());
             return ResultDTO.okOf();
         }else{
             Question question = questionMapper.selectByPrimaryKey(comment.getParentId());
             if(question == null){
-                return ResultDTO.errorOf(2004,"回复的提问不存在了，要不换个试试？");
+                return ResultDTO.errorOf(2004,"回复的帖子不存在了，要不换个试试？");
             }
             commentMapper.insertSelective(comment);
             question.setCommentCount(1);
             questionExtMapper.incCommentCount(question);
 
             //创建通知
-            createNotify(comment,question.getCreator(),commentator.getName(),question.getTitle(), NotificationTypeEnum.REPLY_QUESTION, question.getId());
+            createNotify(comment,question.getCreator(),commentator.getNickName(),question.getTitle(), NotificationTypeEnum.REPLY_QUESTION, question.getId());
             return ResultDTO.okOf();
         }
 

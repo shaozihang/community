@@ -1,24 +1,699 @@
+html, body {
+    overflow-x: hidden;
+}
+
+html body {
+    margin-top: 61px;
+}
+
 body{
     background-color: #efefef;
 }
 
-.main{
-    background-color: white;
-    margin: 30px;
+a:hover{
+    color: #009688;
+    transition: all .3s;
 }
 
-.btn-publish{
-    float: right;
+i {
+    font-style: normal;
+}
+
+@media screen and (min-width: 769px) {
+    .site-mobile-shade{
+        display: none;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    #profileUser{
+        transition: left 1s;
+        -moz-transition: left 1s;	/* Firefox 4 */
+        -webkit-transition: left 1s;	/* Safari 和 Chrome */
+        -o-transition: left 1s;    /* Opera */
+        left: -500px;
+    }
+    .profile-panel{
+        margin: 0!important;
+    }
+    .nav-tree-mobile {
+        display: block!important;
+        position: fixed;
+        z-index: 100000;
+        bottom:20px;
+        left: 10px;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        border-radius: 2px;
+        text-align: center;
+        background-color: rgba(0,0,0,.7);
+        color: #fff;
+    }
+}
+
+.site-mobile-shade {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,.9);
+    z-index: 999;
+}
+
+.layui-container {
+    padding: 0;
+}
+
+.layui-header{
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 10000;
+    width: 100%;
+    border-bottom: 1px solid #404553;
+    border-right: 1px solid #404553;
+    border-radius: 0;
+}
+
+.tree-bg-black{
+    background: #393D49!important;
+}
+
+.tree-logo{
+    position: absolute;
+    left: 15px;
+    top: 11px;
+}
+
+.tree-nav{
+    margin-left: 200px;
+    padding: 0;
+}
+
+.tree-nav-user{
+    padding: 0;
+}
+
+.tree-nav-user .layui-badge{
+    top: 45%;
+}
+
+.layui-header .layui-nav a {
+    padding: 0 25px 0 60px;
+}
+
+.tree-nav a i {
+    position: absolute;
+    left: 25px;
+    top: 0;
+    padding-right: 10px;
+    font-size: 26px;
+}
+
+.tree-nav-user{
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.layui-header .tree-nav-user li a {
+    padding: 0 10px;
+}
+
+.layui-header .tree-nav-user .tree-nav-avatar{
+    padding-right: 0;
+}
+
+.tree-nav-avatar img {
+    width: 36px;
+    height: 36px;
+    margin-left: 10px;
+    border-radius: 100%;
+}
+
+.tree-nav .layui-nav-bar{
+    display: none !important;
+}
+
+.tree-nav .layui-this:after{
+    display: none !important;
+}
+
+.layui-header .layui-nav .layui-this:after, .layui-header .layui-nav .layui-nav-bar, .layui-header .tree-nav-user .layui-nav-more {
+    display: none !important;
+}
+
+.tree-nav-user .layui-nav-more{
+    display: none !important;
+}
+
+.tree-anim{
+    left: auto;
+    right: 0;
+    width: 120px;
+    min-width: 0;
+}
+
+.tree-anim dd{
+    line-height: 36px;
+}
+
+.tree-anim a i{
+    position: relative;
+    top: 2px;
+    margin-right: 10px;
+    font-size: 26px;
+}
+
+.tree-column {
+    height: 50px;
+    line-height: 50px;
+}
+.tree-panel {
+    margin-bottom: 15px;
+    border-radius: 2px;
+    background-color: #fff;
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,.05);
+}
+
+.tree-column ul li {
+    position: relative;
+    display: inline-block;
+    height: 50px;
+}
+
+.tree-column ul li.layui-this a {
+    color: #5FB878;
+}
+
+.tree-column ul li a {
+    padding: 0 20px;
+}
+
+.tree-column .layui-badge-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -4px 0 0 20px;
+}
+
+.tree-column ul li .tree-mid {
+    margin: 0 20px;
+}
+
+/**总的手机端媒体查询*/
+@media screen and (max-width: 768px) {
+    .tree-column {
+        height: auto;
+    }
+    .tree-column ul {
+        padding: 10px;
+    }
+    .tree-column ul li {
+        float: left;
+        width: 33.33%;
+        height: 36px;
+        line-height: 36px;
+        vertical-align: middle;
+        text-align: center;
+        box-sizing: border-box;
+    }
+    .layui-header .tree-nav-user .tree-nav-avatar{
+        padding-right: 15px;
+    }
+    .layui-header .tree-nav-user {
+        margin-right: 5px;
+    }
+}
+
+.tree-mid {
+    display: inline-block;
+    height: 10px;
+    width: 1px;
+    margin: 0 10px;
+    vertical-align: middle;
+    background-color: #e2e2e2;
+}
+
+.tree-column-right {
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.tree-search {
+    display: inline-block;
+    vertical-align: top;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 20px;
+}
+
+.tree-search .layui-icon {
+    font-size: 20px;
+}
+
+.tree-layer-search input {
+    height: 75px;
+    line-height: 75px;
+    width: 500px;
+    padding: 0 15px;
+    font-size: 20px;
+    border: none 0;
+    background: none;
+}
+
+
+.question-panel{
+    background-color: white;
+    padding: 10px 15px;
     margin-bottom: 15px;
 }
 
-.media-object{
-    width: 38px;
-    height: 38px;
+.panel-page{
+    padding-right: 15px;
+    padding-left: 15px;
 }
 
-.media-body{
-    padding-top: 10px;
+.tree-panel-title {
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+    padding: 0 15px;
+    border-bottom: 1px dotted #E9E9E9;
+    color: #333;
+    border-radius: 2px 2px 0 0;
+    font-size: 14px;
+}
+
+.tree-filter a.layui-this {
+    color: #5FB878;
+}
+
+.tree-filter a {
+    padding: 0 8px;
+    color: #666;
+}
+
+.tree-filter .tree-mid {
+    margin: 0 8px;
+}
+
+.tree-filter-right {
+    position: absolute;
+    right: 10px;
+    top: 0;
+}
+
+.tree-list li {
+    position: relative;
+    height: 45px;
+    line-height: 22px;
+    padding: 15px 15px 15px 75px;
+    border-bottom: 1px dotted #e2e2e2;
+}
+
+.tree-list li:last-child {
+    border-bottom: none;
+}
+
+.tree-avatar {
+    position: absolute;
+    left: 15px;
+    top: 15px;
+}
+
+.tree-avatar img {
+    display: block;
+    width: 45px;
+    height: 45px;
+    margin: 0;
+    border-radius: 2px;
+}
+
+.tree-list li h2, .tree-list li h2 a, .tree-list-info {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.tree-list li h2 {
+    height: 26px;
+    font-size: 0;
+}
+
+.tree-list li h2 a {
+    display: inline-block;
+    max-width: 80%;
+    padding-right: 10px;
+    font-size: 16px;
+}
+
+@media screen and (max-width: 768px) {
+    .tree-list li h2 a {
+        max-width: 72%;
+    }
+}
+
+.tree-list li h2 .layui-badge {
+    top: -2px;
+    height: 16px;
+    line-height: 16px;
+    padding: 0 5px;
+    margin-right: 10px;
+    font-size: 12px;
+    border: 1px solid #5FB878;
+    background: none;
+    color: #5FB878;
+}
+
+.tree-list-info {
+    position: relative;
+    font-size: 13px;
+    color: #999;
+}
+
+.tree-list-info>* {
+    padding-right: 15px;
+}
+
+.tree-list-info a:link{
+    color: #999;
+}
+
+.tree-list-info a:hover{
+    color: #5FB878;
+}
+
+.tree-list-info .tree-badge-vip {
+    position: relative;
+    margin-left: 2px;
+}
+
+.tree-list-liulan {
+    color: #FF5722;
+}
+
+.tree-list-liulan .icon-liulan{
+    font-size: 15px;
+}
+
+.tree-list-like {
+    color: #FF5722;
+}
+
+.tree-list-nums {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding-right: 0!important;
+}
+
+.tree-list-nums i {
+    position: relative;
+    padding: 0 3px 0 15px;
+}
+
+.icon-pinglun1 {
+    position: relative;
+    top: 2px;
+}
+
+.tree-list-badge {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    font-size: 0;
+}
+
+.layui-laypage a{
+    height: 34px;
+    line-height: 34px;
+    font-size: 14px;
+    padding: 0 19px;
+    padding-top: 2px;
+}
+
+.tree-right {
+    position: absolute;
+    right: 15px;
+    top: 0;
+}
+
+.tree-panel-main {
+    padding: 10px 15px;
+}
+
+.tree-marginTop {
+    margin-top: 15px;
+}
+
+@media screen and (max-width: 768px) {
+    .tree-marginTop {
+        margin-top: 0;
+    }
+}
+
+.publish-panel {
+    padding: 20px;
+}
+
+.layui-form-selectup dl {
+    top: 42px;
+    bottom: unset;
+}
+
+.tree-list-one .tree-panel-title {
+    margin-bottom: 5px;
+}
+
+.tree-list-one dd {
+    margin: 0 15px;
+    line-height: 26px;
+    white-space: nowrap;
+    overflow: hidden;
+    list-style: decimal-leading-zero inside;
+    color: #009E94;
+}
+
+.tree-list-one dd a, .tree-list-one dd span {
+    display: inline-block;
+    vertical-align: top;
+    font-style: normal;
+}
+
+.tree-list-one dd a {
+    max-width: 85%;
+    margin-right: 5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+}
+
+.tree-list-one dd span {
+    font-size: 12px;
+    color: #ccc;
+}
+/**问题详情页*/
+.detail-box {
+    padding: 20px;
+}
+
+.detail h1 {
+    font-size: 24px;
+    line-height: 36px;
+}
+
+.tree-detail-info {
+    position: relative;
+    margin: 10px 0 15px;
+}
+
+.tree-admin-box {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    margin-left: 20px;
+}
+
+.tree-detail-info .layui-btn {
+    height: 20px;
+    line-height: 20px;
+    vertical-align: top;
+    border-radius: 0;
+}
+
+.tree-detail-info .layui-btn+.layui-btn {
+    margin-left: 0;
+}
+
+.tree-detail-info .tree-list-nums {
+    top: -3px;
+    font-size: 16px;
+}
+
+.tree-detail-info .tree-list-nums i {
+    font-size: 19px;
+    color: #999;
+}
+
+.detail-about {
+    position: relative;
+    line-height: 20px;
+    padding: 15px 15px 15px 75px;
+    font-size: 13px;
+    background-color: #f8f8f8;
+    color: #999;
+}
+
+.tree-detail-user {
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.tree-detail-user a {
+    padding-right: 10px;
+    font-size: 14px;
+}
+
+.detail-about .detail-hits {
+    position: relative;
+    top: 5px;
+    line-height: 20px;
+}
+
+.detail-hits span {
+    height: 20px;
+    line-height: 20px;
+}
+
+.detail-hits .jie-admin {
+    color: #fff;
+    padding: 0 10px;
+    margin-right: 1px;
+}
+
+.detail-hits .layui-btn {
+    border-radius: 0;
+}
+
+.detail-hits .jie-admin a {
+    color: #fff;
+}
+
+.detail-hits .layui-btn+.layui-btn {
+    margin-left: 5px;
+}
+
+.jieda {
+    margin-bottom: 30px;
+}
+
+.jieda li {
+    position: relative;
+    padding: 20px 0 10px;
+    border-bottom: 1px dotted #DFDFDF;
+}
+
+.jieda li:last-child {
+    border-bottom: none;
+}
+
+.detail-about-reply {
+    padding: 0 0 0 55px;
+    background: none;
+}
+
+.detail-about-reply .tree-avatar {
+    left: 0;
+    top: 0;
+}
+
+.detail-body {
+    margin: 20px 0 0;
+    min-height: 306px;
+    line-height: 26px;
+    font-size: 16px;
+    color: #333;
+    word-wrap: break-word;
+}
+
+.jieda-body {
+    margin: 25px 0 20px;
+    min-height: 0;
+    line-height: 24px;
+    font-size: 14px;
+}
+
+.jieda-reply {
+    position: relative;
+}
+
+.jieda-reply span {
+    padding-right: 20px;
+    color: #999;
+    cursor: pointer;
+}
+
+.jieda-reply span .icon-zan2 {
+    font-size: 22px;
+}
+
+.jieda-reply span .icon-huifu {
+    font-size: 20px;
+    position: relative;
+    top: 2px;
+}
+
+.detail-hits span .icon-huifu{
+    font-size: 20px;
+    position: relative;
+    top: -8px;
+}
+
+.jieda-reply span em {
+    font-style: normal;
+}
+
+.jieda-admin {
+    position: absolute;
+    right: 0;
+    top: 4px;
+}
+
+.rightbtn {
+    float: right;
+    margin: 10px;
+}
+
+.media-object{
+    width: 43px;
+    height: 43px;
+}
+
+.media-heading{
+    font-size: 16px;
+    margin-bottom: 9px;
+}
+
+.media{
+    margin-top: 0px;
+    padding: 15px 15px;
+}
+
+.question-media{
+    padding: 15px 0;
+}
+
+.media-panel{
+    border: 0;
+    border-top: 1px solid #eee;
 }
 
 .text-desc{
@@ -27,32 +702,34 @@ body{
     color: #999;
 }
 
-.profile .section{
-    margin-top: 15px;
-}
-
-.question-title{
-    margin-top: 25px;
-}
-
 .question-tag{
     margin-right: 5px;
 }
 
 .question-related{
     line-height: 20px;
-    font-size: 12px;
+    font-size: 14px;
     list-style: none;
-    padding-left: 0;
+    padding: 10px 15px;
+    margin: 0;
 }
 
-.question-wechat{
-    width: 100%;
+.question-related li{
+    padding-bottom: 10px;
+}
+
+.question-related a{
+    margin-right: 5px;
+}
+
+.question-related span{
+    color: #999;
+    font-size: 15px;
+    top: 3px;
 }
 
 .publish-tag-tab{
     display: none;
-    margin-top: 10px;
     padding-top: 10px;
 }
 
@@ -62,64 +739,112 @@ body{
     display: inline-block;
 }
 
+.community-tag{
+    text-decoration-line: none;
+    cursor: pointer;
+    display: inline-block;
+    height: 20px;
+    line-height: 19px;
+    padding: 2px 5px;
+    background-color: #99cfff;
+    font-size: 12px;
+    color: #fff !important;
+    border-radius: 4px;
+    margin: 4px;
+}
+
+.community-tag:hover {
+    background-color: #339dff;
+    color: #fff !important;
+    text-decoration-line: none;
+}
+
+.tree-link {
+    color: #01AAED;
+}
+
+.tree-link:hover {
+    color: #5FB878;
+}
+
+.tree-link dd {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.tree-link a {
+    line-height: 24px;
+    padding-right: 15px;
+}
+
+.publish-tag{
+    cursor: pointer;
+    height: 20px;
+    line-height: 16px;
+    padding: 2px 7px;
+    background-color: #5bc0de;
+    font-size: 12px;
+    color: #fff;
+    border-radius: 4px;
+}
+
 .community-menu{
     color: #999;
-    font-size: 13px;
-    margin-bottom: 15px;
+    font-size: 12px;
 }
 
 .jumbotron{
     margin: 50px;
 }
 
+.jumbotron h1{
+    font-size: 63px;
+}
+
+@media screen and (max-width: 768px) {
+    .jumbotron h1{
+        font-size: 36px;
+    }
+}
+
+.jumbotron p {
+    margin-bottom: 15px;
+    font-size: 21px;
+    font-weight: 200;
+}
+
 .comment-content{
     margin: 10px 0;
 }
 
-.btn-comment{
-    float: right;
-    margin-bottom: 10px;
-}
-
 .comments{
     padding-bottom: 5px;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #eee;
 }
 
 .sub-comments{
     border-radius: 5px;
-    border: 1px solid #eee;
     margin-top: 10px;
-    margin-bottom: 15px;
+    margin-bottom: 50px;
     padding-top: 15px;
+    padding-left: 56px;
+    line-height: 22px;
+    color: #666;
 }
 
-.sub-comments .btn{
-    margin: 10px 0;
-}
-
-.comment-sp{
-    margin-top: 0;
-}
-
-.menu{
-    color: #999;
-    margin-top: 5px;
-}
-
-.menu .icon{
-    margin-right: 6px;
-    font-size: 15px;
-    cursor: pointer;
-}
-
-.menu .active{
+.jieda-reply .active{
     color: #499ef3;
 }
 
-.menu .icon:hover{
+.jieda-reply .icon:hover{
     color: #499ef3;
+}
+
+.layui-hide.in{
+    display: block!important;
+}
+
+.layui-layedit i {
+    color: #009E94!important;
 }
 
 .footer{
@@ -127,3 +852,410 @@ body{
     text-align: center;
     color: #666;
 }
+
+.register-main{
+    padding: 20px 60px;
+}
+
+.title-line{
+    height: 28px;
+    margin: 0 auto;
+    border-bottom: 1px solid #ddd;
+    margin-top: 5px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.title-line .tit{
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto;
+    padding: 0 20px;
+    font-size: 38px;
+    background: #fff;
+    text-align: center;
+}
+
+.register-container{
+    padding: 30px 300px;
+}
+
+.el-input{
+    width: 100%;
+    height: 40px;
+    padding: 0px 12px;
+    font-size: 14px;
+    line-height: 40px;
+    color: #555;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-sizing:border-box;
+    -moz-box-sizing:border-box; /* Firefox */
+    -webkit-box-sizing:border-box; /* Safari */
+}
+
+@media screen and (max-width: 1199px) {
+    .register-container {
+        padding: 30px 200px;
+    }
+}
+
+@media screen and (max-width: 991px) {
+    .register-main {
+        padding: 20px 30px;
+    }
+    .register-container {
+        padding: 30px 130px;
+    }
+    .tree-hide-sm{
+        display: none!important;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    .register-main {
+        padding: 20px 10px;
+    }
+    .register-container {
+        padding: 30px 5px;
+    }
+}
+
+.el-code{
+    position: relative;
+}
+
+
+.el-code-button{
+    width: 30%;
+    height: 36px;
+    border-radius: 3px;
+    padding: 0 4px;
+    cursor: pointer;
+    position: absolute;
+    right: 2px;
+    top: 2px;
+}
+
+.error-message{
+    display: block;
+    color: #f45d90;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    font-size: 12px;
+}
+
+.el-button{
+    width: 45%;
+    height: 38px;
+    display: inline-block;
+    border-radius: 2px;
+    line-height: 38px;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    -webkit-transition: all .3s;
+    -o-transition: all .3s;
+    -moz-transition: all .3s;
+    transition: all .3s;
+}
+
+.register-text-right{
+    line-height: 40px;
+    text-align: right;
+}
+
+.register-text-right a{
+    text-decoration: none;
+
+}
+
+.register-text-right a:hover{
+    color: #00a7de;
+}
+
+
+.el-button--primary{
+    cursor: pointer;
+    border: 1px solid #0381aa;
+    color: #fff;
+    background-color: #00a7de;
+    width: 100%;
+    height: 40px;
+    display: inline-block;
+    border-radius: 2px;
+    line-height: 40px;
+    font-size: 17px;
+    text-align: center;
+}
+
+.el-button--primary:hover{
+    background-color: #00B6EE;
+}
+
+.btn-login{
+    border: 1px solid #0381aa;
+    color: #fff;
+    background-color: #00a7de;
+}
+
+/**验证码发送后变灰色
+.el-code-button1{
+    border: 1px solid #d9d9d9;
+    color: rgba(0,0,0,0.25);
+    background-color: #f5f5f5;
+    pointer-events:none;
+}*/
+
+.forget-password:hover{
+    color: #00a7de;
+}
+
+.btn-login:hover{
+    color: #fff;
+    background-color: #00B6EE;
+}
+
+.btn-register{
+    color: #555;
+    border: 1px solid #ccc;
+    float: right;
+}
+
+.btn-register:hover {
+    color: #555;
+    background-color: #F5F5F5;
+}
+
+.login-ul{
+    border-bottom: 1px solid #e6e6e6;
+}
+
+.login-ul span{
+    padding: 6px;
+}
+
+.login-ul a{
+    color: #555;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    width: 20%;
+    padding: 5px;
+}
+
+.login-active a{
+    color: #00a7de;
+}
+
+
+.login-active{
+    border-bottom: 2px solid #00a7de;
+}
+
+.other-way-login{
+    margin-top: 10px;
+    background-repeat: no-repeat;
+    font-size: 12px;
+}
+
+.other-way-login a{
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+
+.other-way-login img{
+    width: 23px;
+    height: 23px;
+}
+
+.error-message{
+    height: 16.8px;
+}
+
+.remember-me-span{
+    color: #bbb;
+    margin-left: 10px;
+}
+
+.findpwd-top{
+    padding-top: 24px;
+}
+
+.findpwd-top a{
+    color: black;
+    font-size: 12px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.findpwd-top a:hover{
+    color: #00a7de;
+}
+
+.findpwd-top-icon{
+    font-size: 13px;
+    color: #c0c4cc;
+}
+
+/*用户界面*/
+.profile-nav{
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1000;
+    height: 100%;
+    padding: 10px 0;
+}
+
+.layui-nav-tree i{
+    position: relative;
+    top: 2px;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.profile-panel{
+    min-height: 575px;
+    margin: 0 0 0 215px;
+    background: white;
+    padding: 1px 20px;
+}
+
+.layui-tab-content{
+    padding: 20px 0;
+}
+
+.jie-row li {
+    position: relative;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dotted #E9E9E9;
+    font-size: 0;
+}
+
+.jie-row li * {
+    display: inline-block;
+    vertical-align: top;
+    line-height: 20px;
+}
+
+.jie-row li .jie-title {
+    max-width: 70%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.jie-row li a {
+    padding-right: 15px;
+    font-size: 14px;
+}
+
+.jie-row li i, .jie-row li em{
+    font-size: 12px;
+    color: #999;
+    font-style: normal;
+}
+
+.jie-row li .mine-edit {
+    margin-left: 15px;
+    padding: 0 6px;
+    background-color: #8FCDA0;
+    color: #fff;
+    font-size: 12px;
+}
+
+.jie-row li em {
+    margin-left: 15px;
+}
+
+.mine-msg li {
+    position: relative;
+    margin-bottom: 15px;
+    padding: 10px 0 5px;
+    line-height: 24px;
+    border-bottom: 1px dotted #E9E9E9;
+}
+
+.mine-msg li cite {
+    font-size: 14px;
+    padding: 0 5px;
+    color: #4F99CF;
+}
+
+.layui-elem-quote a{
+    font-size: 14px;
+}
+
+.layui-badge {
+    height: 20px;
+    line-height: 20px;
+    border-radius: 2px;
+}
+
+.tree-badge-vip {
+    height: 16px;
+    line-height: 16px;
+    padding: 0 3px;
+    background-color: #FF5722;
+    color: #fff;
+    border-radius: 2px;
+}
+
+.mine-msg li>p {
+    position: relative;
+    margin-top: 5px;
+    line-height: 26px;
+    text-align: right;
+}
+
+.mine-msg li>p span {
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #999;
+}
+
+.laypage-main li{
+    display: inline-block;
+}
+
+.current_page a{
+    background-color: #009688;
+    color: white;
+    pointer-events:none;
+}
+
+.current_page a:hover{
+    color: white;
+}
+
+.info-none{
+    text-align: center;
+    padding-top: 50px;
+    color: #999;
+}
+
+@media screen and (max-width: 768px) {
+    .btn-login:hover {
+        color: #fff;
+        background-color: #00a7de;
+    }
+    .btn-register:hover {
+        color: #555;
+        background-color: white;
+    }
+    .el-button--primary:hover {
+        background-color: #00a7de;
+    }
+    .btn-hover .layui-btn:hover{
+        opacity: 1;
+    }
+}
+

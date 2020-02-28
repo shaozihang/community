@@ -3,94 +3,178 @@
 <head>
     <title>发布 - 树洞社区</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
-    <link rel="stylesheet" th:href="@{/css/bootstrap-theme.min.css}">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
     <link rel="stylesheet" th:href="@{/css/editormd.min.css}">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
-    <script th:src="@{/js/bootstrap.min.js}" type="application/javascript"></script>
+    <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script th:src="@{/js/comment.js}" type="application/javascript"></script>
     <script th:src="@{/js/editormd.min.js}" type="application/javascript"></script>
+    <script type="application/javascript">
+        layui.use(['element','form','layer'],function () {
+            var element = layui.element;
+            var layer = layui.layer;
+            var form = layui.form;
+            form.on('select(column1)', function(data){
+                if(data.value == 1){
+                    layer.tips('为了得到更多人更加准确的回答，请务必保证问题详尽且清楚哦~', '#publish-select',{tips:1,time:10000});
+                }else if(data.value == 2){
+                    layer.tips('欢迎分享干货，好的帖子，大家可能会为你点赞加分哦！', '#publish-select',{tips:1,time:10000});
+                }else if(data.value == 3){
+                    layer.tips('有好建议，放肆提，一起完善社区！采纳后会收到站长的么么哒哦(づ￣ 3￣)づ', '#publish-select',{tips:1,time:10000});
+                }else if(data.value == 4){
+                    layer.tips('讨论是一种快速学习，加深印象的方法哦~', '#publish-select',{tips:1,time:10000});
+                }else if(data.value == 5){
+                    layer.tips('新闻动态，科技前沿，可以选这里哦！', '#publish-select',{tips:1,time:10000});
+                }
+            });
+        });
+
+        function publishCheck() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var title = $("#title").val();
+                var description = $("#description").val();
+                var tag = $("#tag").val();
+                var id = $("#id").val();
+                if(!title){
+                    layer.msg("问题标题不能为空");
+                }else if(!description){
+                    layer.msg("问题描述不能为空");
+                }else if(!tag){
+                    layer.msg("标签不能为空");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/publish",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "id":id,
+                            "title":title,
+                            "description":description,
+                            'tag':tag
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.href="/";
+                            }else if(result.code == 2016){
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+    </script>
 </head>
 <body>
 <div th:replace="navigation :: nav"></div>
-<div class="container-fluid main">
-    <div class="row">
-        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
-            <h2><span class="glyphicon glyphicon-plus" aria-hidden="true"></span>发起</h2>
-            <hr>
-
-            <form action="/publish" method="post">
-                <input type="hidden" name="id" th:value="${id}">
-                <div class="form-group">
-                    <label for="title">问题标题（简单扼要）:</label>
-                    <input type="text" class="form-control" id="title" name="title" placeholder="问题标题..."
-                           autocomplete="off" th:value="${title}">
-                </div>
-                <div class="form-group" id="question-editor">
-                    <label for="description">问题补充（必填，请参照右侧提示）:</label>
-                    <textarea class="form-control" name="description" id="description" cols="30" rows="10"
-                              style="display: none;"
-                              th:text="${description}"></textarea>
-                </div>
-                <script type="text/javascript">
-                    $(function () {
-                        var editor = editormd("question-editor", {
-                            width: "100%",
-                            height: 350,
-                            path: "/js/lib/",
-                            delay: 0,
-                            watch: false,
-                            placeholder: "请输入问题描述",
-                            imageUpload: true,
-                            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
-                            imageUploadURL: "/file/upload",
-                        });
-                    });
-                </script>
-                <div class="form-group">
-                    <label for="tag">添加标签:</label>
-                    <input type="text" class="form-control" id="tag" name="tag" placeholder="输入标签，以，号分隔"
-                           autocomplete="off" th:value="${tag}" onclick="showSelectTag()">
-                    <div id="select-tag" class="publish-tag-tab">
-                        <ul class="nav nav-tabs" role="tablist">
-                            <li role="presentation" th:each="selectCategory,selectCategoryStat:${tags}"
-                                th:class="${selectCategoryStat.first ? 'active':''}">
-                                <a th:href="${'#'+selectCategory.categoryName}" aria-controls="home" role="tab"
-                                   data-toggle="tab"
-                                   th:text="${selectCategory.categoryName}"></a>
-                            </li>
-                        </ul>
-                        <div class="tab-content">
-                            <div role="tabpanel" th:id="${selectCategory.categoryName}" th:each="selectCategory:${tags}"
-                                 th:class="${selectCategoryStat.first ? 'active tab-pane':'tab-pane'}">
-                                <span class="label label-info" th:each="selectTag:${selectCategory.tags}">
-                                    <span class="glyphicon glyphicon-tags" onclick="selectTag(this)"
-                                          th:data-tag="${selectTag}"
-                                          th:text="${' '+selectTag}"></span>
-                                </span>
+<div class="layui-container tree-marginTop">
+    <div class="tree-panel publish-panel" style="padding-top: 5px;">
+        <div class="layui-tab layui-tab-brief">
+            <ul class="layui-tab-title">
+                <li class="layui-this">发表新帖</li>
+            </ul>
+            <div class="layui-tab-content" style="padding: 20px 0;">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form layui-form-pane">
+                        <div class="layui-row layui-col-space15 layui-form-item">
+                            <input type="hidden" id="id" th:value="${id}">
+                            <div class="">
+                                <label for="title" class="layui-form-label">标题</label>
+                                <div class="layui-input-block">
+                                    <input type="text" id="title" name="title" autocomplete="off"
+                                           class="layui-input" th:value="${title}">
+                                </div>
                             </div>
                         </div>
+                        <div class="layui-form-item layui-form-text">
+                            <div id="question-editor" class="layui-input-block">
+                                <textarea name="description" id="description" class="form-control" cols="30" rows="10"
+                                          style="display:none;" th:text="${description}"></textarea>
+                            </div>
+                        </div>
+                        <script type="text/javascript">
+                            $(function () {
+                                var editor = editormd("question-editor", {
+                                    width: "100%",
+                                    height: 350,
+                                    path: "/js/lib/",
+                                    delay: 0,
+                                    watch: false,
+                                    placeholder: "请输入问题描述",
+                                    imageUpload: true,
+                                    imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                                    imageUploadURL: "/file/upload",
+                                });
+                            });
+                        </script>
+                        <div class="layui-form-item ">
+                            <label for="tag">添加标签:</label>
+                            <input type="text" name="tag" id="tag" class="layui-input" placeholder="输入标签，以英文逗号,分割"
+                                   autocomplete="off" th:value="${tag}" onclick="showSelectTag()">
+                            <div id="select-tag" class="layui-tab publish-tag-tab">
+                                <ul class="layui-tab-title">
+                                    <li th:each="selectCategory,selectCategoryStat:${tags}"
+                                        th:class="${selectCategoryStat.first ? 'layui-this':''}">
+                                        <a th:href="${'#'+selectCategory.categoryName}"
+                                           data-toggle="tab" th:text="${selectCategory.categoryName}"></a>
+                                    </li>
+                                </ul>
+                                <div class="layui-tab-content">
+                                    <div th:id="${selectCategory.categoryName}" th:each="selectCategory:${tags}"
+                                         th:class="${selectCategoryStat.first ? 'layui-tab-item layui-show':'layui-tab-item'}">
+                                        <span class="community-tag" th:each="selectTag:${selectCategory.tags}" onclick="selectTag(this)"
+                                              th:data-tag="${selectTag}"
+                                              th:text="${selectTag}">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">所在专栏</label>
+                            <div class="layui-input-block" style="width: 190px;" id="publish-select">
+                                <select id="column" name="column" lay-filter="column1">
+                                    <option></option>
+                                    <option value="1">提问</option>
+                                    <option value="2">分享</option>
+                                    <option value="3">建议</option>
+                                    <option value="4">讨论</option>
+                                    <option value="5">动态</option>
+                                    <option value="6">其它</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-inline">
+                                <label class="layui-form-label">阅读权限</label>
+                                <div class="layui-input-inline" style="width: 190px;">
+                                    <select id="permission" name="permission">
+                                        <option value="0">默认，所有用户可见</option>
+                                        <option value="1">LV1及以上用户可见</option>
+                                        <option value="2">LV2及以上用户可见</option>
+                                        <option value="3">LV3及以上用户可见</option>
+                                        <option value="4">LV4及以上用户可见</option>
+                                        <option value="5">LV5及以上用户可见</option>
+                                        <option value="6">LV6及以上用户可见</option>
+                                        <option value="10">会员专享</option>
+                                        <option value="11">管理员可见</option>
+                                    </select>
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">除非有重要信息，不然建议设置所有用户可见，这样不会影响您帖子的人气，点击查看
+                                    <a class="tree-link" target="_blank" href="/user/set/info#userGroup">用户组权限</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item btn-hover">
+                            <button class="layui-btn" onclick="publishCheck()">立即发布</button>
+                        </div>
                     </div>
                 </div>
-                <div class="container-fluid main">
-                    <div class="row">
-                        <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12">
-                            <div class="alert alert-danger col-lg-12 col-md-12 col-sm-12 col-xs-12"
-                                 th:if="${error!=null}" th:text="${error}"></div>
-                        </div>
-                        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-                            <button type="submit" class="btn btn-success btn-publish">发布</button>
-                        </div>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
-            <h3>问题发起指南</h3>
-            • 问题标题：请用精简的语言描述您发布的问题，不超过25字<br>
-            • 问题补充：详细补充您的问题内容，并确保问题描述清晰直观，并提供一些相关的资料<br>
-            • 选择标签：选择一个或者多个合适的标签，用逗号隔开，每个标签不超过10个字<br>
+            </div>
         </div>
     </div>
 </div>

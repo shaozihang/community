@@ -3,7 +3,7 @@
  */
 function post() {
     var questionId = $("#question_id").val();
-    var content = $(".comment-content").val();
+    var content = $(".layui-textarea").val();
     comment2target(questionId,1,content);
 }
 
@@ -14,37 +14,42 @@ function comment(e) {
 }
 
 function comment2target(targetId, type, content) {
-    if(!content){
-        alert("请输入回复内容！");
-    }
-    else{
-        $.ajax({
-            type:"post",
-            url:"/comment",
-            contentType:"application/json",
-            data:JSON.stringify({
-                "parentId":targetId,
-                "content":content,
-                "type":type
-            }),
-            success:function (result) {
-                if(result.code == 200){
-                    window.location.reload();
-                }else{
-                    if(result.code == 2000){
-                        var isAccepted = confirm(result.message);
-                        if(isAccepted){
-                            window.open("https://github.com/login/oauth/authorize?client_id=a7984ce94e8e4c8c796d&redirect_uri=http://localhost:8887/callback&scope=user&state=1");
-                            window.localStorage.setItem("closable",true);
-                        }
+    layui.use('layer',function () {
+        var layer = layui.layer;
+        if(!content){
+            layer.msg("请输入回复内容！");
+        }
+        else{
+            $.ajax({
+                type:"post",
+                url:"/comment",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "parentId":targetId,
+                    "content":content,
+                    "type":type
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
                     }else{
-                        alert(result.message);
+                        if(result.code == 2000){
+                            layer.confirm(result.message, {
+                                btn: ['确定','取消'] //按钮
+                            }, function(index){
+                                window.open("http://localhost:8887/login");
+                                window.localStorage.setItem("closable",true);
+                                layer.close(index);
+                            });
+                        }else{
+                            layer.msg(result.message);
+                        }
                     }
-                }
-            },
-            dataType:"json"
-        });
-    }
+                },
+                dataType:"json"
+            });
+        }
+    });
 }
 
 /**
@@ -68,34 +73,41 @@ function collapseComments(e) {
             $.getJSON("/comment/" + id, function (data) {
                 $.each(data.data.reverse(),function (index, comment) {
 
-                    var mediaLeftElement = $("<div/>",{
-                        "class":"media-left"
+                    var commentAvatar = $("<a/>",{
+                        "class":"tree-avatar",
+                        "href":"#"
                     }).append($("<img/>", {
-                        "class": "media-object img-rounded",
                         src: comment.user.avatarUrl
                     }));
 
-                    var mediaBodyElement = $("<div/>",{
-                        "class":"media-body"
-                    }).append($("<h5/>", {
-                        "class": "media-heading",
-                        "html": comment.user.name
-                    })).append($("<div/>", {
-                        "html": comment.content
-                    })).append($("<div/>", {
-                        "class":"menu"
-                    }).append($("<span/>", {
-                        "class":"pull-right",
-                        "html":moment(comment.gmtCreate).format("YYYY-MM-DD")
+                    var commentUser = $("<div/>",{
+                        "class":"tree-detail-user"
+                    }).append($("<a/>", {
+                        "class":"tree-link",
+                        "href":"#"
+                    }).append($("<cite/>", {
+                        "html": comment.user.nickName
                     })));
 
-                    var mediaElement = $("<div/>",{
-                        "class":"media"
-                    }).append(mediaLeftElement).append(mediaBodyElement);
+                    var commentHits = $("<div/>",{
+                        "class":"detail-hits"
+                    }).append($("<span/>", {
+                        "html":moment(comment.gmtCreate).format("YYYY-MM-DD HH:mm")
+                    })).append($("<span/>", {
+                        "class":"rightbtn",
+                        style:"cursor: pointer;"
+                    }).append($("<i/>", {
+                        "class":"iconfont icon-huifu"
+                    })));
+
+                    var commentJieDaBody = $("<div/>",{
+                        "class":"detail-body jieda-body",
+                        "html": comment.content
+                    });
 
                     var commentElement = $("<div/>",{
-                        "class":"col-lg-12 col-md-12 col-sm-12 col-xs-12 comments"
-                    }).append(mediaElement);
+                        "class":"detail-about detail-about-reply"
+                    }).append(commentAvatar).append(commentUser).append(commentHits).append(commentJieDaBody);
                     subCommentContainer.prepend(commentElement);
                 });
                 //展开二级评论

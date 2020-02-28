@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class NotificationDTO {
     private Long id;
-    private long gmtCreate;
+    private Long gmtCreate;
     private Integer status;
     private Long notifier;
     private String notifierName;
