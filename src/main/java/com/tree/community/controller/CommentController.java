@@ -36,20 +36,21 @@ public class CommentController {
 
         Comment comment = new Comment();
         comment.setParentId(commentCreateDTO.getParentId());
+        comment.setTargetId(commentCreateDTO.getTargetId());
         comment.setContent(commentCreateDTO.getContent());
         comment.setType(commentCreateDTO.getType());
         comment.setGmtCreate(System.currentTimeMillis());
         comment.setGmtModified(System.currentTimeMillis());
         comment.setCommentator(user.getId());
 
-        ResultDTO result = commentService.insert(comment,user);
+        ResultDTO result = commentService.insert(comment,user,commentCreateDTO.getQuestionId());
         return result;
     }
 
     @ResponseBody
     @RequestMapping(value = "/comment/{id}",method = RequestMethod.GET)
-    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id){
-        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT);
+    public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id,HttpServletRequest request){
+        List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT,request);
         return ResultDTO.okOf(commentDTOS);
     }
 

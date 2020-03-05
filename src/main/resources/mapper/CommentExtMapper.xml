@@ -13,10 +13,16 @@
     <result column="commentator" jdbcType="BIGINT" property="commentator" />
     <result column="gmt_create" jdbcType="BIGINT" property="gmtCreate" />
     <result column="gmt_modified" jdbcType="BIGINT" property="gmtModified" />
-    <result column="like_count" jdbcType="BIGINT" property="likeCount" />
+    <result column="like_count" jdbcType="INTEGER" property="likeCount" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="comment_count" jdbcType="INTEGER" property="commentCount" />
+    <result column="target_id" jdbcType="BIGINT" property="targetId" />
   </resultMap>
+  <select id="selectByType" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select * from comment
+     where parent_id = #{id} and (type = 2 or type = 3)
+     order by gmt_create desc;
+  </select>
   <update id="incCommentCount" parameterType="com.tree.community.model.Comment">
     update comment
     set

@@ -1,7 +1,7 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title th:text="${question.title}"></title>
+    <title th:text="${question.title+'_树洞社区'}"></title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
@@ -49,7 +49,6 @@
                 <div class="tree-detail-info">
                     <!-- <span class="layui-badge">审核中</span> -->
                     <a class="layui-badge layui-bg-green">其它</a>
-                    <span class="layui-badge" style="background-color: #999;">未结</span>
                     <!-- <span class="layui-badge" style="background-color: #5FB878;">已结</span> -->
                     <div class="tree-admin-box" data-id="123" th:if="${session.user!=null && session.user.id==question.user.id}">
                         <span class="layui-btn layui-btn-xs">删除</span>
@@ -59,16 +58,20 @@
                         <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
                     </div>
                     <span class="tree-list-nums">
-                        <a href="#comment"><i class="iconfont icon-pinglun1" title="回复"></i><span th:text="${question.commentCount}"></span></a>
-                        <i class="iconfont icon-liulan2" title="浏览" style="font-size: 22px;top: 3px;"></i><span th:text="${question.viewCount}"></span>
+                        <a th:id="${'likeQu-'+question.id}" th:data-id="${question.id}"
+                           onclick="like_question(this)" th:class="${question.likeStatus == 1?'liked':''}">
+                            <i class="iconfont icon-zan2" title="点赞" style="padding-right: 0px;margin-right: -2px;"></i>
+                            <span th:text="${question.likeCount}" th:id="${'likeCountQu-'+question.id}"></span>
+                        </a>
+                        <i class="iconfont icon-liulan2" title="浏览" style="font-size: 22px;top: 3px;margin-right: 1px;"></i><span th:text="${question.viewCount}"></span>
                     </span>
                 </div>
                 <div class="detail-about">
-                    <a class="tree-avatar" href="/user/123">
+                    <a class="tree-avatar" th:href="@{'/user/'+${question.user.id}}">
                         <img th:src="${question.user.avatarUrl}">
                     </a>
                     <div class="tree-detail-user">
-                        <a href="/user/123" class="tree-link">
+                        <a th:href="@{'/user/'+${question.user.id}}" class="tree-link">
                             <cite th:text="${question.user.nickName}"></cite>
                             <i class="layui-badge tree-badge-vip layui-bg-gray">LV2</i>
                         </a>
@@ -112,11 +115,11 @@
                     <ul class="jieda" id="jieda">
                         <li id="comment-body-224" class="jieda-daan" th:each="comment : ${comments}">
                             <div class="detail-about detail-about-reply">
-                                <a class="tree-avatar" href="/user/123">
+                                <a class="tree-avatar" th:href="@{'/user/'+${comment.user.id}}">
                                     <img th:src="${comment.user.avatarUrl}">
                                 </a>
                                 <div class="tree-detail-user">
-                                    <a href="/user/123" class="tree-link">
+                                    <a th:href="@{'/user/'+${comment.user.id}}" class="tree-link">
                                         <cite th:text="${comment.user.nickName}"></cite>
                                         <i class="layui-badge tree-badge-vip layui-bg-gray">LV2</i>
                                     </a>
@@ -127,9 +130,10 @@
                             </div>
                             <div class="detail-body jieda-body" th:text="${comment.content}"></div>
                             <div class="jieda-reply">
-                                <span class="jieda-zan" id="thumbicon-224">
-                                    <i class="iconfont icon-zan2" data-id="224" onclick="like_comment(this)"></i>
-                                    <em id="likecount-224" class="zanok">0</em>
+                                <span class="jieda-zan" th:id="${'likeCom-'+comment.id}" th:data-id="${comment.id}"
+                                      onclick="like_comment(this)" th:class="${comment.likeStatus == 1?'liked':''}">
+                                    <i class="iconfont icon-zan2"></i>
+                                    <em th:text="${comment.likeCount}" th:id="${'likeCountCom-'+comment.id}"></em>
                                 </span>
                                 <span class="icon" th:data-id="${comment.id}" onclick="collapseComments(this)">
                                     <i class="iconfont icon-huifu"></i>
@@ -144,7 +148,8 @@
                             <div class="sub-comments layui-hide" th:id="${'comment-'+comment.id}">
                                 <div>
                                     <input type="text" class="form-control layui-input" placeholder="评论一下..." th:id="'input-'+${comment.id}">
-                                    <button type="button" class="layui-btn  rightbtn" onclick="comment(this)" th:data-id="${comment.id}">回复</button>
+                                    <button type="button" class="layui-btn  rightbtn" onclick="comment(this)"
+                                            th:id="'btn-'+${comment.id}" th:data-parentid="${comment.id}" th:data-targetid="${comment.id}" th:data-type="2">回复</button>
                                 </div>
                             </div>
                         </li>
@@ -188,7 +193,7 @@
                 <h3 class="tree-panel-title">友情链接</h3>
                 <dl class="tree-panel-main">
                     <dd><a href="#">树洞社区</a></dd>
-                    <dd><a href="https://treedon.cn/" target="_blank">TreeDonForum</a></dd>
+                    <dd><a href="https://treedon.cn/" target="_blank">TreeDongForum</a></dd>
                     <dd><a th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}" target="_blank">联系站长</a></dd>
                     <dd><a href="" target="_blank">社区源码</a></dd>
                     <dd><a th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}" target="_blank" class="tree-link">申请友链</a></dd>

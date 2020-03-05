@@ -672,6 +672,11 @@ i {
     margin: 10px;
 }
 
+.rightLike{
+    float: right;
+    margin-right: 10px;
+}
+
 .media-object{
     width: 43px;
     height: 43px;
@@ -1189,6 +1194,10 @@ i {
     color: #4F99CF;
 }
 
+.mine-msg li cite:hover{
+    color: #5FB878;
+}
+
 .layui-elem-quote a{
     font-size: 14px;
 }
@@ -1257,5 +1266,9 @@ i {
     .btn-hover .layui-btn:hover{
         opacity: 1;
     }
+}
+
+.liked i,.liked em,.liked span{
+    color: #ca0c16!important;
 }
 

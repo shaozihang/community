@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -39,18 +40,24 @@ public class CommentService {
     @Autowired
     private NotificationMapper notificationMapper;
 
+    @Autowired
+    private UserLikeService userLikeService;
+
+    @Autowired
+    private RedisService redisService;
+
     @Transactional
-    public ResultDTO insert(Comment comment, User commentator) {
+    public ResultDTO insert(Comment comment, User commentator,Long questionId) {
         if(comment.getParentId() == null || comment.getParentId() == 0){
             return ResultDTO.errorOf(2002,"未选择任何问题或评论进行回复");
         }
 
-        if(comment.getType() == CommentTypeEnum.COMMENT.getType()){
-            Comment dbComment = commentMapper.selectByPrimaryKey(comment.getParentId());
-            if(dbComment == null){
+        if(comment.getType() == CommentTypeEnum.COMMENT.getType() || comment.getType() == CommentTypeEnum.SUBCOMMENT.getType()){
+            Comment targetComment = commentMapper.selectByPrimaryKey(comment.getTargetId());
+            if(targetComment == null){
                 return ResultDTO.errorOf(2003,"回复的评论不存在了，要不换个试试？");
             }
-            Question question = questionMapper.selectByPrimaryKey(dbComment.getParentId());
+            Question question = questionMapper.selectByPrimaryKey(questionId);
             if(question == null){
                 return ResultDTO.errorOf(2004,"回复的帖子不存在了，要不换个试试？");
             }
@@ -62,7 +69,7 @@ public class CommentService {
             commentExtMapper.incCommentCount(parentComment);
 
             //创建通知
-            createNotify(comment, dbComment.getCommentator(), commentator.getNickName(), question.getTitle(), NotificationTypeEnum.REPLY_COMMENT, question.getId());
+            createNotify(comment, targetComment.getCommentator(), commentator.getNickName(), targetComment.getContent(), NotificationTypeEnum.REPLY_COMMENT, question.getId());
             return ResultDTO.okOf();
         }else{
             Question question = questionMapper.selectByPrimaryKey(comment.getParentId());
@@ -96,13 +103,19 @@ public class CommentService {
         notificationMapper.insert(notification);
     }
 
-    public List<CommentDTO> listByTargetId(Long id, CommentTypeEnum type) {
-        CommentExample commentExample = new CommentExample();
-        commentExample.createCriteria()
-                .andParentIdEqualTo(id)
-                .andTypeEqualTo(type.getType());
-        commentExample.setOrderByClause("gmt_create desc");
-        List<Comment> comments = commentMapper.selectByExample(commentExample);
+    public List<CommentDTO> listByTargetId(Long id, CommentTypeEnum type,HttpServletRequest request) {
+        User currentUser = (User) request.getSession().getAttribute("user");
+        List<Comment> comments = null;
+        if(type.getType() == 1){
+            CommentExample commentExample = new CommentExample();
+            commentExample.createCriteria()
+                    .andParentIdEqualTo(id)
+                    .andTypeEqualTo(type.getType());
+            commentExample.setOrderByClause("gmt_create desc");
+            comments = commentMapper.selectByExample(commentExample);
+        }else {
+            comments = commentExtMapper.selectByType(id);
+        }
         if(comments.size() == 0){
             return new ArrayList<>();
         }
@@ -124,6 +137,18 @@ public class CommentService {
             CommentDTO commentDTO = new CommentDTO();
             BeanUtils.copyProperties(comment, commentDTO);
             commentDTO.setUser(userMap.get(comment.getCommentator()));
+            if(comment.getType() == 3){
+                Comment targetUserComment = commentMapper.selectByPrimaryKey(comment.getTargetId());
+                User user = userMapper.selectByPrimaryKey(targetUserComment.getCommentator());
+                commentDTO.setTargetUserId(user.getId());
+                commentDTO.setTargetUserName(user.getNickName());
+            }
+            Integer status = userLikeService.selectlikeStatus(commentDTO.getId(), currentUser.getId(), 2);
+            commentDTO.setLikeStatus(status);
+            Integer likeCount = redisService.selectlikeCount(commentDTO.getId(), 2);
+            if(likeCount != null){
+                commentDTO.setLikeCount(commentDTO.getLikeCount()+likeCount);
+            }
             return commentDTO;
         }).collect(Collectors.toList());
         return  commentDTOS;

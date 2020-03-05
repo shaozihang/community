@@ -29,6 +29,9 @@ public class RegisterController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AliyunProvider aliyunProvider;
+
     @GetMapping("/register")
     public String register(@ModelAttribute("oauthsInfo")String oauthsInfo,
                            @ModelAttribute("useroauths") Useroauths useroauths, Model model){
@@ -84,7 +87,6 @@ public class RegisterController {
                 return ResultDTO.errorOf(2014,"该手机号未注册");
             }
         }
-        AliyunProvider aliyunProvider = new AliyunProvider();
         String code = aliyunProvider.SendSms(phone,type,request);
         if(!code.equals("OK")){
             return ResultDTO.errorOf(2009,"验证码发送失败，请重新发送");

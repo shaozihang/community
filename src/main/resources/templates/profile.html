@@ -76,8 +76,8 @@
                 <ul class="mine-msg" th:each="notification:${pagination.data}">
                     <li data-id="123">
                         <blockquote class="layui-elem-quote">
-                            <a><cite th:text="${notification.notifierName}"></cite></a>
-                            <a th:text="${notification.typeName}"></a>
+                            <a th:href="@{'/user/'+${notification.notifier}}"><cite th:text="${notification.notifierName}"></cite></a>
+                            <span th:text="${notification.typeName}"></span>
                             <a th:href="@{'/notification/'+${notification.id}}"><cite th:text="${notification.outerTitle}"></cite></a>
                             <span class="layui-badge layui-bg-green" th:if="${notification.status == 0}">未读</span>
                         </blockquote>

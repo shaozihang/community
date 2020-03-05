@@ -90,7 +90,7 @@
                             </a>
                             <h2>
                                 <a class="layui-badge layui-bg-green">公告</a>
-                                <a href="/">【发布】NiterForum 2 正式发布！赶快去下载吧</a>
+                                <a href="/">【发布】TreeDongForum 2 正式发布！赶快去下载吧</a>
                                 <a class="tree-list-like layui-hide-xs" title="烫烫烫">
                                     <i class="layui-icon layui-icon-fire" style="font-size: 20px"></i>
                                 </a>
@@ -169,7 +169,7 @@
                 <ul class="tree-list">
                     <li th:each="question:${pagination.data}">
                         <div>
-                            <a href="/user/98" class="tree-avatar">
+                            <a th:href="@{'/user/'+${question.user.id}}" class="tree-avatar">
                                 <img th:src="${question.user.avatarUrl}">
                             </a>
                             <h2>
@@ -177,7 +177,7 @@
                                 <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
                             </h2>
                             <div class="tree-list-info">
-                                <a href="/user/98">
+                                <a th:href="@{'/user/'+${question.user.id}}">
                                     <cite th:text="${question.user.nickName}"></cite>
                                     <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs">站长</i>
                                 </a>
@@ -238,7 +238,7 @@
                 <h3 class="tree-panel-title">友情链接</h3>
                 <dl class="tree-panel-main">
                     <dd><a href="#">树洞社区</a></dd>
-                    <dd><a href="https://treedon.cn/" target="_blank">TreeDonForum</a></dd>
+                    <dd><a href="https://treedon.cn/" target="_blank">TreeDongForum</a></dd>
                     <dd><a th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}" target="_blank">联系站长</a></dd>
                     <dd><a href="" target="_blank">社区源码</a></dd>
                     <dd><a th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}" target="_blank" class="tree-link">申请友链</a></dd>

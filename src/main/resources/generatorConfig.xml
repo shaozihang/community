@@ -37,5 +37,6 @@
         <table tableName="useroauths" domainObjectName="Useroauths" ></table>
         <table tableName="role" domainObjectName="Role" ></table>
         <table tableName="user_role" domainObjectName="UserRole" ></table>
+        <table tableName="user_like" domainObjectName="UserLike" ></table>
     </context>
 </generatorConfiguration>

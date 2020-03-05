@@ -9,15 +9,24 @@ import com.aliyuncs.exceptions.ClientException;
 import com.aliyuncs.http.MethodType;
 import com.aliyuncs.profile.DefaultProfile;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Timer;
 import java.util.TimerTask;
-
+@Service
 public class AliyunProvider {
+
+        @Value("${aliyun.access-key.id}")
+        private String accessKeyId;
+
+        @Value("${aliyun.client.secret}")
+        private String secret;
+
     public String SendSms(String phone,Integer type,HttpServletRequest request1) throws ClientException {
-            DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", "LTAI4FfVPZGf3hvdQoRMihYb", "eaOoNXdE9TBBCKBzBPElulUuG1daAi");
+            DefaultProfile profile = DefaultProfile.getProfile("cn-hangzhou", accessKeyId, secret);
             DefaultProfile.addEndpoint("cn-hangzhou", "cn-hangzhou","Dysmsapi", "dysmsapi.aliyuncs.com");
             IAcsClient client = new DefaultAcsClient(profile);
 
