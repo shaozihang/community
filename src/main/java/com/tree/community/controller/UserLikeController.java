@@ -31,11 +31,9 @@ public class UserLikeController {
         if(userLike.getStatus() == 0){
             redisService.saveLikedRedis(String.valueOf(userLike.getLikedUserId()),String.valueOf(user.getId()),userLike.getType());
             redisService.incrementLikedCount(String.valueOf(userLike.getLikedUserId()),userLike.getType());
-            System.out.println("成功点赞");
         }else if(userLike.getStatus() == 1){
             redisService.unlikeFromRedis(String.valueOf(userLike.getLikedUserId()),String.valueOf(user.getId()),userLike.getType());
             redisService.decrementLikedCount(String.valueOf(userLike.getLikedUserId()),userLike.getType());
-            System.out.println("取消点赞");
         }
         return ResultDTO.okOf();
     }

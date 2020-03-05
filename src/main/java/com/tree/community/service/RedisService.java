@@ -117,7 +117,6 @@ public class RedisService {
     public Integer selectlikeStatus(Long likedUserId, Long likedPostId,Integer type) {
         String key = RedisKeyUtils.getLikedKey(String.valueOf(likedUserId.longValue()), String.valueOf(likedPostId.longValue()),type);
         Integer status = (Integer) redisTemplate.opsForHash().get(RedisKeyUtils.MAP_KEY_USER_LIKED, key);
-        System.out.println(status+"查询点赞状态");
         if(status == null){
             status = 2;
         }
@@ -131,7 +130,6 @@ public class RedisService {
     public Integer selectlikeCount(Long likedUserId,Integer type){
         String key = RedisKeyUtils.getLikedKeyCount(String.valueOf(likedUserId),type);
         Integer likeCount = (Integer) redisTemplate.opsForHash().get(RedisKeyUtils.MAP_KEY_USER_LIKED_COUNT, key);
-        System.out.println(likeCount+"点赞数量");
         return likeCount;
     }
 }

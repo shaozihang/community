@@ -197,56 +197,59 @@ function like_comment(e) {
 }
 
 function liketarget(targetId, type, status){
-    $.ajax({
-        type:"post",
-        url:"/like",
-        contentType:"application/json",
-        data:JSON.stringify({
-            "likedUserId":targetId,
-            "type":type,
-            "status":status
-        }),
-        success:function (result) {
-            if(result.code == 200){
-                if(type == 1){
-                    if(status == 0){
-                        var likeQu = $("#likeQu-"+targetId);
-                        likeQu.addClass("liked");
-                        var likeCountQu = $("#likeCountQu-"+targetId);
-                        likeCountQu.html(parseInt(likeCountQu.text())+1);
-                    }else if(status == 1){
-                        var likeQu = $("#likeQu-"+targetId);
-                        likeQu.removeClass("liked");
-                        var likeCountQu = $("#likeCountQu-"+targetId);
-                        likeCountQu.html(parseInt(likeCountQu.text())-1);
+    layui.use('layer',function () {
+        var layer = layui.layer;
+        $.ajax({
+            type:"post",
+            url:"/like",
+            contentType:"application/json",
+            data:JSON.stringify({
+                "likedUserId":targetId,
+                "type":type,
+                "status":status
+            }),
+            success:function (result) {
+                if(result.code == 200){
+                    if(type == 1){
+                        if(status == 0){
+                            var likeQu = $("#likeQu-"+targetId);
+                            likeQu.addClass("liked");
+                            var likeCountQu = $("#likeCountQu-"+targetId);
+                            likeCountQu.html(parseInt(likeCountQu.text())+1);
+                        }else if(status == 1){
+                            var likeQu = $("#likeQu-"+targetId);
+                            likeQu.removeClass("liked");
+                            var likeCountQu = $("#likeCountQu-"+targetId);
+                            likeCountQu.html(parseInt(likeCountQu.text())-1);
+                        }
+                    }else if(type == 2){
+                        if(status == 0){
+                            var likeCom = $("#likeCom-"+targetId);
+                            likeCom.addClass("liked");
+                            var likeCountCom = $("#likeCountCom-"+targetId);
+                            likeCountCom.html(parseInt(likeCountCom.text())+1);
+                        }else if(status == 1){
+                            var likeCom = $("#likeCom-"+targetId);
+                            likeCom.removeClass("liked");
+                            var likeCountCom = $("#likeCountCom-"+targetId);
+                            likeCountCom.html(parseInt(likeCountCom.text())-1);
+                        }
                     }
-                }else if(type == 2){
-                    if(status == 0){
-                        var likeCom = $("#likeCom-"+targetId);
-                        likeCom.addClass("liked");
-                        var likeCountCom = $("#likeCountCom-"+targetId);
-                        likeCountCom.html(parseInt(likeCountCom.text())+1);
-                    }else if(status == 1){
-                        var likeCom = $("#likeCom-"+targetId);
-                        likeCom.removeClass("liked");
-                        var likeCountCom = $("#likeCountCom-"+targetId);
-                        likeCountCom.html(parseInt(likeCountCom.text())-1);
-                    }
-                }
-            }else{
-                if(result.code == 2000){
-                    layer.confirm(result.message, {
-                        btn: ['确定','取消'] //按钮
-                    }, function(index){
-                        window.open("/login");
-                        window.localStorage.setItem("closable",true);
-                        layer.close(index);
-                    });
                 }else{
-                    layer.msg(result.message);
+                    if(result.code == 2000){
+                        layer.confirm(result.message, {
+                            btn: ['确定','取消'] //按钮
+                        }, function(index){
+                            window.open("/login");
+                            window.localStorage.setItem("closable",true);
+                            layer.close(index);
+                        });
+                    }else{
+                        layer.msg(result.message);
+                    }
                 }
-            }
-        },
-        dataType:"json"
+            },
+            dataType:"json"
+        });
     });
 }

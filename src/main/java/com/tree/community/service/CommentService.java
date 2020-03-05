@@ -143,8 +143,12 @@ public class CommentService {
                 commentDTO.setTargetUserId(user.getId());
                 commentDTO.setTargetUserName(user.getNickName());
             }
-            Integer status = userLikeService.selectlikeStatus(commentDTO.getId(), currentUser.getId(), 2);
-            commentDTO.setLikeStatus(status);
+            if(currentUser != null){
+                Integer status = userLikeService.selectlikeStatus(commentDTO.getId(), currentUser.getId(), 2);
+                commentDTO.setLikeStatus(status);
+            }else{
+                commentDTO.setLikeStatus(0);
+            }
             Integer likeCount = redisService.selectlikeCount(commentDTO.getId(), 2);
             if(likeCount != null){
                 commentDTO.setLikeCount(commentDTO.getLikeCount()+likeCount);

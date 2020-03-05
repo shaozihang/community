@@ -39,8 +39,12 @@ public class QuestionController {
         List<Question> relatedQuestions = questionService.selectRelated(questionDTO);
         List<CommentDTO> comments = commentService.listByTargetId(id, CommentTypeEnum.QUESTION,request);
         User user = (User) request.getSession().getAttribute("user");
-        Integer status = userLikeService.selectlikeStatus(id, user.getId(), 1);
-        questionDTO.setLikeStatus(status);
+        if(user != null){
+            Integer status = userLikeService.selectlikeStatus(id, user.getId(), 1);
+            questionDTO.setLikeStatus(status);
+        }else {
+            questionDTO.setLikeStatus(0);
+        }
         Integer likeCount = redisService.selectlikeCount(id, 1);
         if(likeCount != null){
             questionDTO.setLikeCount(questionDTO.getLikeCount()+likeCount);

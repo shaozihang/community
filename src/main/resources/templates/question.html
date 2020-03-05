@@ -58,11 +58,11 @@
                         <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
                     </div>
                     <span class="tree-list-nums">
-                        <a th:id="${'likeQu-'+question.id}" th:data-id="${question.id}"
+                        <span th:id="${'likeQu-'+question.id}" th:data-id="${question.id}" style="cursor: pointer;"
                            onclick="like_question(this)" th:class="${question.likeStatus == 1?'liked':''}">
                             <i class="iconfont icon-zan2" title="点赞" style="padding-right: 0px;margin-right: -2px;"></i>
                             <span th:text="${question.likeCount}" th:id="${'likeCountQu-'+question.id}"></span>
-                        </a>
+                        </span>
                         <i class="iconfont icon-liulan2" title="浏览" style="font-size: 22px;top: 3px;margin-right: 1px;"></i><span th:text="${question.viewCount}"></span>
                     </span>
                 </div>
