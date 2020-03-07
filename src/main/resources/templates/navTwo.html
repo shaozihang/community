@@ -8,13 +8,13 @@
     <div class="layui-container">
         <ul class="layui-clear">
             <li class="layui-this"><a href="/">首页</a></li>
-            <li><a href="/?column=1">提问</a></li>
-            <li><a href="/?column=2">分享<span class="layui-badge-dot"></span></a></li>
-            <li><a href="/?column=3">建议</a></li>
-            <li><a href="/?column=4">讨论</a></li>
-            <li><a href="/?column=5">公告</a></li>
-            <li><a href="/?column=6">动态</a></li>
-            <li><a href="/?column=9">其它</a></li>
+            <li class="type1"><a th:href="@{/(type='1')}">提问</a></li>
+            <li class="type2"><a th:href="@{/(type='2')}">分享<span class="layui-badge-dot"></span></a></li>
+            <li class="type3"><a th:href="@{/(type='3')}">建议</a></li>
+            <li class="type4"><a th:href="@{/(type='4')}">讨论</a></li>
+            <li class="type7"><a th:href="@{/(type='7')}">公告</a></li>
+            <li class="type5"><a th:href="@{/(type='5')}">动态</a></li>
+            <li class="type6"><a th:href="@{/(type='6')}">其它</a></li>
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="tree-mid"></span></li>
             <!-- 用户登录后显示 -->
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block" th:if="${session.user!=null}">
@@ -23,6 +23,7 @@
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block" th:if="${session.user!=null}">
                 <a href="/profile/questions">我收藏的贴</a>
             </li>
+            <input type="text" th:value="${type}" class="nav-type layui-hide">
         </ul>
         <div class="tree-column-right layui-hide-xs">
             <span class="tree-search" onclick="search()"><i class="layui-icon layui-icon-search"></i></span>

@@ -46,7 +46,6 @@ public class PublishController {
             return ResultDTO.errorOf(2016,"输入非法标签:" + invalid);
         }
 
-
         User user = (User) request.getSession().getAttribute("user");
         question.setCreator(user.getId());
         question.setId(question.getId());

@@ -16,6 +16,47 @@
                 window.close();
                 window.localStorage.removeItem("closable");
             }
+
+            //专栏高亮切换
+            function changeNavTypeColor(value) {
+                $(".tree-column .layui-this").removeClass("layui-this");
+                $(".tree-column ul .type"+value).addClass("layui-this");
+            }
+
+            function changeNavSortColor(value) {
+                $(".tree-sort .layui-this").removeClass("layui-this");
+                $(".tree-sort ."+value).addClass("layui-this");
+            }
+            
+            var navType = $(".nav-type").val();
+            var navSort = $(".nav-sort").val();
+            if(navType == 1){
+                changeNavTypeColor(1);
+            }else if(navType == 2){
+                changeNavTypeColor(2);
+            }else if(navType == 3){
+                changeNavTypeColor(3);
+            }else if(navType == 4){
+                changeNavTypeColor(4);
+            }else if(navType == 5){
+                changeNavTypeColor(5);
+            }else if(navType == 6){
+                changeNavTypeColor(6);
+            }else if(navType == 7){
+                changeNavTypeColor(7);
+            }
+
+            if(navSort == "hot7"){
+                changeNavSortColor('hot7');
+            }else if(navSort == "hot30"){
+                changeNavSortColor('hot30');
+            }else if(navSort == "good"){
+                changeNavSortColor('good');
+            }else if(navSort == "new"){
+                changeNavSortColor('new');
+            }else if(navSort == "no"){
+                changeNavSortColor('no');
+            }
         };
 
         layui.use('element',function () {
@@ -152,19 +193,20 @@
                 </ul>
             </div>
             <div class="tree-panel" style="margin-bottom: 0;">
-                <div class="tree-panel-title tree-filter">
+                <div class="tree-panel-title tree-filter tree-sort">
                     <a href="/" class="layui-this">综合</a>
                     <span class="tree-mid"></span>
-                    <a th:href="@{/(sort='hot7',search=${search},tag=${tag},column=${column})}">周榜</a>
+                    <a th:href="@{/(sort='hot7',search=${search},tag=${tag},type=${type})}" class="hot7">周榜</a>
                     <span class="tree-mid"></span>
-                    <a th:href="@{/(sort='hot30',search=${search},tag=${tag},column=${column})}">月榜</a>
+                    <a th:href="@{/(sort='hot30',search=${search},tag=${tag},type=${type})}" class="hot30">月榜</a>
                     <span class="tree-mid"></span>
-                    <a th:href="@{/(sort='good',search=${search},tag=${tag},column=${column})}">精华</a>
+                    <a th:href="@{/(sort='good',search=${search},tag=${tag},type=${type})}" class="good">精华</a>
                     <span class="tree-filter-right">
-                    <a th:href="@{/(sort='new',search=${search},tag=${tag},column=${column})}" class="layui-this layui-hide-xs">按最新</a>
+                    <a th:href="@{/(sort='new',search=${search},tag=${tag},type=${type})}" class="layui-this layui-hide-xs new">按最新</a>
                     <span class="tree-mid layui-hide-xs"></span>
-                    <a th:href="@{/(sort='no',search=${search},tag=${tag},column=${column})}" class=" layui-hide-xs">抢沙发</a>
+                    <a th:href="@{/(sort='no',search=${search},tag=${tag},type=${type})}" class=" layui-hide-xs no">抢沙发</a>
                     </span>
+                    <input type="text" th:value="${sort}" class="nav-sort layui-hide">
                 </div>
                 <ul class="tree-list">
                     <li th:each="question:${pagination.data}">
@@ -173,7 +215,7 @@
                                 <img th:src="${question.user.avatarUrl}">
                             </a>
                             <h2>
-                                <a class="layui-badge layui-bg-green">公告</a>
+                                <a th:class="${question.typeName != '公告'?'layui-badge':'layui-badge layui-bg-green'}" th:text="${question.typeName}" ></a>
                                 <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
                             </h2>
                             <div class="tree-list-info">
@@ -201,19 +243,19 @@
                 <div style="text-align: center" class="laypage-main" th:if="${pagination.data != null}">
                     <div class="layui-box layui-laypage">
                         <li th:if="${pagination.showFirstPage}">
-                            <a th:if="${pagination.showFirstPage}" th:href="@{/(page=1,search=${search},tag=${tag})}">&lt;&lt;</a>
+                            <a th:if="${pagination.showFirstPage}" th:href="@{/(page=1,search=${search},tag=${tag},type=${type},sort=${sort})}">&lt;&lt;</a>
                         </li>
                         <li th:if="${pagination.showPrevious}">
-                            <a th:href="@{/(page=${pagination.page-1},search=${search},tag=${tag})}">&lt;</a>
+                            <a th:href="@{/(page=${pagination.page-1},search=${search},tag=${tag},type=${type},sort=${sort})}">&lt;</a>
                         </li>
                         <li th:each="page:${pagination.pages}" th:class="${pagination.page==page}?'current_page':''">
-                            <a th:href="@{/(page=${page},search=${search},tag=${tag})}" th:text="${page}"></a>
+                            <a th:href="@{/(page=${page},search=${search},tag=${tag},type=${type},sort=${sort})}" th:text="${page}"></a>
                         </li>
                         <li th:if="${pagination.showNext}">
-                            <a th:href="@{/(page=${pagination.page+1},search=${search},tag=${tag})}">&gt;</a>
+                            <a th:href="@{/(page=${pagination.page+1},search=${search},tag=${tag},type=${type},sort=${sort})}">&gt;</a>
                         </li>
                         <li th:if="${pagination.showEndPage}">
-                            <a th:href="@{/(page=${pagination.totalPage},search=${search},tag=${tag})}">&gt;&gt;</a>
+                            <a th:href="@{/(page=${pagination.totalPage},search=${search},tag=${tag},type=${type},sort=${sort})}">&gt;&gt;</a>
                         </li>
                     </div>
                 </div>
@@ -224,7 +266,7 @@
             <div class="tree-panel">
                 <div class="tree-panel-title">热门话题</div>
                 <ul class="tree-panel-main">
-                    <a th:each="tag:${tags}" th:href="@{/(page=1,search=${search},tag=${tag})}" th:text="${tag}" class="community-tag"></a>
+                    <a th:each="tag:${tags}" th:href="@{/(page=1,tag=${tag},sort=${sort})}" th:text="${tag}" class="community-tag"></a>
                 </ul>
             </div>
             <div class="tree-panel">

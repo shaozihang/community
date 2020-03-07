@@ -11,6 +11,7 @@
     <result column="view_count" jdbcType="INTEGER" property="viewCount" />
     <result column="like_count" jdbcType="INTEGER" property="likeCount" />
     <result column="tag" jdbcType="VARCHAR" property="tag" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
   <select id="selectRelated" parameterType="com.tree.community.model.Question" resultMap="BaseResultMap">
     select * from question where id != #{id} and tag regexp #{tag} order by comment_count desc,gmt_create desc limit 10
@@ -25,6 +26,15 @@
        <if test="tag != null and tag != ''">
          and tag regexp #{tag}
        </if>
+       <if test="type != null and type != ''">
+         and type = #{type}
+       </if>
+       <if test="sort != null and (sort == 7 or sort == 32)">
+         and to_days(now())-to_days(FROM_UNIXTIME(round(gmt_create / 1000,0))) &lt; #{sort}
+       </if>
+       <if test="sort != null and sort == 0">
+         and comment_count = #{sort}
+       </if>
      </where>
   </select>
 
@@ -37,8 +47,24 @@
       <if test="tag != null and tag != ''">
         and tag regexp #{tag}
       </if>
+      <if test="type != null and type != ''">
+        and type = #{type}
+      </if>
+      <if test="sort != null and (sort == 7 or sort == 32)">
+        and to_days(now())-to_days(FROM_UNIXTIME(round(gmt_create / 1000,0))) &lt; #{sort}
+      </if>
+      <if test="sort != null and sort == 0">
+        and comment_count = #{sort}
+      </if>
     </where>
-    order by gmt_create desc limit #{page},#{size}
+    <choose>
+      <when test="sort != null and (sort == 7 or sort == 32)">
+        order by like_count desc,comment_count desc,gmt_create desc limit #{page},#{size}
+      </when>
+      <otherwise>
+        order by gmt_create desc limit #{page},#{size}
+      </otherwise>
+    </choose>
   </select>
 
   <update id="incView" parameterType="com.tree.community.model.Question">

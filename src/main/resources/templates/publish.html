@@ -38,12 +38,15 @@
                 var description = $("#description").val();
                 var tag = $("#tag").val();
                 var id = $("#id").val();
+                var options= $("#column option:selected");
                 if(!title){
                     layer.msg("问题标题不能为空");
                 }else if(!description){
                     layer.msg("问题描述不能为空");
                 }else if(!tag){
                     layer.msg("标签不能为空");
+                }else if(!options.val()){
+                    layer.msg("请选择专栏");
                 }else{
                     $.ajax({
                         type:"post",
@@ -53,7 +56,8 @@
                             "id":id,
                             "title":title,
                             "description":description,
-                            'tag':tag
+                            'tag':tag,
+                            "type":options.val()
                         }),
                         success:function (result) {
                             if(result.code == 200){
@@ -113,7 +117,7 @@
                         </script>
                         <div class="layui-form-item ">
                             <label for="tag">添加标签:</label>
-                            <input type="text" name="tag" id="tag" class="layui-input" placeholder="输入标签，以英文逗号,分割"
+                            <input type="text" name="tag" id="tag" class="layui-input" placeholder="点击标签，以英文逗号,分割"
                                    autocomplete="off" th:value="${tag}" onclick="showSelectTag()">
                             <div id="select-tag" class="layui-tab publish-tag-tab">
                                 <ul class="layui-tab-title">

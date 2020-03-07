@@ -3,6 +3,7 @@ package com.tree.community.service;
 import com.tree.community.dto.PaginationDTO;
 import com.tree.community.dto.QuestionDTO;
 import com.tree.community.dto.QuestionQueryDTO;
+import com.tree.community.enums.QuestionTypeEnum;
 import com.tree.community.exception.CustomizeErrorCode;
 import com.tree.community.exception.CustomizeException;
 import com.tree.community.mapper.QuestionExtMapper;
@@ -10,6 +11,7 @@ import com.tree.community.mapper.QuestionMapper;
 import com.tree.community.mapper.UserLikeMapper;
 import com.tree.community.mapper.UserMapper;
 import com.tree.community.model.*;
+import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
@@ -31,7 +33,7 @@ public class QuestionService {
     @Autowired
     private UserMapper userMapper;
 
-    public PaginationDTO list(String search, String tag, Integer page, Integer size) {
+    public PaginationDTO list(String search, String tag, Integer page, Integer size,String type,String sort) {
         if(StringUtils.isNotBlank(search)){
             search = StringUtils.replace(search, " ", "|");
         }
@@ -43,6 +45,16 @@ public class QuestionService {
         QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
         questionQueryDTO.setSearch(search);
         questionQueryDTO.setTag(tag);
+        questionQueryDTO.setType(type);
+        if(StringUtils.isNotBlank(sort)){
+            if(sort.equals("hot7")){
+                questionQueryDTO.setSort(7);
+            }else if(sort.equals("hot30")){
+                questionQueryDTO.setSort(32);
+            }else if(sort.equals("no")){
+                questionQueryDTO.setSort(0);
+            }
+        }
         Integer totalCount = questionExtMapper.countBySearch(questionQueryDTO);
 
         if(totalCount % size ==0){
@@ -64,7 +76,20 @@ public class QuestionService {
         Integer offset = page < 1 ? 0 : size*(page-1);
         questionQueryDTO.setPage(offset);
         questionQueryDTO.setSize(size);
-        List<Question> questions = questionExtMapper.selectBySearch(questionQueryDTO);
+        List<Question> questions = null;
+        if(StringUtils.isNotBlank(sort)){
+            if(sort.equals("hot7")){
+                questions = questionExtMapper.selectBySearch(questionQueryDTO);
+            }else if(sort.equals("hot30")){
+                questions = questionExtMapper.selectBySearch(questionQueryDTO);
+            }else if(sort.equals("no")){
+                questions = questionExtMapper.selectBySearch(questionQueryDTO);
+            }else if(sort.equals("new")){
+                questions = questionExtMapper.selectBySearch(questionQueryDTO);
+            }
+        }else{
+            questions = questionExtMapper.selectBySearch(questionQueryDTO);
+        }
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for (Question question : questions) {
@@ -72,6 +97,7 @@ public class QuestionService {
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);
             questionDTO.setUser(user);
+            questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
             questionDTOList.add(questionDTO);
         }
         paginationDTO.setData(questionDTOList);
