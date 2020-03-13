@@ -107,7 +107,7 @@ public class AuthorizeController {
         String accessToken = qqProvider.getAccessToken(accessTokenDTO);
         OauthsUser oauthsUser = qqProvider.getUser(accessToken);
         if(oauthsUser !=null && oauthsUser.getOpenid()!=null){
-            User user = useroauthsService.findByAccountId(String.valueOf(oauthsUser.getOpenid()),1);
+            User user = useroauthsService.findByAccountId(oauthsUser.getOpenid(),1);
             if(user != null){
                 HttpSession session = request.getSession();
                 session.setAttribute("user",user);

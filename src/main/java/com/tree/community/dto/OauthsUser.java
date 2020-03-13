@@ -5,5 +5,5 @@ import lombok.Data;
 @Data
 public class OauthsUser {
     private Long id;
-    private Long openid;
+    private String openid;
 }

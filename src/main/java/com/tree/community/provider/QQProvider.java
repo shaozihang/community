@@ -1,12 +1,15 @@
 package com.tree.community.provider;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPObject;
 import com.tree.community.dto.AccessTokenDTO;
 import com.tree.community.dto.OauthsUser;
 import okhttp3.*;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Component
 public class QQProvider {
@@ -36,10 +39,18 @@ public class QQProvider {
         try {
             Response response = client.newCall(request).execute();
             String string = response.body().string();
-            OauthsUser githubUser = JSON.parseObject(string, OauthsUser.class);
+            String json = JSONPToJSON(string);
+            OauthsUser githubUser = JSON.parseObject(json, OauthsUser.class);
             return githubUser;
         } catch (IOException e) {
         }
         return  null;
+    }
+
+    public String JSONPToJSON(String jsonp){
+        int startIndex = jsonp.indexOf("(");
+        int endIndex = jsonp.lastIndexOf(")");
+        String json = jsonp.substring(startIndex+1, endIndex);
+        return json;
     }
 }
