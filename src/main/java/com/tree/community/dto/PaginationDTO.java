@@ -15,6 +15,7 @@ public class PaginationDTO<T> {
     private Integer page;
     private List<Integer> pages = new ArrayList<>();
     private Integer totalPage;
+    private Integer quCount;
 
     public void setPagination(Integer totalPage, Integer page) {
         this.totalPage = totalPage;

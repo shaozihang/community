@@ -53,7 +53,7 @@ public class LoginController {
         ResultDTO result = null;
         if(type == 1){
             result = userService.loginOrBind(userDTO,request);
-        }else if(type == 2){
+        }else if(type == 2 || type == 3){
             HttpSession session = request.getSession();
             Object userCode = session.getAttribute("userCode"+type);
             Object userPhone = session.getAttribute("userPhone"+type);
@@ -65,6 +65,9 @@ public class LoginController {
             }
             if(!userDTO.getPhone().equals(String.valueOf(userPhone))){
                 return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
+            }
+            if(type == 3){
+                return ResultDTO.okOf();
             }
             UserExample userExample = new UserExample();
             userExample.createCriteria()

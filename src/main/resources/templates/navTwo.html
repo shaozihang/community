@@ -18,10 +18,10 @@
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block"><span class="tree-mid"></span></li>
             <!-- 用户登录后显示 -->
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block" th:if="${session.user!=null}">
-                <a href="/profile/questions">我发表的贴</a>
+                <a href="/user/profile/questions">我发表的贴</a>
             </li>
             <li class="layui-hide-xs layui-hide-sm layui-show-md-inline-block" th:if="${session.user!=null}">
-                <a href="/profile/questions">我收藏的贴</a>
+                <a href="/user/profile/questions">我收藏的贴</a>
             </li>
             <input type="text" th:value="${type}" class="nav-type layui-hide">
         </ul>

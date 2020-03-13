@@ -38,5 +38,9 @@
         <table tableName="role" domainObjectName="Role" ></table>
         <table tableName="user_role" domainObjectName="UserRole" ></table>
         <table tableName="user_like" domainObjectName="UserLike" ></table>
+        <table tableName="follow_and_fans" domainObjectName="FollowAndFans" ></table>
+        <table tableName="province" domainObjectName="Province" ></table>
+        <table tableName="city" domainObjectName="City" ></table>
+        <table tableName="area" domainObjectName="Area" ></table>
     </context>
 </generatorConfiguration>

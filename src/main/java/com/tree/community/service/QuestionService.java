@@ -113,6 +113,7 @@ public class QuestionService {
         example.createCriteria()
                 .andCreatorEqualTo(userId);
         Integer totalCount = (int) questionMapper.countByExample(example);
+        paginationDTO.setQuCount(totalCount);
 
         if(totalCount % size ==0){
             totalPage = totalCount / size;
@@ -135,7 +136,7 @@ public class QuestionService {
         example1.createCriteria()
                 .andCreatorEqualTo(userId);
         example1.setOrderByClause("gmt_create desc");
-        List<Question> questions = questionMapper.selectByExampleWithRowbounds(example1,new RowBounds(offset,size));
+        List<Question> questions = questionMapper.selectByExampleWithBLOBsWithRowbounds(example1,new RowBounds(offset,size));
 
         if(questions.size() == 0){
             return paginationDTO;
@@ -148,6 +149,7 @@ public class QuestionService {
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);
             questionDTO.setUser(user);
+            questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
             questionDTOList.add(questionDTO);
         }
         paginationDTO.setData(questionDTOList);
@@ -203,5 +205,13 @@ public class QuestionService {
 
         List<Question> questions = questionExtMapper.selectRelated(question);
         return questions;
+    }
+
+    public int getQuCountById(Long id) {
+        QuestionExample example = new QuestionExample();
+        example.createCriteria()
+                .andCreatorEqualTo(id);
+        int quCount = (int) questionMapper.countByExample(example);
+        return quCount;
     }
 }

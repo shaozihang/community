@@ -129,7 +129,7 @@ function collapseComments(e) {
                     })));
 
                     var a = $("<a/>",{
-                        "href":"/user"+comment.targetUserId,
+                        "href":"/user/"+comment.targetUserId,
                         "class":"tree-link",
                         html:comment.targetUserName
                     });
@@ -234,6 +234,63 @@ function liketarget(targetId, type, status){
                             var likeCountCom = $("#likeCountCom-"+targetId);
                             likeCountCom.html(parseInt(likeCountCom.text())-1);
                         }
+                    }
+                }else{
+                    if(result.code == 2000){
+                        layer.confirm(result.message, {
+                            btn: ['确定','取消'] //按钮
+                        }, function(index){
+                            window.open("/login");
+                            window.localStorage.setItem("closable",true);
+                            layer.close(index);
+                        });
+                    }else{
+                        layer.msg(result.message);
+                    }
+                }
+            },
+            dataType:"json"
+        });
+    });
+}
+
+function fans(e) {
+    var targetId = e.getAttribute("data-id");
+    var text = $("#"+targetId).text();
+    var status = 0;
+    if(text == "关注"){
+        status = 0;
+    }else if(text == "已关注"){
+        status = 1;
+    }else if(text == "已互粉"){
+        status = 2;
+    }
+    fanstarget(targetId,status);
+}
+
+function fanstarget(targetId,status) {
+    layui.use('layer',function () {
+        var layer = layui.layer;
+        $.ajax({
+            type:"post",
+            url:"/fans",
+            contentType:"application/json",
+            data:JSON.stringify({
+                "toUserId":targetId,
+                "status":status
+            }),
+            success:function (result) {
+                if(result.code == 200){
+                    if(status == 0){
+                        $("#"+targetId).addClass("fansStatus").html("已关注");
+                        var status1 = $("#status-"+targetId).val();
+                        if(status1 == -1){
+                            $("#"+targetId).addClass("fansStatus").html("已互粉");
+                        }
+                    }else if(status == 1){
+                        $("#"+targetId).removeClass("fansStatus").html("关注");
+                    }else if(status == 2){
+                        $("#"+targetId).removeClass("fansStatus").html("关注");
                     }
                 }else{
                     if(result.code == 2000){

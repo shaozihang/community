@@ -6,11 +6,137 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_qhmkrexr74k.css">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script type="application/javascript">
         layui.use('element',function () {
             var element = layui.element;
+
+            //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+            var layid = location.hash.replace(/^#/, '');
+            element.tabChange('userInfo', layid);
+
+            //监听Tab切换，以改变地址hash值
+            element.on('tab(userInfo)', function(){
+                location.hash = this.getAttribute('lay-id');
+            });
+        });
+
+        layui.use(['form','layer'], function() {
+            var form = layui.form;
+            var layer = layui.layer;
+            form.on('select(province)', function(data){
+                if(data.value == ""){
+                    var cityId = $("#city").empty();
+                    cityId.append("<option value=\"\">请选择城市</option>");
+                    var areaId = $("#area").empty();
+                    areaId.append("<option value=\"\">请选择地区</option>");
+                    form.render('select');
+                    return "";
+                }
+                var provinceCode = data.value;
+                $.ajax({
+                    type:"get",
+                    url:"/getCity",
+                    contentType:"application/json",
+                    data: {"provinceCode":provinceCode},
+                    success:function (result) {
+                        if(result.code == 200){
+                            var cityId = $("#city").empty();
+                            cityId.append("<option value=\"\">请选择城市</option>");
+                            $.each(result.data,function (index, city) {
+                                cityId.append($("<option/>", {
+                                    value: city.cityCode,
+                                    html:city.name
+                                }));
+                                if(index == 0){
+                                    $('#city option:eq(1)').attr('selected','selected');
+                                    $.ajax({
+                                        type:"get",
+                                        url:"/getArea",
+                                        contentType:"application/json",
+                                        data: {"cityCode":city.cityCode},
+                                        success:function (result) {
+                                            if(result.code == 200){
+                                                var areaId = $("#area").empty();
+                                                areaId.append("<option value=\"\">请选择地区</option>");
+                                                $.each(result.data,function (index, area) {
+                                                    areaId.append($("<option/>", {
+                                                        value: area.areaCode,
+                                                        html:area.name
+                                                    }));
+                                                    if(index == 0){
+                                                        $('#area option:eq(1)').attr('selected','selected');
+                                                    }
+                                                });
+                                                form.render('select');
+                                            }else{
+                                                layer.msg("获取数据失败,请重试");
+                                            }
+                                        },
+                                        dataType:"json"
+                                    });
+                                }
+                            });
+                            form.render('select');
+                        }else{
+                            layer.msg("获取数据失败,请重试");
+                        }
+                    },
+                    dataType:"json"
+                });
+            });
+
+            form.on('select(city)', function(data){
+                if(data.value == ""){
+                    var areaId = $("#area").empty();
+                    areaId.append("<option value=\"\">请选择地区</option>");
+                    form.render('select');
+                    return "";
+                }
+                $.ajax({
+                    type:"get",
+                    url:"/getArea",
+                    contentType:"application/json",
+                    data: {"cityCode":data.value},
+                    success:function (result) {
+                        if(result.code == 200){
+                            var areaId = $("#area").empty();
+                            areaId.append("<option value=\"\">请选择地区</option>");
+                            $.each(result.data,function (index, area) {
+                                areaId.append($("<option/>", {
+                                    value: area.areaCode,
+                                    html:area.name
+                                }));
+                                if(index == 0){
+                                    $('#area option:eq(1)').attr('selected','selected');
+                                }
+                            });
+                            form.render('select');
+                        }else{
+                            layer.msg("获取数据失败,请重试");
+                        }
+                    },
+                    dataType:"json"
+                });
+            });
+        });
+
+        layui.use('upload', function(){
+            var upload = layui.upload;
+
+            //执行实例
+            var uploadInst = upload.render({
+                elem: '#updateAvatar' //绑定元素
+                ,url: '/upload/' //上传接口
+                ,done: function(res){
+                    //上传完毕回调
+                }
+                ,error: function(){
+                    //请求异常回调
+                }
+            });
         });
 
         function navShow() {
@@ -24,6 +150,119 @@
             $(".profile .layui-nav").attr("id","profileUser");
             $("#nav-tree-mobile").addClass("nav-tree-mobile");
         }
+
+        function getByteLen(val) {
+            var len = 0;
+            for (var i = 0; i < val.length; i++) {
+                var a = val.charAt(i);
+                if (a.match(/[^\x00-\xff]/ig) != null) {
+                    len += 2;
+                }
+                else {
+                    len += 1;
+                }
+            }
+            return len;
+        }
+
+        function updateUserInfo() {
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                var nickName = $("#nickName").val();
+                var sign = $("#sign").val();
+                var sex = $("input[name='sex']:checked").val();
+                var regExp = /^[\u4e00-\u9fa5 a-zA-Z0-9]{3,16}$/;
+                var province = $("#province").find("option:selected").text();
+                var city = $("#city").find("option:selected").text();
+                var area = $("#area").find("option:selected").text();
+                if(province != "请选择省份"){
+                    $("#address").val(province);
+                }
+                if(city != "请选择城市"){
+                    $("#address").val($("#address").val()+"-"+city);
+                }
+                if(area != "请选择地区"){
+                    $("#address").val($("#address").val()+"-"+area);
+                }
+                if(province == "请选择省份" && city == "请选择城市" && area == "请选择地区"){
+                    $("#address").val("");
+                }
+                if(!nickName){
+                    layer.msg("昵称不能为空");
+                }else if(getByteLen(nickName)<6){
+                    layer.msg("昵称不能小于6个字符");
+                }else if(getByteLen(nickName)>16){
+                    layer.msg("昵称不能大于16个字符");
+                }else if(regExp.test(nickName) == false){
+                    layer.msg("昵称不能包含特殊字符,可以是字母，数字和汉字");
+                }else if(sign.length>50){
+                    layer.msg("个性签名不能大于50个字符");
+                }else {
+                    $.ajax({
+                        type:"post",
+                        url:"/updateUserInfo",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "nickName":nickName,
+                            "sex":sex,
+                            "sign":sign,
+                            'address':$("#address").val()
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                layer.msg("恭喜您，资料修改成功！！！");
+                            }else if(result.code == 2016){
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function updatePwd() {
+            var curPwd = $("#curPwd").val();
+            var newPwd = $("#newPwd").val();
+            var confirmPwd = $("#confirmPwd").val();
+            var regExp=/^(\w){6,16}$/;
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!curPwd){
+                    layer.msg("请输入当前密码");
+                }else if(!newPwd){
+                    layer.msg("请输入新密码");
+                }else if(!confirmPwd){
+                    layer.msg("请输入确认密码");
+                }else if(newPwd.length<6){
+                    layer.msg("密码不能小于6个字符");
+                }else if(newPwd.length>16){
+                    layer.msg("密码不能大于16个字符");
+                }else if(regExp.test(newPwd) == false){
+                    layer.msg("密码不能包含特殊字符,可以是字母，数字和下划线");
+                }else if(newPwd != confirmPwd){
+                    layer.msg("两次输入的密码不一致");
+                }else {
+                    $.ajax({
+                        type:"post",
+                        url:"/updatePwd",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "curPwd":curPwd,
+                            "newPwd":newPwd
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                layer.msg("恭喜您，密码修改成功！！！");
+                            }else if(result.code == 2017){
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -31,18 +270,23 @@
 <div class="layui-container tree-marginTop profile">
     <ul class="layui-nav layui-nav-tree profile-nav" id="profileUser">
         <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon layui-icon-release"></i>我的主页</a>
+            <a th:href="${'/user/'+session.user.id}"><i class="layui-icon layui-icon-release"></i>我的主页</a>
         </li>
-        <li class="layui-nav-item">
-            <a href="javascript:;"><i class="layui-icon layui-icon-friends"></i>账户中心</a>
+        <li class="layui-nav-item" th:classappend="${section == 'account'}?'layui-this':''">
+            <a href="/user/set/account"><i class="layui-icon layui-icon-friends"></i>账户中心</a>
         </li>
-        <li class="layui-nav-item" th:classappend="${section == 'replies'}?'layui-this':''"><a href="/profile/replies">
-            <i class="layui-icon layui-icon-reply-fill"></i>我的消息
-            <span class="layui-badge" style="top: 52%;" th:if="${session.unreadCount>0}" th:text="${session.unreadCount}"></span></a>
+        <li class="layui-nav-item" th:classappend="${section == 'message'}?'layui-this':''">
+            <a href="/user/profile/message">
+                <i class="layui-icon layui-icon-reply-fill"></i>我的消息
+                <span class="layui-badge" style="top: 52%;" th:if="${session.unreadCount>0}" th:text="${session.unreadCount}"></span>
+            </a>
         </li>
-        <li class="layui-nav-item" th:classappend="${section == 'questions'}?'layui-this':''"><a href="/profile/questions">
-            <i class="layui-icon layui-icon-tabs"></i>帖子管理</a></li>
-        <li class="layui-nav-item"><a href=""><i class="layui-icon layui-icon-set-sm"></i>基本设置</a></li>
+        <li class="layui-nav-item" th:classappend="${section == 'questions'}?'layui-this':''">
+            <a href="/user/profile/questions"><i class="layui-icon layui-icon-tabs"></i>帖子管理</a>
+        </li>
+        <li class="layui-nav-item" th:classappend="${section == 'info'}?'layui-this':''">
+            <a href="/user/set/info"><i class="layui-icon layui-icon-set-sm"></i>基本设置</a>
+        </li>
     </ul>
     <div class="nav-tree-mobile layui-hide" onclick="navShow()" id="nav-tree-mobile">
         <i class="layui-icon layui-icon-right"></i>
@@ -69,7 +313,7 @@
                 <div class="layui-tab-item">2</div>
             </div>
         </div>
-        <div class="layui-tab layui-tab-brief" th:if="${section == 'replies' && pagination.data != null}" style="margin-top: 15px;">
+        <div class="layui-tab layui-tab-brief" th:if="${section == 'message' && pagination.data != null}" style="margin-top: 15px;">
             <button class="layui-btn" >一键已读</button>
             <button class="layui-btn layui-btn-danger">清空全部消息</button>
             <div style="margin-top: 10px;">
@@ -91,24 +335,156 @@
         <!-- 分页展示 -->
         <div style="text-align: center" class="laypage-main" th:if="${pagination.data != null}">
             <div class="layui-box layui-laypage">
-                <li th:if="${pagination.showFirstPage}">
-                    <a th:if="${pagination.showFirstPage}" th:href="@{'/profile/'+${section}(page=1)}">&lt;&lt;</a>
+                <li th:if="${pagination.showFirstPage}" class="first">
+                    <a th:if="${pagination.showFirstPage}" th:href="@{'/user/profile/'+${section}(page=1)}">&lt;&lt;</a>
                 </li>
-                <li th:if="${pagination.showPrevious}">
-                    <a th:href="@{'/profile/'+${section}(page=${pagination.page-1})}">&lt;</a>
+                <li th:if="${pagination.showPrevious}" class="prev">
+                    <a th:href="@{'/user/profile/'+${section}(page=${pagination.page-1})}">&lt;</a>
                 </li>
                 <li th:each="page:${pagination.pages}" th:class="${pagination.page==page}?'current_page':''">
-                    <a th:href="@{'/profile/'+${section}(page=${page})}" th:text="${page}"></a>
+                    <a th:href="@{'/user/profile/'+${section}(page=${page})}" th:text="${page}"></a>
                 </li>
-                <li th:if="${pagination.showNext}">
-                    <a th:href="@{'/profile/'+${section}(page=${pagination.page+1})}">&gt;</a>
+                <li th:if="${pagination.showNext}" class="next">
+                    <a th:href="@{'/user/profile/'+${section}(page=${pagination.page+1})}">&gt;</a>
                 </li>
-                <li th:if="${pagination.showEndPage}">
-                    <a th:href="@{'/profile/'+${section}(page=${pagination.totalPage})}">&gt;&gt;</a>
+                <li th:if="${pagination.showEndPage}" class="end">
+                    <a th:href="@{'/user/profile/'+${section}(page=${pagination.totalPage})}">&gt;&gt;</a>
                 </li>
             </div>
         </div>
-        <div class="info-none" th:if="${pagination.data == null}" th:text="${section == 'replies'?'您暂时没有最新消息':'您还没有发过帖子呢'}"></div>
+        <div class="info-none" th:if="${pagination.data == null && section == 'questions' or section == 'message'}"
+             th:text="${section == 'message'?'您暂时没有最新消息':'您还没有发过帖子呢'}"></div>
+        <div class="layui-tab layui-tab-brief" th:if="${section == 'info'}" lay-filter="userInfo">
+            <ul class="layui-tab-title">
+                <li lay-id="info" class="layui-this">我的资料</li>
+                <li lay-id="score">积分</li>
+                <li lay-id="userGroup">用户组</li>
+                <li lay-id="avatar">头像</li>
+                <li lay-id="pwd">密码</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <div class="layui-form layui-form-pane">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">昵称</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="nickName" name="nickName" autocomplete="off" class="layui-input" th:value="${session.user.nickName}">
+                            </div>
+                            <div class="layui-input-inline" style="width: 250px">
+                                <input type="radio" name="sex" value="0" title="保密" th:attr="checked=${session.user.sex == 0?true:false}">
+                                <input type="radio" name="sex" value="1" title="男" th:attr="checked=${session.user.sex == 1?true:false}">
+                                <input type="radio" name="sex" value="2" title="女" th:attr="checked=${session.user.sex == 2?true:false}">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <input type="hidden" name="address" id="address" value="">
+                            <label for="location" class="layui-form-label">位置</label>
+                                <div class="layui-input-block" id="location" name="location">
+                                    <div class="layui-input-inline">
+                                        <select name="P1" lay-filter="province" id="province">
+                                            <option value="">请选择省份</option>
+                                            <option th:each="province:${provinces}" th:value="${province.provinceCode}"
+                                                    th:text="${province.name}" th:selected="${myProvince == province.name?'true':'false'}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="layui-input-inline">
+                                        <select name="C1" lay-filter="city" id="city">
+                                            <option value="">请选择城市</option>
+                                            <option th:each="city:${citys}" th:value="${city.cityCode}"
+                                                    th:text="${city.name}" th:selected="${myCity == city.name?'true':'false'}"></option>
+                                        </select>
+                                    </div>
+                                    <div class="layui-input-inline">
+                                        <select name="A1" lay-filter="area" id="area">
+                                            <option value="">请选择地区</option>
+                                            <option th:each="area:${areas}" th:value="${area.areaCode}"
+                                                    th:text="${area.name}" th:selected="${myArea == area.name?'true':'false'}"></option>
+                                        </select>
+                                    </div>
+                                </div>
+                        </div>
+                        <div class="layui-form-item layui-form-text">
+                            <label class="layui-form-label">个性签名</label>
+                            <div class="layui-input-block">
+                                <textarea id="sign" name="sign" th:placeholder="${session.user.sign == '' || session.user.sign == null?'编辑你的个性签名':''}" class="layui-textarea" th:text="${session.user.sign}"></textarea>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <button type="button" class="layui-btn" onclick="updateUserInfo()">立即提交</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-tab-item">积分</div>
+                <div class="layui-tab-item">用户组</div>
+                <div class="layui-tab-item">
+                    <div class="avatar-add">
+                        <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过1000KB</p>
+                        <button type="button" class="layui-btn upload-img" id="updateAvatar">
+                            <i class="layui-icon layui-icon-upload"></i>上传头像
+                        </button>
+                        <input class="layui-upload-file" type="file" accept="" name="file">
+                            <img th:src="${session.user.avatarUrl}">
+                        <span class="loading"></span>
+                    </div>
+                </div>
+                <div class="layui-form layui-form-pane layui-tab-item updatePwdWay">
+                        <div class="layui-form-item">
+                            <label for="curPwd" class="layui-form-label">当前密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="curPwd" name="curPwd"  autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="newPwd" class="layui-form-label">新密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="newPwd" name="newPwd"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">6到16个字符</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="confirmPwd" class="layui-form-label">确认密码</label>
+                            <div class="layui-input-inline">
+                                <input type="password" id="confirmPwd" name="confirmPwd"  autocomplete="off" class="layui-input">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <span>其他方式：</span>
+                            <a th:href="@{/findpassword}" class="tree-link">手机验证</a>
+                            <a th:href="@{/findpassword}" class="tree-link">邮箱验证</a>
+                        </div>
+                        <div class="layui-form-item">
+                            <button class="layui-btn" onclick="updatePwd()">确认修改</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab layui-tab-brief" th:if="${section == 'account'}">
+            <ul class="layui-tab-title">
+                <li class="layui-this">我的手机</li>
+                <li>我的邮箱</li>
+                <li>第三方账号</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">我的手机</div>
+                <div class="layui-tab-item">我的邮箱</div>
+                <div class="layui-tab-item">
+                    <ul class="app-bind">
+                        <li class="tree-bindWay">
+                            <i class="iconfont icon-QQ"></i>
+                            <a href="/app/qq" onclick="layer.msg('正在绑定QQ', {icon:16, shade: 0.1, time:0})">立即绑定</a>
+                            <span>，即可使用QQ帐号登录树洞社区</span>
+                            <a href="/app/qq">更换绑定</a>
+                        </li>
+                        <li class="tree-bindWay">
+                            <i class="iconfont icon-github"></i>
+                            <a href="/app/github/" onclick="layer.msg('正在绑定Github', {icon:16, shade: 0.1, time:0})">立即绑定</a>
+                            <span>，即可使用Github帐号登录树洞社区</span>
+                            <a href="/app/qq">更换绑定</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 <div th:replace="footer :: foot"></div>

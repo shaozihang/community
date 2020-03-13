@@ -179,6 +179,14 @@
                 });
             }
         }
+
+        function qqlogin() {
+            var min = 10000000//这里改成你需要的最小值
+            var max = 99999999//这里改成你需要的最大值
+            var state = Math.floor(Math.random() * (max - min + 1) + min);
+            window.location.href ="https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101853590&state="+state+"&redirect_uri="
+                +encodeURI("http://www.treedong.com/loginCallbackqq");
+        }
     </script>
 </head>
 <body>
@@ -238,7 +246,7 @@
                         <span>其他方式登录：</span>
                         <a class="github-login" title="GitHub授权登录"
                            th:href="@{https://github.com/login/oauth/authorize(client_id='a7984ce94e8e4c8c796d',redirect_uri=${#httpServletRequest.getRequestURL()+'Callback'},scope='user',state=1)}"><img src="/images/github.png"></a>
-                        <a class="qq-login" title="qq授权登录"><img src="/images/QQ.png"></a>
+                        <a class="qq-login" title="qq授权登录" onclick="qqlogin()"><img src="/images/QQ.png"></a>
                         <a class="weixin-login" title="微信授权登录"><img src="/images/weixin.png"></a>
                     </div>
                     <input id="oauthsId" hidden="hidden" th:value="${oauthsId}">

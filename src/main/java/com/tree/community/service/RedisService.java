@@ -132,4 +132,34 @@ public class RedisService {
         Integer likeCount = (Integer) redisTemplate.opsForHash().get(RedisKeyUtils.MAP_KEY_USER_LIKED_COUNT, key);
         return likeCount;
     }
+
+    /**
+     * 添加关注。状态为1
+     */
+    public void saveFollowRedis(String meId, String otherId) {
+        redisTemplate.opsForZSet().add(meId+":follow",otherId,System.currentTimeMillis());
+        redisTemplate.opsForZSet().add(otherId+":fans",meId,System.currentTimeMillis());
+    }
+
+    /**
+     * 取消关注。状态为0
+     */
+    public void cancelFollowRedis(String meId, String otherId) {
+        redisTemplate.opsForZSet().remove(meId+":follow",otherId);
+        redisTemplate.opsForZSet().remove(otherId+":fans",meId);
+    }
+
+    /**
+     * 我的关注数
+     */
+    public void FollowCountRedis(String meId) {
+        redisTemplate.opsForZSet().size(meId+":follow");
+    }
+
+    /**
+     * 我的粉丝数
+     */
+    public void FansCountRedis(String meId) {
+        redisTemplate.opsForZSet().size(meId+":fans");
+    }
 }

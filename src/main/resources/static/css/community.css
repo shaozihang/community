@@ -386,6 +386,10 @@ i {
     color: #999;
 }
 
+.tree-list-info a:visited{
+    color: #999;
+}
+
 .tree-list-info a:hover{
     color: #5FB878;
 }
@@ -1272,3 +1276,202 @@ i {
     color: #ca0c16!important;
 }
 
+.tree-home {
+    position: relative;
+    padding: 30px 0 30px;
+    text-align: center;
+}
+
+.tree-home img {
+    width: 100px;
+    height: 100px;
+    border-radius: 100%;
+}
+
+.tree-home h1 {
+    font-size: 26px;
+    line-height: 30px;
+    margin-top: 10px;
+}
+
+.tree-home h1 span {
+    font-size: 22px;
+}
+
+.tree-home h1 .icon-nanxing {
+    color: #4EBBF9;
+}
+
+.tree-home h1 .icon-nvxing {
+    color: #ff6494;
+}
+
+.tree-badge-grade {
+    height: 16px;
+    line-height: 18px;
+    top:-1px;
+    padding: 0 3px;
+    background-color: #FF5722;
+    color: #fff;
+    border-radius: 2px;
+}
+
+.tree-home-sign,.tree-home-info {
+    padding: 0 10px;
+    color: #999;
+    margin-top: 10px;
+}
+
+.tree-home-info span{
+    font-size: 14px;
+    margin-right: 5px;
+}
+
+.tree-sns {
+    margin-top: 10px;
+}
+
+.tree-tab-que-foll-fans{
+    padding: 5px 10px;
+}
+
+.tree-setType li{
+    height: auto;
+    padding: 15px;
+    border-bottom: 1px dotted #e2e2e2;
+}
+
+.tree-setType li:last-child{
+    border-bottom: none;
+}
+
+.tree-setType li h2,.tree-setType li p{
+    padding: 5px 0;
+}
+
+.tree-text-color{
+    color: #858585;
+}
+
+.tree-info-color{
+    font-size: 13px;
+    color: #999;
+    margin-right: 10px;
+}
+
+.rightbtn2{
+    position: absolute;
+    right: 10px;
+    top: 18px;
+}
+
+.fansStatus{
+    background-color: #C9C9C9;
+}
+
+@media (max-width: 768px){
+    .layui-laypage li{
+        display: none;
+    }
+    .layui-laypage li.first{
+        display: inline-block;
+    }
+    .layui-laypage li.prev{
+        display: inline-block;
+    }
+    .layui-laypage li.next{
+        display: inline-block;
+    }
+    .layui-laypage li.current_page{
+        display: inline-block;
+    }
+    .layui-laypage li.end{
+        display: inline-block;
+    }
+}
+
+.avatar-add {
+    position: relative;
+    width: 100%;
+    height: 373px;
+    background-color: #F2F2F5;
+}
+
+.avatar-add p {
+    position: absolute;
+    top: 70px;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 12px;
+    text-align: center;
+    color: #999;
+}
+
+.avatar-add .upload-img {
+    position: absolute;
+    left: 50%;
+    top: 35px;
+    margin: 0 0 0 -56px;
+}
+
+.avatar-add img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 168px;
+    height: 168px;
+    margin: -50px 0 0 -84px;
+}
+
+.avatar-add .loading {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    padding: 0;
+    background-color: #000;
+    opacity: 0.5;
+    filter: Alpha(opacity=50);
+}
+
+.updatePwdWay a{
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.app-bind li {
+    margin-bottom: 10px;
+    line-height: 30px;
+    color: #999;
+}
+
+.tree-bindWay{
+    background-color: #F8F8F8;
+    padding: 10px 15px;
+}
+
+.tree-bindWay a {
+    color: #4F99CF;
+}
+
+.app-bind li .iconfont {
+    position: relative;
+    top: 4px;
+    margin-right: 5px;
+    font-size: 28px;
+}
+
+@media screen and (max-width: 991px) {
+    #location .layui-input-inline {
+        margin-bottom: 10px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    #location .layui-input-inline {
+        margin-left: 2px;
+
+    }
+}

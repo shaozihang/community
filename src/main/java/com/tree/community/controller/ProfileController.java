@@ -22,7 +22,7 @@ public class ProfileController {
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping("/profile/{action}")
+    @GetMapping("/user/profile/{action}")
     public String profile(@PathVariable(name = "action")String action,
                           HttpServletRequest request, Model model,
                           @RequestParam(name = "page",defaultValue = "1")Integer page,
@@ -39,7 +39,7 @@ public class ProfileController {
         }else {
             PaginationDTO paginationDTO = notificationService.list(user.getId(),page,size);
             model.addAttribute("sectionName","我的消息_树洞社区");
-            model.addAttribute("section","replies");
+            model.addAttribute("section","message");
             model.addAttribute("pagination",paginationDTO);
         }
 

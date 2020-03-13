@@ -20,10 +20,11 @@ public class UseroauthsService {
     private UserMapper userMapper;
 
 
-    public User findByAccountId(String accountId) {
+    public User findByAccountId(String accountId,Integer type) {
         UseroauthsExample useroauthsExample = new UseroauthsExample();
         useroauthsExample.createCriteria()
-                .andAccountIdEqualTo(accountId);
+                .andAccountIdEqualTo(accountId)
+                .andTypeEqualTo(type);
         List<Useroauths> useroauths = useroauthsMapper.selectByExample(useroauthsExample);
         if(useroauths.size() != 0){//查得到就代表不是第一次登录
             User user = userMapper.selectByPrimaryKey(useroauths.get(0).getUid());

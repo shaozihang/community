@@ -242,19 +242,19 @@
                 <!-- 分页展示 -->
                 <div style="text-align: center" class="laypage-main" th:if="${pagination.data != null}">
                     <div class="layui-box layui-laypage">
-                        <li th:if="${pagination.showFirstPage}">
+                        <li th:if="${pagination.showFirstPage}" class="first">
                             <a th:if="${pagination.showFirstPage}" th:href="@{/(page=1,search=${search},tag=${tag},type=${type},sort=${sort})}">&lt;&lt;</a>
                         </li>
-                        <li th:if="${pagination.showPrevious}">
+                        <li th:if="${pagination.showPrevious}" class="prev">
                             <a th:href="@{/(page=${pagination.page-1},search=${search},tag=${tag},type=${type},sort=${sort})}">&lt;</a>
                         </li>
                         <li th:each="page:${pagination.pages}" th:class="${pagination.page==page}?'current_page':''">
                             <a th:href="@{/(page=${page},search=${search},tag=${tag},type=${type},sort=${sort})}" th:text="${page}"></a>
                         </li>
-                        <li th:if="${pagination.showNext}">
+                        <li th:if="${pagination.showNext}" class="next">
                             <a th:href="@{/(page=${pagination.page+1},search=${search},tag=${tag},type=${type},sort=${sort})}">&gt;</a>
                         </li>
-                        <li th:if="${pagination.showEndPage}">
+                        <li th:if="${pagination.showEndPage}" class="end">
                             <a th:href="@{/(page=${pagination.totalPage},search=${search},tag=${tag},type=${type},sort=${sort})}">&gt;&gt;</a>
                         </li>
                     </div>
