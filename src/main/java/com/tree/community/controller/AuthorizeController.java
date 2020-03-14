@@ -76,7 +76,7 @@ public class AuthorizeController {
                 dto.setOauthsType(String.valueOf(0));
                 useroauthsService.oauthsBind(user.getId(),dto);
                 request.getSession().removeAttribute("githubBind");
-                return "redirect:/user/set/account";
+                return "redirect:/user/set/account#bind";
             }
             User user = useroauthsService.findByAccountId(oauthsUser.getId(),0);
             if(user != null){
@@ -119,15 +119,15 @@ public class AuthorizeController {
         String accessToken = qqProvider.getAccessToken(accessTokenDTO);
         OauthsUser oauthsUser = qqProvider.getUser(accessToken);
         if(oauthsUser !=null && oauthsUser.getOpenid()!=null){
-            Object githubBind = request.getSession().getAttribute("qq");
+            Object githubBind = request.getSession().getAttribute("qqBind");
             if(githubBind != null){
                 User user = (User) request.getSession().getAttribute("user");
                 UserDTO dto = new UserDTO();
                 dto.setOauthsId(oauthsUser.getId());
                 dto.setOauthsType(String.valueOf(1));
                 useroauthsService.oauthsBind(user.getId(),dto);
-                request.getSession().removeAttribute("qq");
-                return "redirect:/user/set/account";
+                request.getSession().removeAttribute("qqBind");
+                return "redirect:/user/set/account#bind";
             }
             User user = useroauthsService.findByAccountId(oauthsUser.getOpenid(),1);
             if(user != null){
