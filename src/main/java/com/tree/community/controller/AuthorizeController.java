@@ -123,7 +123,7 @@ public class AuthorizeController {
             if(githubBind != null){
                 User user = (User) request.getSession().getAttribute("user");
                 UserDTO dto = new UserDTO();
-                dto.setOauthsId(oauthsUser.getId());
+                dto.setOauthsId(oauthsUser.getOpenid());
                 dto.setOauthsType(String.valueOf(1));
                 useroauthsService.oauthsBind(user.getId(),dto);
                 request.getSession().removeAttribute("qqBind");
