@@ -1,5 +1,6 @@
 package com.tree.community.service;
 
+import com.tree.community.dto.UserDTO;
 import com.tree.community.mapper.UserMapper;
 import com.tree.community.mapper.UseroauthsMapper;
 import com.tree.community.model.User;
@@ -8,7 +9,10 @@ import com.tree.community.model.UseroauthsExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class UseroauthsService {
@@ -32,5 +36,40 @@ public class UseroauthsService {
         }else {
             return null;
         }
+    }
+
+    public Map<String, Integer> getOauthsBindStatus(Long id) {
+        UseroauthsExample example = new UseroauthsExample();
+        example.createCriteria()
+                .andUidEqualTo(id);
+        List<Useroauths> list = useroauthsMapper.selectByExample(example);
+        Map<String, Integer> map = new HashMap<>();
+        map.put("github",0);map.put("qq",0);
+        if(list.size() != 0){
+            for (Useroauths oauth : list) {
+                if(oauth.getType() == 0){
+                    map.put("github",1);
+                }else if (oauth.getType() == 1){
+                    map.put("qq",1);
+                }
+            }
+        }
+        return map;
+    }
+
+    public void oauthsBind(Long uid, UserDTO userDTO){
+        Useroauths useroauths = new Useroauths();
+        useroauths.setUid(uid);
+        useroauths.setAccountId(userDTO.getOauthsId());
+        useroauths.setType(Integer.valueOf(userDTO.getOauthsType()));
+        useroauthsMapper.insert(useroauths);
+    }
+
+    public void unbind(Long id, int type) {
+        UseroauthsExample example = new UseroauthsExample();
+        example.createCriteria()
+                .andUidEqualTo(id)
+                .andTypeEqualTo(type);
+        useroauthsMapper.deleteByExample(example);
     }
 }

@@ -24,7 +24,7 @@ public class UserService {
     private UserMapper userMapper;
 
     @Autowired
-    private UseroauthsMapper useroauthsMapper;
+    private UseroauthsService useroauthsService;
 
     @Autowired
     private UserRoleMapper userRoleMapper;
@@ -37,32 +37,6 @@ public class UserService {
 
     @Autowired
     private AreaMapper areaMapper;
-
-    public void createOrUpdate(User user) {
-        UserExample userExample = new UserExample();
-        //userExample.createCriteria()
-               // .andAccountIdEqualTo(user.getAccountId());
-        List<User> users = userMapper.selectByExample(userExample);
-        if(users.size() == 0){
-            //创建
-           // user.setGmtCreate(System.currentTimeMillis());
-           // user.setGmtModified(user.getGmtCreate());
-            userMapper.insert(user);
-        }else{
-            //更新
-            User dbUser = users.get(0);
-            User updateUser = new User();
-           // updateUser.setName(user.getName());
-            updateUser.setAvatarUrl(user.getAvatarUrl());
-           // updateUser.setGmtModified(System.currentTimeMillis());
-            updateUser.setToken(user.getToken());
-            UserExample example = new UserExample();
-            example.createCriteria()
-                    .andIdEqualTo(dbUser.getId());
-            userMapper.updateByExampleSelective(updateUser, example);
-        }
-
-    }
 
     public ResultDTO createOrBind(UserDTO userDTO) {
         User user = new User();
@@ -82,7 +56,7 @@ public class UserService {
         userRole.setRoleId(1L);
         userRoleMapper.insert(userRole);
         if(StringUtils.isNotBlank(userDTO.getOauthsId())){
-            oauthsBind(users.get(0).getId(),userDTO);
+            useroauthsService.oauthsBind(users.get(0).getId(),userDTO);
         }
         return ResultDTO.okOf();
 
@@ -98,19 +72,11 @@ public class UserService {
             return ResultDTO.errorOf(2015,"账号或密码错误");
         }
         if(StringUtils.isNotBlank(userDTO.getOauthsId())){
-            oauthsBind(users.get(0).getId(),userDTO);
+            useroauthsService.oauthsBind(users.get(0).getId(),userDTO);
         }
         HttpSession session = request.getSession();
         session.setAttribute("user",users.get(0));
         return ResultDTO.okOf();
-    }
-
-    public void oauthsBind(Long uid,UserDTO userDTO){
-        Useroauths useroauths = new Useroauths();
-        useroauths.setUid(uid);
-        useroauths.setAccountId(userDTO.getOauthsId());
-        useroauths.setType(Integer.valueOf(userDTO.getOauthsType()));
-        useroauthsMapper.insert(useroauths);
     }
 
     public void modifyPwd(Map<String, String> map) {

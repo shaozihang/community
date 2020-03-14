@@ -9,6 +9,7 @@ import com.tree.community.model.User;
 import com.tree.community.model.UserExample;
 import com.tree.community.model.Useroauths;
 import com.tree.community.service.UserService;
+import com.tree.community.service.UseroauthsService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,6 +33,9 @@ public class LoginController {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private UseroauthsService useroauthsService;
 
     @GetMapping(value = "/login")
     public String login(@RequestParam(value = "oauthsId",required = false)String oauthsId,
@@ -74,7 +78,7 @@ public class LoginController {
                     .andPhoneEqualTo(userDTO.getPhone());
             List<User> users = userMapper.selectByExample(userExample);
             if(StringUtils.isNotBlank(userDTO.getOauthsId())){
-                userService.oauthsBind(users.get(0).getId(),userDTO);
+                useroauthsService.oauthsBind(users.get(0).getId(),userDTO);
             }
             session.setAttribute("user",users.get(0));
             session.removeAttribute("userCode"+type);

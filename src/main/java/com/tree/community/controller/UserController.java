@@ -12,6 +12,7 @@ import com.tree.community.model.User;
 import com.tree.community.service.FollowAndFansService;
 import com.tree.community.service.QuestionService;
 import com.tree.community.service.UserService;
+import com.tree.community.service.UseroauthsService;
 import com.tree.community.util.MD5Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,9 @@ public class UserController {
 
     @Autowired
     private FollowAndFansService followAndFansService;
+
+    @Autowired
+    private UseroauthsService useroauthsService;
 
     @GetMapping(value = "/user/{id}")
     public String user(@PathVariable(name = "id")Long id, Model model,
@@ -70,8 +74,11 @@ public class UserController {
         User user = (User) request.getSession().getAttribute("user");
 
         if("account".equals(action)){
+            Map<String, Integer> map = useroauthsService.getOauthsBindStatus(user.getId());
             model.addAttribute("sectionName","账户中心_树洞社区");
             model.addAttribute("section","account");
+            model.addAttribute("github",map.get("github"));
+            model.addAttribute("qq",map.get("qq"));
         }else {
             String[] address = new String[]{"请选择省份","请选择城市","请选择地区"};
             List<Province> provinces = userService.getProvinceAll();

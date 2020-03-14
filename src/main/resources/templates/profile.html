@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
-    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_qhmkrexr74k.css">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_4wxsaib01vx.css">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script type="application/javascript">
@@ -17,8 +17,15 @@
             var layid = location.hash.replace(/^#/, '');
             element.tabChange('userInfo', layid);
 
+            var layid = location.hash.replace(/^#/, '');
+            element.tabChange('userBind', layid);
+
             //监听Tab切换，以改变地址hash值
             element.on('tab(userInfo)', function(){
+                location.hash = this.getAttribute('lay-id');
+            });
+
+            element.on('tab(userBind)', function(){
                 location.hash = this.getAttribute('lay-id');
             });
         });
@@ -263,6 +270,48 @@
                 }
             });
         }
+
+        function bind(value) {
+            $.ajax({
+                type:"post",
+                url:"/bind",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "type":value
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        if(value == 0){
+                            window.location.href ="https://github.com/login/oauth/authorize?client_id=a7984ce94e8e4c8c796d&redirect_uri=http://www.treedong.com/loginCallback&scope=user&state=1";
+                        }else if(value == 1){
+                            var min = 10000000//这里改成你需要的最小值
+                            var max = 99999999//这里改成你需要的最大值
+                            var state = Math.floor(Math.random() * (max - min + 1) + min);
+                            window.location.href ="https://graph.qq.com/oauth2.0/authorize?response_type=code&client_id=101853590&state="+state+"&redirect_uri="
+                                +encodeURI("http://www.treedong.com/loginCallbackqq");
+                        }
+                    }
+                },
+                dataType:"json"
+            });
+        }
+
+        function Unbind(value) {
+            $.ajax({
+                type:"post",
+                url:"/Unbind",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "type":value
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
+                    }
+                },
+                dataType:"json"
+            });
+        }
     </script>
 </head>
 <body>
@@ -458,30 +507,43 @@
                 </div>
             </div>
         </div>
-        <div class="layui-tab layui-tab-brief" th:if="${section == 'account'}">
+        <div class="layui-tab layui-tab-brief" th:if="${section == 'account'}" lay-filter="userBind">
             <ul class="layui-tab-title">
-                <li class="layui-this">我的手机</li>
-                <li>我的邮箱</li>
-                <li>第三方账号</li>
+                <li class="layui-this" lay-id="phone">我的手机</li>
+                <li lay-id="Email">我的邮箱</li>
+                <li lay-id="bind">第三方账号</li>
             </ul>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">我的手机</div>
                 <div class="layui-tab-item">我的邮箱</div>
                 <div class="layui-tab-item">
                     <ul class="app-bind">
-                        <li class="tree-bindWay">
-                            <i class="iconfont icon-QQ"></i>
-                            <a href="/app/qq" onclick="layer.msg('正在绑定QQ', {icon:16, shade: 0.1, time:0})">立即绑定</a>
-                            <span>，即可使用QQ帐号登录树洞社区</span>
-                            <a href="/app/qq">更换绑定</a>
+                        <li class="tree-bindWay" th:classappend="${qq == 1?'havebind':''}">
+                            <i class="iconfont icon-qq" style="color: #bcae12;"></i>
+                            <span>腾讯 QQ</span>
+                            <a onclick="Unbind('1')" th:if="${qq == 1}"><span>已绑定 · </span>解绑</a>
+                            <a onclick="bind('1')" th:if="${qq == 0}">立即绑定</a>
                         </li>
-                        <li class="tree-bindWay">
+                        <li class="tree-bindWay" th:classappend="${github == 1?'havebind':''}">
                             <i class="iconfont icon-github"></i>
-                            <a href="/app/github/" onclick="layer.msg('正在绑定Github', {icon:16, shade: 0.1, time:0})">立即绑定</a>
-                            <span>，即可使用Github帐号登录树洞社区</span>
-                            <a href="/app/qq">更换绑定</a>
+                            <span>GitHub</span>
+                            <a onclick="Unbind('0')" th:if="${github == 1}"><span>已绑定 · </span>解绑</a>
+                            <a onclick="bind('0')" th:if="${github == 0}">立即绑定</a>
+                        </li>
+                        <li class="tree-bindWay" th:classappend="${github == 1?'havebind':''}">
+                            <i class="iconfont icon-baidu" style="color: #1296db;"></i>
+                            <span>百度</span>
+                            <a onclick="Unbind('0')" th:if="${github == 1}"><span>已绑定 · </span>解绑</a>
+                            <a onclick="bind('0')" th:if="${github == 0}">立即绑定</a>
+                        </li>
+                        <li class="tree-bindWay" th:classappend="${github == 1?'havebind':''}">
+                            <i class="iconfont icon-weibo" style="color: #d81e06;"></i>
+                            <span>新浪微博</span>
+                            <a onclick="Unbind('0')" th:if="${github == 1}"><span>已绑定 · </span>解绑</a>
+                            <a onclick="bind('0')" th:if="${github == 0}">立即绑定</a>
                         </li>
                     </ul>
+                    <div style="color: #999;padding: 10px;display: none" class="bind-hint">移动端暂不支持绑定与解绑，请使用电脑进行此操作</div>
                 </div>
             </div>
         </div>

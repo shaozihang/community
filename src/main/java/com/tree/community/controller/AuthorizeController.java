@@ -2,12 +2,14 @@ package com.tree.community.controller;
 
 import com.tree.community.dto.AccessTokenDTO;
 import com.tree.community.dto.OauthsUser;
+import com.tree.community.dto.UserDTO;
 import com.tree.community.mapper.UserMapper;
 import com.tree.community.model.User;
 import com.tree.community.model.UserExample;
 import com.tree.community.model.Useroauths;
 import com.tree.community.provider.GithubProvider;
 import com.tree.community.provider.QQProvider;
+import com.tree.community.service.UserService;
 import com.tree.community.service.UseroauthsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +68,17 @@ public class AuthorizeController {
         String accessToken = githubProvider.getAccessToken(accessTokenDTO);
         OauthsUser oauthsUser = githubProvider.getUser(accessToken);
         if(oauthsUser !=null && oauthsUser.getId()!=null){
-            User user = useroauthsService.findByAccountId(String.valueOf(oauthsUser.getId()),0);
+            Object githubBind = request.getSession().getAttribute("githubBind");
+            if(githubBind != null){
+                User user = (User) request.getSession().getAttribute("user");
+                UserDTO dto = new UserDTO();
+                dto.setOauthsId(oauthsUser.getId());
+                dto.setOauthsType(String.valueOf(0));
+                useroauthsService.oauthsBind(user.getId(),dto);
+                request.getSession().removeAttribute("githubBind");
+                return "redirect:/user/set/account";
+            }
+            User user = useroauthsService.findByAccountId(oauthsUser.getId(),0);
             if(user != null){
                 HttpSession session = request.getSession();
                 session.setAttribute("user",user);
@@ -107,6 +119,16 @@ public class AuthorizeController {
         String accessToken = qqProvider.getAccessToken(accessTokenDTO);
         OauthsUser oauthsUser = qqProvider.getUser(accessToken);
         if(oauthsUser !=null && oauthsUser.getOpenid()!=null){
+            Object githubBind = request.getSession().getAttribute("qq");
+            if(githubBind != null){
+                User user = (User) request.getSession().getAttribute("user");
+                UserDTO dto = new UserDTO();
+                dto.setOauthsId(oauthsUser.getId());
+                dto.setOauthsType(String.valueOf(1));
+                useroauthsService.oauthsBind(user.getId(),dto);
+                request.getSession().removeAttribute("qq");
+                return "redirect:/user/set/account";
+            }
             User user = useroauthsService.findByAccountId(oauthsUser.getOpenid(),1);
             if(user != null){
                 HttpSession session = request.getSession();

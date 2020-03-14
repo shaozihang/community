@@ -1444,7 +1444,17 @@ i {
 .app-bind li {
     margin-bottom: 10px;
     line-height: 30px;
-    color: #999;
+}
+
+.app-bind a{
+    cursor: pointer;
+    float: right;
+    margin-right: 30px;
+    margin-top: 5px;
+}
+
+.app-bind span{
+    color: black;
 }
 
 .tree-bindWay{
@@ -1460,7 +1470,7 @@ i {
     position: relative;
     top: 4px;
     margin-right: 5px;
-    font-size: 28px;
+    font-size: 26px;
 }
 
 @media screen and (max-width: 991px) {
@@ -1473,5 +1483,14 @@ i {
     #location .layui-input-inline {
         margin-left: 2px;
 
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .app-bind{
+        display: none!important;
+    }
+    .bind-hint{
+        display: block!important;
     }
 }
