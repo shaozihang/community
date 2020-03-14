@@ -64,7 +64,7 @@ public class UseroauthsService {
         useroauths.setType(Integer.valueOf(userDTO.getOauthsType()));
         UseroauthsExample example = new UseroauthsExample();
         example.createCriteria()
-                .andUidEqualTo(uid)
+                .andAccountIdEqualTo(userDTO.getOauthsId())
                 .andTypeEqualTo(Integer.valueOf(userDTO.getOauthsType()));
         List<Useroauths> result = useroauthsMapper.selectByExample(example);
         if(result.size() !=0){
