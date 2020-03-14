@@ -57,12 +57,21 @@ public class UseroauthsService {
         return map;
     }
 
-    public void oauthsBind(Long uid, UserDTO userDTO){
+    public int oauthsBind(Long uid, UserDTO userDTO){
         Useroauths useroauths = new Useroauths();
         useroauths.setUid(uid);
         useroauths.setAccountId(userDTO.getOauthsId());
         useroauths.setType(Integer.valueOf(userDTO.getOauthsType()));
+        UseroauthsExample example = new UseroauthsExample();
+        example.createCriteria()
+                .andUidEqualTo(uid)
+                .andTypeEqualTo(Integer.valueOf(userDTO.getOauthsType()));
+        List<Useroauths> result = useroauthsMapper.selectByExample(example);
+        if(result.size() !=0){
+            return -1;
+        }
         useroauthsMapper.insert(useroauths);
+        return 1;
     }
 
     public void unbind(Long id, int type) {

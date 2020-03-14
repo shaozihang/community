@@ -69,7 +69,8 @@ public class UserController {
 
     @GetMapping("/user/set/{action}")
     public String profile(@PathVariable(name = "action")String action,
-                          HttpServletRequest request, Model model){
+                          HttpServletRequest request, Model model,
+                          @ModelAttribute("bindResult")String bindResult){
 
         User user = (User) request.getSession().getAttribute("user");
 
@@ -79,6 +80,11 @@ public class UserController {
             model.addAttribute("section","account");
             model.addAttribute("github",map.get("github"));
             model.addAttribute("qq",map.get("qq"));
+            int bindResult2 = 1;
+            if(bindResult.equals("-1")){
+                bindResult2 = -1;
+            }
+            model.addAttribute("bindResult2",bindResult2);
         }else {
             String[] address = new String[]{"请选择省份","请选择城市","请选择地区"};
             List<Province> provinces = userService.getProvinceAll();

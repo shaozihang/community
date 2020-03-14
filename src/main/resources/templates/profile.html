@@ -10,6 +10,18 @@
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script type="application/javascript">
+        window.onload = function(){
+            var treeNotice = $(".tree_notice").val();
+            if(treeNotice == -1){
+                layui.use('layer',function () {
+                    var layer = layui.layer;
+                    layer.open({
+                        content: '该第三方账号已经绑定了树洞社区其他账号'
+                    });
+                });
+            }
+        };
+
         layui.use('element',function () {
             var element = layui.element;
 
@@ -544,6 +556,7 @@
                         </li>
                     </ul>
                     <div style="color: #999;padding: 10px;display: none" class="bind-hint">移动端暂不支持绑定与解绑，请使用电脑进行此操作</div>
+                    <input type="text" class="tree_notice" th:value="${bindResult2}" hidden="hidden">
                 </div>
             </div>
         </div>

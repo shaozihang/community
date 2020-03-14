@@ -74,8 +74,11 @@ public class AuthorizeController {
                 UserDTO dto = new UserDTO();
                 dto.setOauthsId(oauthsUser.getId());
                 dto.setOauthsType(String.valueOf(0));
-                useroauthsService.oauthsBind(user.getId(),dto);
+                int result = useroauthsService.oauthsBind(user.getId(), dto);
                 request.getSession().removeAttribute("githubBind");
+                if(result == -1){
+                    model.addFlashAttribute("bindResult","-1");
+                }
                 return "redirect:/user/set/account#bind";
             }
             User user = useroauthsService.findByAccountId(oauthsUser.getId(),0);
@@ -125,8 +128,11 @@ public class AuthorizeController {
                 UserDTO dto = new UserDTO();
                 dto.setOauthsId(oauthsUser.getOpenid());
                 dto.setOauthsType(String.valueOf(1));
-                useroauthsService.oauthsBind(user.getId(),dto);
+                int result = useroauthsService.oauthsBind(user.getId(), dto);
                 request.getSession().removeAttribute("qqBind");
+                if(result == -1){
+                    model.addFlashAttribute("bindResult","-1");
+                }
                 return "redirect:/user/set/account#bind";
             }
             User user = useroauthsService.findByAccountId(oauthsUser.getOpenid(),1);
