@@ -57,7 +57,7 @@ public class LoginController {
         ResultDTO result = null;
         if(type == 1){
             result = userService.loginOrBind(userDTO,request);
-        }else if(type == 2 || type == 3){
+        }else if(type == 2 || type == 3){//type==3表示是修改密码验证手机号的
             HttpSession session = request.getSession();
             Object userCode = session.getAttribute("userCode"+type);
             Object userPhone = session.getAttribute("userPhone"+type);

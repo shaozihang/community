@@ -27,11 +27,13 @@
                 $(".login-ul span:last").removeClass("login-active");
                 $(".login-a").removeClass("layui-hide");
                 $(".login-b").addClass("layui-hide");
+                $("#loginType").val(1);
             }else if(value == 2){
                 $(".login-ul span:last").addClass("login-active");
                 $(".login-ul span:first").removeClass("login-active");
                 $(".login-b").removeClass("layui-hide");
                 $(".login-a").addClass("layui-hide");
+                $("#loginType").val(2);
             }
         }
 
@@ -137,14 +139,12 @@
         function check() {
             var check = false;
             var phone;
-            var type;
-            if(checkPhone('phoneA') && checkPassword()){
+            var type = $("#loginType").val();
+            if(checkPhone('phoneA') && checkPassword() && type == 1){
                 phone = $("#phoneA").val();
-                type = 1;
                 check = true;
-            }else if(checkPhone('phoneB') && checkCode()){
+            }else if(checkPhone('phoneB') && checkCode() && type == 2){
                 phone = $("#phoneB").val();
-                type = 2;
                 check = true;
             }
             var password = $("#password").val();
@@ -259,6 +259,7 @@
                     </div>
                     <input id="oauthsId" hidden="hidden" th:value="${oauthsId}">
                     <input id="oauthsType" hidden="hidden" th:value="${oauthsType}">
+                    <input id="loginType" value="1">
                 </form>
             </div>
         </div>
