@@ -26,16 +26,16 @@
             var element = layui.element;
 
             //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
-            var layid = location.hash.replace(/^#/, '');
-            element.tabChange('userInfo', layid);
-
-            var layid = location.hash.replace(/^#/, '');
-            element.tabChange('userBind', layid);
+            var layId = location.hash.replace(/^#/, '');
+            element.tabChange('userInfo', layId);
 
             //监听Tab切换，以改变地址hash值
             element.on('tab(userInfo)', function(){
                 location.hash = this.getAttribute('lay-id');
             });
+
+            var layId2 = location.hash.replace(/^#/, '');
+            element.tabChange('userBind', layId2);
 
             element.on('tab(userBind)', function(){
                 location.hash = this.getAttribute('lay-id');
