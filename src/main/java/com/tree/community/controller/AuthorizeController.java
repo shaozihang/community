@@ -77,7 +77,9 @@ public class AuthorizeController {
                 int result = useroauthsService.oauthsBind(user.getId(), dto);
                 request.getSession().removeAttribute("githubBind");
                 if(result == -1){
-                    model.addFlashAttribute("bindResult","-1");
+                    model.addFlashAttribute("bindResult","-10");
+                }else if(result == -2){
+                    model.addFlashAttribute("bindResult","-2");
                 }
                 return "redirect:/user/set/account#bind";
             }
@@ -131,7 +133,9 @@ public class AuthorizeController {
                 int result = useroauthsService.oauthsBind(user.getId(), dto);
                 request.getSession().removeAttribute("qqBind");
                 if(result == -1){
-                    model.addFlashAttribute("bindResult","-1");
+                    model.addFlashAttribute("bindResult","-11");
+                }else if(result == -2){
+                    model.addFlashAttribute("bindResult","-2");
                 }
                 return "redirect:/user/set/account#bind";
             }

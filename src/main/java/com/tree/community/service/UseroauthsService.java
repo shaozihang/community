@@ -62,13 +62,21 @@ public class UseroauthsService {
         useroauths.setUid(uid);
         useroauths.setAccountId(userDTO.getOauthsId());
         useroauths.setType(Integer.valueOf(userDTO.getOauthsType()));
+        UseroauthsExample example1 = new UseroauthsExample();
+        example1.createCriteria()
+                .andUidEqualTo(uid)
+                .andTypeEqualTo(Integer.valueOf(userDTO.getOauthsType()));
+        List<Useroauths> typeIsBound = useroauthsMapper.selectByExample(example1);
+        if(typeIsBound.size() != 0){
+            return -1;
+        }
         UseroauthsExample example = new UseroauthsExample();
         example.createCriteria()
                 .andAccountIdEqualTo(userDTO.getOauthsId())
                 .andTypeEqualTo(Integer.valueOf(userDTO.getOauthsType()));
         List<Useroauths> result = useroauthsMapper.selectByExample(example);
         if(result.size() !=0){
-            return -1;
+            return -2;
         }
         useroauthsMapper.insert(useroauths);
         return 1;

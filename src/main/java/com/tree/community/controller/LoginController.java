@@ -78,7 +78,17 @@ public class LoginController {
                     .andPhoneEqualTo(userDTO.getPhone());
             List<User> users = userMapper.selectByExample(userExample);
             if(StringUtils.isNotBlank(userDTO.getOauthsId())){
-                useroauthsService.oauthsBind(users.get(0).getId(),userDTO);
+                int typeIsBound = useroauthsService.oauthsBind(users.get(0).getId(), userDTO);
+                if(typeIsBound == -1){
+                    if(userDTO.getOauthsType().equals("0")){
+                        result = ResultDTO.errorOf(2020,"Github账号绑定失败！此账号已绑定过其他的Github账号");
+                    }else if(userDTO.getOauthsType().equals("1")){
+                        result = ResultDTO.errorOf(2021,"QQ账号绑定失败！此账号已绑定过其他的QQ账号");
+                    }
+                    session.removeAttribute("userCode"+type);
+                    session.removeAttribute("userPhone"+type);
+                    return result;
+                }
             }
             session.setAttribute("user",users.get(0));
             session.removeAttribute("userCode"+type);

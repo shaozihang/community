@@ -170,6 +170,14 @@
                         }else{
                             if(result.code == 2015){
                                 $("#password").next().html(result.message);
+                            }else if(result.code == 2018){
+                                $("#password").next().html(result.message);
+                            }else if(result.code == 2019){
+                                $("#password").next().html(result.message);
+                            }else if(result.code == 2020){
+                                $("#code").parent().next().html(result.message);
+                            }else if(result.code == 2021){
+                                $("#code").parent().next().html(result.message);
                             }else{
                                 $("#code").parent().next().html(result.message);
                             }

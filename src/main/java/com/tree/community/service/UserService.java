@@ -72,7 +72,14 @@ public class UserService {
             return ResultDTO.errorOf(2015,"账号或密码错误");
         }
         if(StringUtils.isNotBlank(userDTO.getOauthsId())){
-            useroauthsService.oauthsBind(users.get(0).getId(),userDTO);
+            int result = useroauthsService.oauthsBind(users.get(0).getId(), userDTO);
+            if(result == -1){
+                if(userDTO.getOauthsType().equals("0")){
+                    return ResultDTO.errorOf(2018,"Github账号绑定失败！此账号已绑定过其他的Github账号");
+                }else if(userDTO.getOauthsType().equals("1")){
+                    return ResultDTO.errorOf(2019,"QQ账号绑定失败！此账号已绑定过其他的QQ账号");
+                }
+            }
         }
         HttpSession session = request.getSession();
         session.setAttribute("user",users.get(0));

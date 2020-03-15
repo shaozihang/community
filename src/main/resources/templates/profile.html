@@ -12,14 +12,22 @@
     <script type="application/javascript">
         window.onload = function(){
             var treeNotice = $(".tree_notice").val();
-            if(treeNotice == -1){
-                layui.use('layer',function () {
-                    var layer = layui.layer;
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                if(treeNotice == -10){
+                    layer.open({
+                        content: 'Github账号绑定失败！此账号已绑定过其他的Github账号'
+                    });
+                }else if(treeNotice == -11){
+                    layer.open({
+                        content: 'QQ账号绑定失败！此账号已绑定过其他的QQ账号'
+                    });
+                }else if(treeNotice == -2){
                     layer.open({
                         content: '该第三方账号已经绑定了树洞社区其他账号'
                     });
-                });
-            }
+                }
+            });
         };
 
         layui.use('upload', function(){

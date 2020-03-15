@@ -81,8 +81,12 @@ public class UserController {
             model.addAttribute("github",map.get("github"));
             model.addAttribute("qq",map.get("qq"));
             int bindResult2 = 1;
-            if(bindResult.equals("-1")){
-                bindResult2 = -1;
+            if(bindResult.equals("-10")){
+                bindResult2 = -10;
+            }else if(bindResult.equals("-11")){
+                bindResult2 = -11;
+            }else if(bindResult.equals("-2")){
+                bindResult2 = -2;
             }
             model.addAttribute("bindResult2",bindResult2);
         }else {
