@@ -22,126 +22,6 @@
             }
         };
 
-        layui.use('element',function () {
-            var element = layui.element;
-
-            /*//获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
-            var layId = location.hash.replace(/^#/, '');
-            element.tabChange('userInfo', layId);
-
-            //监听Tab切换，以改变地址hash值
-            element.on('tab(userInfo)', function(){
-                location.hash = this.getAttribute('lay-id');
-            });
-
-            var layId2 = location.hash.replace(/^#/, '');
-            element.tabChange('userBind', layId2);
-
-            element.on('tab(userBind)', function(){
-                location.hash = this.getAttribute('lay-id');
-            });*/
-        });
-
-        layui.use(['form','layer'], function() {
-            var form = layui.form;
-            var layer = layui.layer;
-            form.on('select(province)', function(data){
-                if(data.value == ""){
-                    var cityId = $("#city").empty();
-                    cityId.append("<option value=\"\">请选择城市</option>");
-                    var areaId = $("#area").empty();
-                    areaId.append("<option value=\"\">请选择地区</option>");
-                    form.render('select');
-                    return "";
-                }
-                var provinceCode = data.value;
-                $.ajax({
-                    type:"get",
-                    url:"/getCity",
-                    contentType:"application/json",
-                    data: {"provinceCode":provinceCode},
-                    success:function (result) {
-                        if(result.code == 200){
-                            var cityId = $("#city").empty();
-                            cityId.append("<option value=\"\">请选择城市</option>");
-                            $.each(result.data,function (index, city) {
-                                cityId.append($("<option/>", {
-                                    value: city.cityCode,
-                                    html:city.name
-                                }));
-                                if(index == 0){
-                                    $('#city option:eq(1)').attr('selected','selected');
-                                    $.ajax({
-                                        type:"get",
-                                        url:"/getArea",
-                                        contentType:"application/json",
-                                        data: {"cityCode":city.cityCode},
-                                        success:function (result) {
-                                            if(result.code == 200){
-                                                var areaId = $("#area").empty();
-                                                areaId.append("<option value=\"\">请选择地区</option>");
-                                                $.each(result.data,function (index, area) {
-                                                    areaId.append($("<option/>", {
-                                                        value: area.areaCode,
-                                                        html:area.name
-                                                    }));
-                                                    if(index == 0){
-                                                        $('#area option:eq(1)').attr('selected','selected');
-                                                    }
-                                                });
-                                                form.render('select');
-                                            }else{
-                                                layer.msg("获取数据失败,请重试");
-                                            }
-                                        },
-                                        dataType:"json"
-                                    });
-                                }
-                            });
-                            form.render('select');
-                        }else{
-                            layer.msg("获取数据失败,请重试");
-                        }
-                    },
-                    dataType:"json"
-                });
-            });
-
-            form.on('select(city)', function(data){
-                if(data.value == ""){
-                    var areaId = $("#area").empty();
-                    areaId.append("<option value=\"\">请选择地区</option>");
-                    form.render('select');
-                    return "";
-                }
-                $.ajax({
-                    type:"get",
-                    url:"/getArea",
-                    contentType:"application/json",
-                    data: {"cityCode":data.value},
-                    success:function (result) {
-                        if(result.code == 200){
-                            var areaId = $("#area").empty();
-                            areaId.append("<option value=\"\">请选择地区</option>");
-                            $.each(result.data,function (index, area) {
-                                areaId.append($("<option/>", {
-                                    value: area.areaCode,
-                                    html:area.name
-                                }));
-                                if(index == 0){
-                                    $('#area option:eq(1)').attr('selected','selected');
-                                }
-                            });
-                            form.render('select');
-                        }else{
-                            layer.msg("获取数据失败,请重试");
-                        }
-                    },
-                    dataType:"json"
-                });
-            });
-            form.render();
-        });
 
         layui.use('upload', function(){
             var upload = layui.upload;
@@ -564,5 +444,126 @@
     </div>
 </div>
 <div th:replace="footer :: foot"></div>
+<script type="application/javascript">
+    layui.use('element',function () {
+        var element = layui.element;
+
+        /*//获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+        var layId = location.hash.replace(/^#/, '');
+        element.tabChange('userInfo', layId);
+
+        //监听Tab切换，以改变地址hash值
+        element.on('tab(userInfo)', function(){
+            location.hash = this.getAttribute('lay-id');
+        });
+
+        var layId2 = location.hash.replace(/^#/, '');
+        element.tabChange('userBind', layId2);
+
+        element.on('tab(userBind)', function(){
+            location.hash = this.getAttribute('lay-id');
+        });*/
+    });
+
+    layui.use(['form','layer'], function() {
+        var form = layui.form;
+        var layer = layui.layer;
+        form.on('select(province)', function(data){
+            if(data.value == ""){
+                var cityId = $("#city").empty();
+                cityId.append("<option value=\"\">请选择城市</option>");
+                var areaId = $("#area").empty();
+                areaId.append("<option value=\"\">请选择地区</option>");
+                form.render('select');
+                return "";
+            }
+            var provinceCode = data.value;
+            $.ajax({
+                type:"get",
+                url:"/getCity",
+                contentType:"application/json",
+                data: {"provinceCode":provinceCode},
+                success:function (result) {
+                    if(result.code == 200){
+                        var cityId = $("#city").empty();
+                        cityId.append("<option value=\"\">请选择城市</option>");
+                        $.each(result.data,function (index, city) {
+                            cityId.append($("<option/>", {
+                                value: city.cityCode,
+                                html:city.name
+                            }));
+                            if(index == 0){
+                                $('#city option:eq(1)').attr('selected','selected');
+                                $.ajax({
+                                    type:"get",
+                                    url:"/getArea",
+                                    contentType:"application/json",
+                                    data: {"cityCode":city.cityCode},
+                                    success:function (result) {
+                                        if(result.code == 200){
+                                            var areaId = $("#area").empty();
+                                            areaId.append("<option value=\"\">请选择地区</option>");
+                                            $.each(result.data,function (index, area) {
+                                                areaId.append($("<option/>", {
+                                                    value: area.areaCode,
+                                                    html:area.name
+                                                }));
+                                                if(index == 0){
+                                                    $('#area option:eq(1)').attr('selected','selected');
+                                                }
+                                            });
+                                            form.render('select');
+                                        }else{
+                                            layer.msg("获取数据失败,请重试");
+                                        }
+                                    },
+                                    dataType:"json"
+                                });
+                            }
+                        });
+                        form.render('select');
+                    }else{
+                        layer.msg("获取数据失败,请重试");
+                    }
+                },
+                dataType:"json"
+            });
+        });
+
+        form.on('select(city)', function(data){
+            if(data.value == ""){
+                var areaId = $("#area").empty();
+                areaId.append("<option value=\"\">请选择地区</option>");
+                form.render('select');
+                return "";
+            }
+            $.ajax({
+                type:"get",
+                url:"/getArea",
+                contentType:"application/json",
+                data: {"cityCode":data.value},
+                success:function (result) {
+                    if(result.code == 200){
+                        var areaId = $("#area").empty();
+                        areaId.append("<option value=\"\">请选择地区</option>");
+                        $.each(result.data,function (index, area) {
+                            areaId.append($("<option/>", {
+                                value: area.areaCode,
+                                html:area.name
+                            }));
+                            if(index == 0){
+                                $('#area option:eq(1)').attr('selected','selected');
+                            }
+                        });
+                        form.render('select');
+                    }else{
+                        layer.msg("获取数据失败,请重试");
+                    }
+                },
+                dataType:"json"
+            });
+        });
+    });
+</script>
 </body>
 </html>
