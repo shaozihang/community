@@ -25,7 +25,7 @@
         layui.use('element',function () {
             var element = layui.element;
 
-           /* //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+            //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
             var layId = location.hash.replace(/^#/, '');
             element.tabChange('userInfo', layId);
 
@@ -39,10 +39,10 @@
 
             element.on('tab(userBind)', function(){
                 location.hash = this.getAttribute('lay-id');
-            });*/
+            });
         });
 
-        layui.use(['form','layer'], function() {
+       /* layui.use(['form','layer'], function() {
             var form = layui.form;
             var layer = layui.layer;
             form.on('select(province)', function(data){
@@ -140,7 +140,7 @@
                     dataType:"json"
                 });
             });
-        });
+        });*/
 
         layui.use('upload', function(){
             var upload = layui.upload;
@@ -431,13 +431,13 @@
                             <div class="layui-input-inline">
                                 <input type="text" id="nickName" name="nickName" autocomplete="off" class="layui-input" th:value="${session.user.nickName}">
                             </div>
-                            <div class="layui-input-inline" style="width: 250px">
+                            <!--<div class="layui-input-inline" style="width: 250px">
                                 <input type="radio" name="sex" value="0" title="保密" th:attr="checked=${session.user.sex == 0?true:false}">
                                 <input type="radio" name="sex" value="1" title="男" th:attr="checked=${session.user.sex == 1?true:false}">
                                 <input type="radio" name="sex" value="2" title="女" th:attr="checked=${session.user.sex == 2?true:false}">
-                            </div>
+                            </div>-->
                         </div>
-                        <div class="layui-form-item">
+                        <!--<div class="layui-form-item">
                             <input type="hidden" name="address" id="address" value="">
                             <label for="location" class="layui-form-label">位置</label>
                                 <div class="layui-input-block" id="location" name="location">
@@ -463,7 +463,7 @@
                                         </select>
                                     </div>
                                 </div>
-                        </div>
+                        </div>-->
                         <div class="layui-form-item layui-form-text">
                             <label class="layui-form-label">个性签名</label>
                             <div class="layui-input-block">
