@@ -22,7 +22,6 @@
             }
         };
 
-
         layui.use('upload', function(){
             var upload = layui.upload;
 
@@ -448,7 +447,7 @@
     layui.use('element',function () {
         var element = layui.element;
 
-        /*//获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
+        //获取hash来切换选项卡，假设当前地址的hash为lay-id对应的值
         var layId = location.hash.replace(/^#/, '');
         element.tabChange('userInfo', layId);
 
@@ -462,7 +461,7 @@
 
         element.on('tab(userBind)', function(){
             location.hash = this.getAttribute('lay-id');
-        });*/
+        });
     });
 
     layui.use(['form','layer'], function() {
