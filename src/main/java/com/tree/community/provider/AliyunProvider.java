@@ -100,14 +100,14 @@ public class AliyunProvider {
                     ossClient.putObject(bucketName, filePath, new ByteArrayInputStream(file.getBytes()));
                     User user1 = userMapper.selectByPrimaryKey(user.getId());
                     if(!user1.getAvatarUrl().equals("/images/default-avatar.png")){
-                            String avatarUrl = StringUtils.substringAfterLast(user1.getAvatarUrl(), "com/");
+                            String avatarUrl = StringUtils.substringAfterLast(user1.getAvatarUrl(), "com:8090/");
                             ossClient.deleteObject(bucketName, avatarUrl);
                     }
             } catch (Exception e) {
                     e.printStackTrace();
                     return "error";
             }
-            user.setAvatarUrl( urlPrefix + filePath);
+            user.setAvatarUrl( "http://www.treedong.com:8090/" + filePath);
             UserExample example = new UserExample();
             example.createCriteria()
                     .andIdEqualTo(user.getId());
