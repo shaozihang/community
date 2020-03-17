@@ -30,18 +30,37 @@
             });
         };
 
-        layui.use('upload', function(){
+        layui.use(['upload','layer'], function(){
             var upload = layui.upload;
+            var layer = layui.layer;
 
             //执行实例
             var uploadInst = upload.render({
-                elem: '#updateAvatar' //绑定元素
-                ,url: '/upload/' //上传接口
-                ,done: function(res){
+                elem: '#updateAvatar', //绑定元素
+                url: '/file/uploadAvatar/',
+                accept: 'images',
+                acceptMime: 'image/*',//上传接口
+                exts: 'jpg|png|gif',
+                size:1024,
+                /*before: function(obj){
+                    //预读本地文件示例，不支持ie8
+                    obj.preview(function(index, file, result){
+                        $('#avatarImg').attr('src', result); //图片链接（base64）
+                    });
+                },*/
+                before: function(obj){
+                    $(".avatar-add span").css("display","inline");
+                },
+                done: function(res){
                     //上传完毕回调
-                }
-                ,error: function(){
-                    //请求异常回调
+                    if(res.code == 0){
+                        return layer.msg('头像上传失败');
+                    }
+                    //上传成功
+                    if(res.code == 200){
+                        return window.location.reload();
+                    }
+
                 }
             });
         });
@@ -367,12 +386,12 @@
                 <div class="layui-tab-item">用户组</div>
                 <div class="layui-tab-item">
                     <div class="avatar-add">
-                        <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过1000KB</p>
+                        <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过1024KB</p>
                         <button type="button" class="layui-btn upload-img" id="updateAvatar">
                             <i class="layui-icon layui-icon-upload"></i>上传头像
                         </button>
                         <input class="layui-upload-file" type="file" accept="" name="file">
-                            <img th:src="${session.user.avatarUrl}">
+                            <img id="avatarImg" th:src="${session.user.avatarUrl}">
                         <span class="loading"></span>
                     </div>
                 </div>
