@@ -4,6 +4,7 @@ import com.tree.community.dto.FileDTO;
 import com.tree.community.model.User;
 import com.tree.community.provider.AliyunProvider;
 import com.tree.community.provider.UCloudProvider;
+import com.tree.community.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,9 @@ public class FileController {
 
     @Autowired
     private AliyunProvider aliyunProvider;
+
+    @Autowired
+    private UserService userService;
 
     @ResponseBody
     @RequestMapping("/file/upload")
@@ -58,10 +62,11 @@ public class FileController {
         Map map = new HashMap();
         try {
             if(file == null){
-                map.put("code",0);
+                map.put("code",-1);
             }else {
                 String result = aliyunProvider.uploadAvatar(file, user);
                 if(result.equals("success")){
+                    userService.flushUser(user.getId(),request);
                     map.put("code",200);
                 }else {
                     map.put("code",0);

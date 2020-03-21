@@ -5,10 +5,12 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
+    <link rel="stylesheet" th:href="@{/cropper/cropper.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
     <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_4wxsaib01vx.css">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
+    <script th:src="@{/cropper/cropper.js}"></script>
     <script type="application/javascript">
         window.onload = function(){
             var treeNotice = $(".tree_notice").val();
@@ -30,39 +32,31 @@
             });
         };
 
-        layui.use(['upload','layer'], function(){
-            var upload = layui.upload;
-            var layer = layui.layer;
+        layui.config({
+            base: '/cropper/' //layui自定义layui组件目录
+        }).use('croppers', function () {
+                var croppers = layui.croppers;
+                var layer= layui.layer;
 
-            //执行实例
-            var uploadInst = upload.render({
-                elem: '#updateAvatar', //绑定元素
-                url: '/file/uploadAvatar/',
-                accept: 'images',
-                acceptMime: 'image/*',//上传接口
-                exts: 'jpg|png|gif',
-                size:1024,
-                /*before: function(obj){
-                    //预读本地文件示例，不支持ie8
-                    obj.preview(function(index, file, result){
-                        $('#avatarImg').attr('src', result); //图片链接（base64）
-                    });
-                },*/
-                before: function(obj){
-                    $(".avatar-add span").css("display","inline");
-                },
-                done: function(res){
-                    //上传完毕回调
-                    if(res.code == 0){
-                        return layer.msg('头像上传失败');
+            //创建一个头像上传组件
+            croppers.render({
+                elem: '#updateAvatar'
+                ,saveW:400     //保存宽度
+                ,saveH:400
+                ,mark:1/1    //选取比例
+                ,area: ['500px','auto'] //弹窗宽度
+                ,url: "/file/uploadAvatar/"  //图片上传接口返回和（layui 的upload 模块）返回的JOSN一样
+                ,done: function(result){ //上传完毕回调
+                    if(result == 200){
+                        window.location.reload();
+                    }else if(result == 0){
+                        layer.msg("图片上传失败，请重试",{icon: 2});
+                    }else if(result == -1){
+                        layer.msg("请选择一张图片上传",{icon: 2});
                     }
-                    //上传成功
-                    if(res.code == 200){
-                        return window.location.reload();
-                    }
-
                 }
             });
+
         });
 
         function navShow() {
@@ -395,6 +389,21 @@
                         <span class="loading"></span>
                     </div>
                 </div>
+                <!--<div class="layui-form-item">
+                    <label class="layui-form-label">头像</label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="head" lay-verify="required" id="inputimgurl" placeholder="图片地址" value="123.jpg" class="layui-input">
+                    </div>
+                    <div class="layui-input-inline">
+                        <div class="layui-upload-list" style="margin:0">
+                            <img src="123.jpg" id="srcimgurl" class="layui-upload-img">
+                        </div>
+                    </div>
+                    <div class="layui-input-inline layui-btn-container" style="width: auto;">
+                        <button class="layui-btn layui-btn-primary" id="editimg">修改图片</button >
+                    </div>
+                    <div class="layui-form-mid layui-word-aux">头像的尺寸限定150x150px,大小在50kb以内</div>
+                </div>-->
                 <div class="layui-form layui-form-pane layui-tab-item updatePwdWay">
                         <div class="layui-form-item">
                             <label for="curPwd" class="layui-form-label">当前密码</label>

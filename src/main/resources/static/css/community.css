@@ -1473,6 +1473,10 @@ i {
     font-size: 26px;
 }
 
+.cropper-bg{
+    margin: 0 auto;
+}
+
 @media screen and (max-width: 991px) {
     #location .layui-input-inline {
         margin-bottom: 10px;
@@ -1492,5 +1496,11 @@ i {
     }
     .bind-hint{
         display: block!important;
+    }
+}
+
+@media screen and (max-width: 550px) {
+    .openAvatar {
+        width: 90%!important;
     }
 }

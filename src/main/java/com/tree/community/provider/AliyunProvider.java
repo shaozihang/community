@@ -107,7 +107,7 @@ public class AliyunProvider {
                     e.printStackTrace();
                     return "error";
             }
-            user.setAvatarUrl( "http://www.treedong.com:8090/" + filePath);
+            user.setAvatarUrl( urlPrefix + filePath);
             UserExample example = new UserExample();
             example.createCriteria()
                     .andIdEqualTo(user.getId());
