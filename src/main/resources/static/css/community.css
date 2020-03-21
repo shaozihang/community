@@ -885,6 +885,17 @@ i {
     text-align: center;
 }
 
+.title-line .other-login-words{
+    height: 56px;
+    line-height: 56px;
+    margin: 0 auto;
+    padding: 0 15px;
+    font-size: 15px;
+    background: #fff;
+    text-align: center;
+    color: #777777;
+}
+
 .register-container{
     padding: 30px 300px;
 }
@@ -1071,11 +1082,14 @@ i {
     font-size: 12px;
 }
 
-.other-way-login a{
-    cursor: pointer;
-    margin-right: 5px;
+.other-login-content{
+    text-align: center;
 }
 
+.other-login-content a{
+    padding: 0 10px;
+    cursor: pointer;
+}
 
 .other-way-login img{
     width: 23px;

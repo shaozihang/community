@@ -251,11 +251,15 @@
                         <a th:href="@{/register}" class="btn-register el-button">注册</a>
                     </div>
                     <div class="form-group other-way-login">
-                        <span>其他方式登录：</span>
-                        <a class="github-login" title="GitHub授权登录"
-                           th:href="@{https://github.com/login/oauth/authorize(client_id='a7984ce94e8e4c8c796d',redirect_uri=${#httpServletRequest.getRequestURL()+'Callback'},scope='user',state=1)}"><img src="/images/github.png"></a>
-                        <a class="qq-login" title="qq授权登录" onclick="qqlogin()"><img src="/images/QQ.png"></a>
-                        <a class="weixin-login" title="微信授权登录"><img src="/images/weixin.png"></a>
+                        <!--<span>其他方式登录：</span>-->
+                        <div class="title-line"><span class="other-login-words">更多登录方式</span></div>
+                        <div class="other-login-content">
+                            <a class="github-login" title="GitHub授权登录"
+                               th:href="@{https://github.com/login/oauth/authorize(client_id='a7984ce94e8e4c8c796d',redirect_uri=${#httpServletRequest.getRequestURL()+'Callback'},scope='user',state=1)}"><img src="/images/github.png"></a>
+                            <a class="qq-login" title="qq授权登录" onclick="qqlogin()"><img src="/images/QQ.png"></a>
+                            <a class="weixin-login" title="微博授权登录"><img src="/images/weibo.png"></a>
+                            <a class="weixin-login" title="百度授权登录"><img src="/images/baidu1.png"></a>
+                        </div>
                     </div>
                     <input id="oauthsId" hidden="hidden" th:value="${oauthsId}">
                     <input id="oauthsType" hidden="hidden" th:value="${oauthsType}">
