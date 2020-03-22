@@ -73,6 +73,11 @@ public class LoginController {
             if(type == 3 || type == 4){
                 session.removeAttribute("userCode"+type);
                 session.removeAttribute("userPhone"+type);
+                if(type == 3){
+                    session.setAttribute("updatePwdPhone",userDTO.getPhone());
+                }else if(type == 4){
+                    session.setAttribute("updatePhonePhone",userDTO.getPhone());
+                }
                 return ResultDTO.okOf();
             }
             UserExample userExample = new UserExample();
@@ -118,10 +123,15 @@ public class LoginController {
     @ResponseBody
     public Object modifyPwd(HttpServletRequest request,
                             @RequestBody Map<String,String> map){
+        String updatePwdPhone = (String) request.getSession().getAttribute("updatePwdPhone");
+        if(updatePwdPhone == null){
+            return ResultDTO.errorOf(2022,"请重新验证手机号");
+        }
         userService.modifyPwd(map);
         HttpSession session = request.getSession();
         session.removeAttribute("userCode3");
         session.removeAttribute("userPhone3");
+        session.removeAttribute("updatePwdPhone");
         return ResultDTO.okOf();
     }
 

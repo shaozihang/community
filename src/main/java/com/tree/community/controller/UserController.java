@@ -173,6 +173,10 @@ public class UserController {
     @ResponseBody
     @RequestMapping(value = "/updatePhone/{type}",method = RequestMethod.POST)
     public Object updatePhone(@RequestBody UserDTO userDTO,@PathVariable(name = "type")Integer type, HttpServletRequest request){
+        String updatePhonePhone = (String) request.getSession().getAttribute("updatePhonePhone");
+        if(updatePhonePhone == null){
+            return ResultDTO.errorOf(2022,"请重新验证手机号");
+        }
         User user = (User) request.getSession().getAttribute("user");
         HttpSession session = request.getSession();
         Object userCode = session.getAttribute("userCode"+type);

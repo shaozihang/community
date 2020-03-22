@@ -347,7 +347,18 @@
                                     }
                                 });
                             }else{
-                                layer.msg(result.message);
+                                if(result.code== 2022){
+                                    layer.open({
+                                        content: '请重新验证手机号',
+                                        yes: function(index, layero){
+                                            window.location.reload();
+                                        },cancel: function(index, layero){
+                                            window.location.reload();
+                                        }
+                                    });
+                                }else{
+                                    layer.msg(result.message);
+                                }
                             }
                         },
                         dataType:"json"
