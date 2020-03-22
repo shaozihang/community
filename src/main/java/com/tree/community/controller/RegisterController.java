@@ -77,7 +77,7 @@ public class RegisterController {
         userExample.createCriteria()
                 .andPhoneEqualTo(phone);
         List<User> users = userMapper.selectByExample(userExample);
-        if(type == 1){
+        if(type == 1 || type == 5){
             if(users.size() != 0){
                 return ResultDTO.errorOf(2008,"手机号已存在");
             }
@@ -86,6 +86,10 @@ public class RegisterController {
             if(users.size() == 0){
                 return ResultDTO.errorOf(2014,"该手机号未注册");
             }
+        }
+        if(type == 4){
+            User user = (User) request.getSession().getAttribute("user");
+            phone = user.getPhone();
         }
         String code = aliyunProvider.SendSms(phone,type,request);
         if(!code.equals("OK")){

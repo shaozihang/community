@@ -2,9 +2,7 @@ package com.tree.community.controller;
 
 import com.tree.community.dto.PaginationDTO;
 import com.tree.community.dto.ResultDTO;
-import com.tree.community.mapper.CityMapper;
-import com.tree.community.mapper.ProvinceMapper;
-import com.tree.community.mapper.UserMapper;
+import com.tree.community.dto.UserDTO;
 import com.tree.community.model.Area;
 import com.tree.community.model.City;
 import com.tree.community.model.Province;
@@ -14,13 +12,13 @@ import com.tree.community.service.QuestionService;
 import com.tree.community.service.UserService;
 import com.tree.community.service.UseroauthsService;
 import com.tree.community.util.MD5Utils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 
@@ -169,6 +167,29 @@ public class UserController {
         map.put("modifyPhone",user.getPhone());
         userService.modifyPwd(map);
         userService.flushUser(user.getId(),request);
+        return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/updatePhone/{type}",method = RequestMethod.POST)
+    public Object updatePhone(@RequestBody UserDTO userDTO,@PathVariable(name = "type")Integer type, HttpServletRequest request){
+        User user = (User) request.getSession().getAttribute("user");
+        HttpSession session = request.getSession();
+        Object userCode = session.getAttribute("userCode"+type);
+        Object userPhone = session.getAttribute("userPhone"+type);
+        if(userCode == null){
+            return ResultDTO.errorOf(2011,"验证码已过期，请重新发送");
+        }
+        if(!userDTO.getCode().equals(String.valueOf(userCode))){
+            return ResultDTO.errorOf(2012,"验证码错误");
+        }
+        if(!userDTO.getPhone().equals(String.valueOf(userPhone))){
+            return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
+        }
+        userService.updatePhone(userDTO.getPhone(),user);
+        userService.flushUser(user.getId(),request);
+        session.removeAttribute("userCode"+type);
+        session.removeAttribute("userPhone"+type);
         return ResultDTO.okOf();
     }
 }

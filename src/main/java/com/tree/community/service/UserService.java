@@ -151,4 +151,12 @@ public class UserService {
         request.getSession().setAttribute("user",user);
     }
 
+    public void updatePhone(String phone, User user) {
+        User user1 = new User();
+        user1.setPhone(phone);
+        UserExample example = new UserExample();
+        example.createCriteria()
+                .andIdEqualTo(user.getId());
+        userMapper.updateByExampleSelective(user1, example);
+    }
 }

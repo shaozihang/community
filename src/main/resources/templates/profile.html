@@ -225,6 +225,136 @@
                 dataType:"json"
             });
         }
+
+        var countdown=60;
+        function getCode(value) {
+            var obj = $("#el-code-button");
+            var span = obj.children();
+            var phone = $("#phone").val();
+            var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!phone){
+                    layer.msg("请输入手机号");
+                }else if(regExp.test(phone) == false){
+                    layer.msg("请输入正确的手机号");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/getCode/"+value,
+                        contentType:"application/json",
+                        data: phone,
+                        success:function (result) {
+                            if(result.code == 200){
+                                settime(obj,span);
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        var t;
+        function settime(obj,span) { //发送验证码倒计时
+            if (countdown == 0) {
+                obj.attr('disabled',false);
+                span.html("获取验证码");
+                countdown = 60;
+                return;
+            } else {
+                obj.attr('disabled',true);
+                span.html("" + countdown + "s后重新获取");
+                countdown--;
+            }
+            t=setTimeout(function(){
+                settime(obj,span);
+            },1000)
+        }
+
+        function verifyPhone() {
+            var phone = $("#phone").val();
+            var code = $("#code").val();
+            var type = 4;
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!code){
+                    layer.msg("请输入验证码");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/loginUser/"+type,
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "phone":phone,
+                            "code":code
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                $(".updatePhoneBtn").attr("onclick","updatePhone()");
+                                $("#el-code-button").attr('onclick', 'getCode(5)');
+                                $("#el-code-button").attr('disabled',false);
+                                $(".phone-label").html("新手机号");
+                                $("#phone").attr("placeholder","请输入新的手机号");
+                                $("#phone").removeAttr("disabled");
+                                $("#phone").attr("value","");
+                                $("#code").val("");
+                                clearTimeout(t);
+                                countdown = 60;
+                                $("#el-code-button span").html("获取验证码");
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function updatePhone() {
+            var phone = $("#phone").val();
+            var code = $("#code").val();
+            var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
+            var type = 5;
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!phone){
+                    layer.msg("请输入手机号");
+                }else if(regExp.test(phone) == false){
+                    layer.msg("请输入正确的手机号");
+                }else if(!code){
+                    layer.msg("请输入验证码");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/updatePhone/"+type,
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "phone":phone,
+                            "code":code
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                layer.open({
+                                    content: '修改手机号成功！！！',
+                                    yes: function(index, layero){
+                                        window.location.reload();
+                                    },cancel: function(index, layero){
+                                        window.location.reload();
+                                    }
+                                });
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -389,21 +519,6 @@
                         <span class="loading"></span>
                     </div>
                 </div>
-                <!--<div class="layui-form-item">
-                    <label class="layui-form-label">头像</label>
-                    <div class="layui-input-inline">
-                        <input type="text" name="head" lay-verify="required" id="inputimgurl" placeholder="图片地址" value="123.jpg" class="layui-input">
-                    </div>
-                    <div class="layui-input-inline">
-                        <div class="layui-upload-list" style="margin:0">
-                            <img src="123.jpg" id="srcimgurl" class="layui-upload-img">
-                        </div>
-                    </div>
-                    <div class="layui-input-inline layui-btn-container" style="width: auto;">
-                        <button class="layui-btn layui-btn-primary" id="editimg">修改图片</button >
-                    </div>
-                    <div class="layui-form-mid layui-word-aux">头像的尺寸限定150x150px,大小在50kb以内</div>
-                </div>-->
                 <div class="layui-form layui-form-pane layui-tab-item updatePwdWay">
                         <div class="layui-form-item">
                             <label for="curPwd" class="layui-form-label">当前密码</label>
@@ -442,7 +557,24 @@
                 <li lay-id="bind">第三方账号</li>
             </ul>
             <div class="layui-tab-content">
-                <div class="layui-tab-item layui-show">我的手机</div>
+                <div class="layui-form layui-form-pane layui-tab-item layui-show">
+                    <div class="layui-form-item">
+                        <label for="phone" class="layui-form-label phone-label">手机号</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="phone" placeholder=""  autocomplete="off" class="layui-input" th:value="${session.user.phone}" disabled>
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <label for="code" class="layui-form-label">验证码</label>
+                        <div class="layui-input-inline">
+                            <input type="text" id="code" placeholder="请输入验证码"  autocomplete="off" class="layui-input">
+                        </div>
+                        <button class="layui-btn" id="el-code-button" onclick="getCode(4)"><span>获取验证码</span></button>
+                    </div>
+                    <div class="layui-form-item">
+                        <button class="layui-btn updatePhoneBtn" onclick="verifyPhone()">提交</button>
+                    </div>
+                </div>
                 <div class="layui-tab-item">我的邮箱</div>
                 <div class="layui-tab-item">
                     <ul class="app-bind">
