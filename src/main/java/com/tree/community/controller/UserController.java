@@ -7,6 +7,7 @@ import com.tree.community.model.Area;
 import com.tree.community.model.City;
 import com.tree.community.model.Province;
 import com.tree.community.model.User;
+import com.tree.community.provider.EmailProvider;
 import com.tree.community.service.FollowAndFansService;
 import com.tree.community.service.QuestionService;
 import com.tree.community.service.UserService;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,9 @@ public class UserController {
 
     @Autowired
     private UseroauthsService useroauthsService;
+
+    @Autowired
+    private EmailProvider emailProvider;
 
     @GetMapping(value = "/user/{id}")
     public String user(@PathVariable(name = "id")Long id, Model model,
@@ -194,6 +199,57 @@ public class UserController {
         userService.flushUser(user.getId(),request);
         session.removeAttribute("userCode"+type);
         session.removeAttribute("userPhone"+type);
+        session.removeAttribute("updatePhonePhone");
+        return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getEmailCode",method = RequestMethod.POST)
+    public Object getEmailCode(@RequestBody Map<String,String> map, HttpServletRequest request) {
+        List<User> result = userService.checkEmail(map.get("email"));
+        if(result.size() !=0){
+            return ResultDTO.errorOf(2022,"该邮箱已存在，请换一个");
+        }
+        try {
+            emailProvider.sendEmail(map.get("email"),request);
+            return ResultDTO.okOf();
+        }catch (Exception e){
+            e.printStackTrace();
+            return ResultDTO.errorOf(2023,"邮件发送失败！请重试");
+        }
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/bindEmail",method = RequestMethod.POST)
+    public Object bindEmail(@RequestBody Map<String,String> map, HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        Object bindEmailPhone = session.getAttribute("bindEmailPhone");
+        if(bindEmailPhone == null){
+            return ResultDTO.errorOf(2024,"请重新验证手机号！");
+        }
+        Object sendEmailTime = session.getAttribute("sendEmailTime");
+        if(sendEmailTime == null){
+            return ResultDTO.errorOf(2025,"请发送验证码！");
+        }
+        Object sendEmail = session.getAttribute("sendEmail");
+        Object sendEmailCode = session.getAttribute("sendEmailCode");
+        Date date = new Date();
+        if(date.getTime() - Long.valueOf(String.valueOf(sendEmailTime)) > 1000*60*5){
+            session.removeAttribute("sendEmailTime");
+            return ResultDTO.errorOf(2026,"验证码已过期！");
+        }else if(!map.get("emailCode").equals(String.valueOf(sendEmailCode))){
+            return ResultDTO.errorOf(2027,"验证码错误！");
+        }else if(!map.get("email").equals(String.valueOf(sendEmail))){
+            return ResultDTO.errorOf(2028,"邮箱与验证码不匹配");
+        }else{
+            User user = (User) session.getAttribute("user");
+            userService.bindEmail(map.get("email"),user.getId());
+            userService.flushUser(user.getId(),request);
+        }
+        session.removeAttribute("sendEmailTime");
+        session.removeAttribute("sendEmail");
+        session.removeAttribute("sendEmailCode");
+        session.removeAttribute("bindEmailPhone");
         return ResultDTO.okOf();
     }
 }

@@ -87,7 +87,7 @@ public class RegisterController {
                 return ResultDTO.errorOf(2014,"该手机号未注册");
             }
         }
-        if(type == 4){
+        if(type == 4 || type == 6){
             User user = (User) request.getSession().getAttribute("user");
             phone = user.getPhone();
         }

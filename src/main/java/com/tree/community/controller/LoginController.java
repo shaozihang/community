@@ -57,7 +57,7 @@ public class LoginController {
         ResultDTO result = null;
         if(type == 1){
             result = userService.loginOrBind(userDTO,request);
-        }else if(type == 2 || type == 3 || type == 4){//type==3表示是修改密码验证手机号的,4是修改手机号的
+        }else if(type == 2 || type == 4 || type == 6){//4是修改手机号的,6是换绑邮箱的
             HttpSession session = request.getSession();
             Object userCode = session.getAttribute("userCode"+type);
             Object userPhone = session.getAttribute("userPhone"+type);
@@ -70,13 +70,13 @@ public class LoginController {
             if(!userDTO.getPhone().equals(String.valueOf(userPhone))){
                 return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
             }
-            if(type == 3 || type == 4){
+            if(type == 4 || type == 6){
                 session.removeAttribute("userCode"+type);
                 session.removeAttribute("userPhone"+type);
-                if(type == 3){
-                    session.setAttribute("updatePwdPhone",userDTO.getPhone());
-                }else if(type == 4){
+                if(type == 4){
                     session.setAttribute("updatePhonePhone",userDTO.getPhone());
+                }else if(type == 6){
+                    session.setAttribute("bindEmailPhone",userDTO.getPhone());
                 }
                 return ResultDTO.okOf();
             }
@@ -119,25 +119,51 @@ public class LoginController {
         return result;
     }
 
+    @RequestMapping(value = "/checkAccount",method = RequestMethod.POST)
+    @ResponseBody
+    public Object checkAccount(HttpServletRequest request,
+                            @RequestBody Map<String,String> map){
+        String account = map.get("account");
+        List<User> users = userService.checkAccount(account);
+        if(users.size() == 0){
+            return ResultDTO.errorOf(2023,"用户不存在");
+        }
+        return ResultDTO.okOf();
+    }
+
     @RequestMapping(value = "/modifyPwd",method = RequestMethod.POST)
     @ResponseBody
     public Object modifyPwd(HttpServletRequest request,
                             @RequestBody Map<String,String> map){
-        String updatePwdPhone = (String) request.getSession().getAttribute("updatePwdPhone");
-        if(updatePwdPhone == null){
-            return ResultDTO.errorOf(2022,"请重新验证手机号");
+        HttpSession session = request.getSession();
+        Object userCode = session.getAttribute("userCode3");
+        Object userPhone = session.getAttribute("userPhone3");
+        if(userCode == null){
+            return ResultDTO.errorOf(2011,"验证码已过期，请重新发送");
+        }
+        if(!map.get("code").equals(String.valueOf(userCode))){
+            return ResultDTO.errorOf(2012,"验证码错误");
+        }
+        if(!map.get("modifyAccount").equals(String.valueOf(userPhone))){
+            return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
         }
         userService.modifyPwd(map);
-        HttpSession session = request.getSession();
         session.removeAttribute("userCode3");
         session.removeAttribute("userPhone3");
-        session.removeAttribute("updatePwdPhone");
         return ResultDTO.okOf();
     }
 
     @GetMapping("/logout")
     public String logout(HttpServletRequest request,HttpServletResponse response){
         request.getSession().removeAttribute("user");
+        String updatePhonePhone = (String) request.getSession().getAttribute("updatePhonePhone");
+        Object bindEmailPhone = request.getSession().getAttribute("bindEmailPhone");
+        if(updatePhonePhone != null){
+            request.getSession().removeAttribute("updatePhonePhone");
+        }
+        if(bindEmailPhone != null){
+            request.getSession().removeAttribute("bindEmailPhone");
+        }
         Cookie cookie = new Cookie("token",null);
         cookie.setMaxAge(0);
         response.addCookie(cookie);

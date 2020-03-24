@@ -228,10 +228,19 @@
 
         var countdown=60;
         function getCode(value) {
-            var obj = $("#el-code-button");
-            var span = obj.children();
-            var phone = $("#phone").val();
+            var obj;
+            var span;
+            var phone;
             var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
+            if(value == 6){
+                phone = $("#verifyPhone").val();
+                obj = $("#el-verifycode-button");
+                span = obj.children();
+            }else{
+                phone = $("#phone").val();
+                obj = $("#el-code-button");
+                span = obj.children();
+            }
             layui.use('layer', function(){
                 var layer = layui.layer;
                 if(!phone){
@@ -348,6 +357,121 @@
                                 });
                             }else{
                                 if(result.code== 2022){
+                                    layer.open({
+                                        content: '请重新验证手机号',
+                                        yes: function(index, layero){
+                                            window.location.reload();
+                                        },cancel: function(index, layero){
+                                            window.location.reload();
+                                        }
+                                    });
+                                }else{
+                                    layer.msg(result.message);
+                                }
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function verifyPhoneOfEmail() {
+            var phone = $("#verifyPhone").val();
+            var code = $("#verifycode").val();
+            var type = 6;
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!code){
+                    layer.msg("请输入验证码");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/loginUser/"+type,
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "phone":phone,
+                            "code":code
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                $(".bindEmailB").removeClass("layui-hide");
+                                $(".bindEmailA").addClass("layui-hide");
+                                clearTimeout(t);
+                                countdown = 60;
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function getEmailCode() {
+            var obj = $("#el-emailCode-button");
+            var span = obj.children();
+            var email = $("#email").val();
+            var regExp = /^[A-Za-z0-9]+([-_\.][A-Za-z0-9]+)*@([A-Za-z0-9]+\.)+[a-z]{2,3}$/;
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!email){
+                    layer.msg("请输入邮箱号");
+                }else if(regExp.test(email) == false){
+                    layer.msg("请换用QQ,163邮箱等常用公共邮件服务");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/getEmailCode",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "email":email
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                layer.msg("验证码发送成功！");
+                                settime(obj,span);
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function bindEmail() {
+            var email = $("#email").val();
+            var emailCode = $("#emailCode").val();
+            layui.use('layer', function(){
+                var layer = layui.layer;
+                if(!email){
+                    layer.msg("请输入邮箱");
+                }else if(!emailCode){
+                    layer.msg("请输入验证码");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/bindEmail",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "email":email,
+                            "emailCode":emailCode
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                layer.open({
+                                    content: '绑定邮箱成功！！！',
+                                    yes: function(index, layero){
+                                        window.location.reload();
+                                    },cancel: function(index, layero){
+                                        window.location.reload();
+                                    }
+                                });
+                            }else{
+                                if(result.code == 2024){
                                     layer.open({
                                         content: '请重新验证手机号',
                                         yes: function(index, layero){
@@ -574,6 +698,7 @@
                         <div class="layui-input-inline">
                             <input type="text" id="phone" placeholder=""  autocomplete="off" class="layui-input" th:value="${session.user.phone}" disabled>
                         </div>
+                        <div class="layui-form-mid layui-word-aux">发送验证码通过后可换绑手机号</div>
                     </div>
                     <div class="layui-form-item">
                         <label for="code" class="layui-form-label">验证码</label>
@@ -586,7 +711,55 @@
                         <button class="layui-btn updatePhoneBtn" onclick="verifyPhone()">提交</button>
                     </div>
                 </div>
-                <div class="layui-tab-item">我的邮箱</div>
+                <div class="layui-form layui-form-pane layui-tab-item">
+                    <div class="bindEmailA">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label phone-label">我的邮箱</label>
+                            <div class="layui-input-inline">
+                                <input type="text" th:placeholder="${session.user.email !=null?'请输入您要绑定的邮箱号':'暂无绑定的邮箱'}"
+                                        class="layui-input" th:value="${session.user.email}" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="verifyPhone" class="layui-form-label phone-label">手机号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="verifyPhone" placeholder=""  autocomplete="off" class="layui-input"
+                                       th:value="${session.user.phone}" disabled>
+                            </div>
+                            <div class="layui-form-mid layui-word-aux"
+                                 th:text="${session.user.email != null?'发送验证码通过后可换绑邮箱':'发送验证码通过后可绑定邮箱'}"></div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="verifycode" class="layui-form-label">验证码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="verifycode" placeholder="请输入验证码"  autocomplete="off" class="layui-input">
+                            </div>
+                            <button class="layui-btn" id="el-verifycode-button" onclick="getCode(6)"><span>获取验证码</span></button>
+                        </div>
+                        <div class="layui-form-item">
+                            <button class="layui-btn" onclick="verifyPhoneOfEmail()">提交完成验证</button>
+                        </div>
+                    </div>
+                    <div class="bindEmailB layui-hide">
+                        <div class="layui-form-item">
+                            <label for="email" class="layui-form-label phone-label">邮箱号</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="email" placeholder="请输入您要绑定的邮箱号"  autocomplete="off" class="layui-input">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">请输入正确的邮箱号，可修改换绑</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label for="emailCode" class="layui-form-label">验证码</label>
+                            <div class="layui-input-inline">
+                                <input type="text" id="emailCode" placeholder="请输入验证码"  autocomplete="off" class="layui-input">
+                            </div>
+                            <button class="layui-btn" id="el-emailCode-button" onclick="getEmailCode()"><span>获取验证码</span></button>
+                        </div>
+                        <div class="layui-form-item">
+                            <button class="layui-btn" onclick="bindEmail()">提交</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="layui-tab-item">
                     <ul class="app-bind">
                         <li class="tree-bindWay" th:classappend="${qq == 1?'havebind':''}">

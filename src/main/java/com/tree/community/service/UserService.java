@@ -91,7 +91,7 @@ public class UserService {
         user.setPassword(MD5Utils.md5(map.get("newPwd"),"邵梓航"));
         UserExample userExample = new UserExample();
         userExample.createCriteria()
-                .andPhoneEqualTo(map.get("modifyPhone"));
+                .andPhoneEqualTo(map.get("modifyAccount"));
         userMapper.updateByExampleSelective(user, userExample);
     }
 
@@ -158,5 +158,38 @@ public class UserService {
         example.createCriteria()
                 .andIdEqualTo(user.getId());
         userMapper.updateByExampleSelective(user1, example);
+    }
+
+    public List<User> checkAccount(String account) {
+        List<User> users;
+        if(account.length() == 11){
+            UserExample example = new UserExample();
+            example.createCriteria()
+                    .andPhoneEqualTo(account);
+            users = userMapper.selectByExample(example);
+        }else{
+            UserExample example = new UserExample();
+            example.createCriteria()
+                    .andEmailEqualTo(account);
+            users = userMapper.selectByExample(example);
+        }
+        return users;
+    }
+
+    public List<User> checkEmail(String email) {
+        UserExample example = new UserExample();
+        example.createCriteria()
+                .andEmailEqualTo(email);
+        List<User> result = userMapper.selectByExample(example);
+        return result;
+    }
+
+    public void bindEmail(String email, Long id) {
+        User user = new User();
+        user.setEmail(email);
+        UserExample example = new UserExample();
+        example.createCriteria()
+                .andIdEqualTo(id);
+        userMapper.updateByExampleSelective(user, example);
     }
 }
