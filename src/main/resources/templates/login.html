@@ -37,10 +37,23 @@
             }
         }
 
+        function checkAccount() {
+            var check = false;
+            var account = $("#account").val();
+            if(!account){
+                $("#account").next().html("请输入手机号或者邮箱");
+                check = false;
+            }else{
+                $("#account").next().html("");
+                check = true;
+            }
+            return check;
+        }
+
         function checkPassword() {
             var check = false;
             var password = $("#password").val();
-            if(password == null || password == ""){
+            if(!password){
                 $("#password").next().html("请输入密码");
                 check = false;
             }else{
@@ -50,18 +63,18 @@
             return check;
         }
 
-        function checkPhone(value) {
+        function checkPhone() {
             var check = false;
-            var phone = $("#"+value+"").val();
+            var phone = $("#phone").val();
             var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
-            if(phone == null || phone == ""){
-                $("#"+value+"").next().html("请输入注册时用的手机号");
+            if(!phone){
+                $("#phone").next().html("请输入注册时用的手机号");
                 check = false;
             }else if(regExp.test(phone) == false){
-                $("#"+value+"").next().html("请输入正确的手机号");
+                $("#phone").next().html("请输入正确的手机号");
                 check = false;
             }else{
-                $("#"+value+"").next().html("");
+                $("#phone").next().html("");
                 check = true;
             }
             return check;
@@ -70,7 +83,7 @@
         function checkCode() {
             var check = false;
             var code = $("#code").val();
-            if(code == null || code == ""){
+            if(!code){
                 $("#code").parent().next().html("请输入验证码");
                 check = false;
             }else{
@@ -84,23 +97,23 @@
         function getCode(value) {
             var obj = $("#el-code-button");
             var span = obj.children();
-            var phoneB = $("#phoneB").val();
+            var phone = $("#phone").val();
             var regExp = /^1(3|4|5|6|7|8|9)\d{9}$/;
-            if(phoneB == null || phoneB == ""){
-                $("#phoneB").next().html("请输入手机号");
-            }else if(regExp.test(phoneB) == false){
-                $("#phoneB").next().html("请输入正确的手机号");
+            if(!phone){
+                $("#phone").next().html("请输入手机号");
+            }else if(regExp.test(phone) == false){
+                $("#phone").next().html("请输入正确的手机号");
             }else{
                 $.ajax({
                     type:"post",
                     url:"/getCode/"+value,
                     contentType:"application/json",
-                    data: phoneB,
+                    data: phone,
                     success:function (result) {
                         if(result.code == 200){
                             settime(obj,span);
                         }else{
-                            $("#phoneB").next().html(result.message);
+                            $("#phone").next().html(result.message);
                         }
                     },
                     dataType:"json"
@@ -139,12 +152,13 @@
         function check() {
             var check = false;
             var phone;
+            var account;
             var type = $("#loginType").val();
-            if(checkPhone('phoneA') && checkPassword() && type == 1){
-                phone = $("#phoneA").val();
+            if(checkAccount() && checkPassword() && type == 1){
+                account = $("#account").val();
                 check = true;
-            }else if(checkPhone('phoneB') && checkCode() && type == 2){
-                phone = $("#phoneB").val();
+            }else if(checkPhone() && checkCode() && type == 2){
+                phone = $("#phone").val();
                 check = true;
             }
             var password = $("#password").val();
@@ -157,6 +171,7 @@
                     url:"/loginUser/"+type,
                     contentType:"application/json",
                     data:JSON.stringify({
+                        "account":account,
                         "password":password,
                         "phone":phone,
                         "code":code,
@@ -215,7 +230,7 @@
                     </div>
                     <div class="login-a">
                         <div class="form-group">
-                            <input type="text" class="el-input" id="phoneA" name="phone" placeholder="你的手机号" autocomplete="off" onkeyup="checkPhone('phoneA')">
+                            <input type="text" class="el-input" id="account" name="account" placeholder="你的手机号/邮箱" autocomplete="off" onkeyup="checkAccount()">
                             <p class="error-message"></p>
                         </div>
                         <div class="form-group">
@@ -225,7 +240,7 @@
                     </div>
                     <div class="login-b layui-hide">
                         <div class="form-group">
-                            <input type="text" class="el-input" id="phoneB" name="phone" placeholder="填写常用手机号" autocomplete="off" onkeyup="checkPhone('phoneB')">
+                            <input type="text" class="el-input" id="phone" name="phone" placeholder="填写常用手机号" autocomplete="off" onkeyup="checkPhone()">
                             <p class="error-message"></p>
                         </div>
                         <div class="form-group">

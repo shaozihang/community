@@ -21,6 +21,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -108,8 +109,18 @@ public class LoginController {
             String token = UUID.randomUUID().toString();
             user.setToken(token);
             UserExample example = new UserExample();
-            example.createCriteria()
-                    .andPhoneEqualTo(userDTO.getPhone());
+            if(type == 1){
+                if(userDTO.getAccount().contains("@")){
+                    example.createCriteria()
+                            .andEmailEqualTo(userDTO.getAccount());
+                }else{
+                    example.createCriteria()
+                            .andPhoneEqualTo(userDTO.getAccount());
+                }
+            }else{
+                example.createCriteria()
+                        .andPhoneEqualTo(userDTO.getPhone());
+            }
             userMapper.updateByExampleSelective(user, example);
             Cookie token1 = new Cookie("token", token);
             token1.setMaxAge(30*24*60*60);
@@ -136,20 +147,43 @@ public class LoginController {
     public Object modifyPwd(HttpServletRequest request,
                             @RequestBody Map<String,String> map){
         HttpSession session = request.getSession();
-        Object userCode = session.getAttribute("userCode3");
-        Object userPhone = session.getAttribute("userPhone3");
-        if(userCode == null){
-            return ResultDTO.errorOf(2011,"验证码已过期，请重新发送");
+        if(map.get("modifyAccount").contains("@")){
+            Object sendEmailTime = session.getAttribute("sendEmailTime");
+            if(sendEmailTime == null){
+                return ResultDTO.errorOf(2025,"请发送验证码！");
+            }
+            Object sendEmail = session.getAttribute("sendEmail");
+            Object sendEmailCode = session.getAttribute("sendEmailCode");
+            Date date = new Date();
+            if(date.getTime() - Long.valueOf(String.valueOf(sendEmailTime)) > 1000*60*5){
+                session.removeAttribute("sendEmailTime");
+                return ResultDTO.errorOf(2026,"验证码已过期！");
+            }else if(!map.get("code").equals(String.valueOf(sendEmailCode))){
+                return ResultDTO.errorOf(2027,"验证码错误！");
+            }else if(!map.get("modifyAccount").equals(String.valueOf(sendEmail))){
+                return ResultDTO.errorOf(2028,"邮箱与验证码不匹配");
+            }else{
+                userService.modifyPwd(map);
+            }
+            session.removeAttribute("sendEmailTime");
+            session.removeAttribute("sendEmail");
+            session.removeAttribute("sendEmailCode");
+        }else{
+            Object userCode = session.getAttribute("userCode3");
+            Object userPhone = session.getAttribute("userPhone3");
+            if(userCode == null){
+                return ResultDTO.errorOf(2011,"验证码已过期，请重新发送");
+            }
+            if(!map.get("code").equals(String.valueOf(userCode))){
+                return ResultDTO.errorOf(2012,"验证码错误");
+            }
+            if(!map.get("modifyAccount").equals(String.valueOf(userPhone))){
+                return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
+            }
+            userService.modifyPwd(map);
+            session.removeAttribute("userCode3");
+            session.removeAttribute("userPhone3");
         }
-        if(!map.get("code").equals(String.valueOf(userCode))){
-            return ResultDTO.errorOf(2012,"验证码错误");
-        }
-        if(!map.get("modifyAccount").equals(String.valueOf(userPhone))){
-            return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
-        }
-        userService.modifyPwd(map);
-        session.removeAttribute("userCode3");
-        session.removeAttribute("userPhone3");
         return ResultDTO.okOf();
     }
 

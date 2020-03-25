@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 public class UserDTO {
     private String nickName;
+    private String account;
     private String password;
     private String phone;
     private String code;

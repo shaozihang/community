@@ -409,7 +409,7 @@
             });
         }
 
-        function getEmailCode() {
+        function getEmailCode(value) {
             var obj = $("#el-emailCode-button");
             var span = obj.children();
             var email = $("#email").val();
@@ -423,7 +423,7 @@
                 }else{
                     $.ajax({
                         type:"post",
-                        url:"/getEmailCode",
+                        url:"/getEmailCode/" + value,
                         contentType:"application/json",
                         data:JSON.stringify({
                             "email":email
@@ -753,7 +753,7 @@
                             <div class="layui-input-inline">
                                 <input type="text" id="emailCode" placeholder="请输入验证码"  autocomplete="off" class="layui-input">
                             </div>
-                            <button class="layui-btn" id="el-emailCode-button" onclick="getEmailCode()"><span>获取验证码</span></button>
+                            <button class="layui-btn" id="el-emailCode-button" onclick="getEmailCode(2)"><span>获取验证码</span></button>
                         </div>
                         <div class="layui-form-item">
                             <button class="layui-btn" onclick="bindEmail()">提交</button>

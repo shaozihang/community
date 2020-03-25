@@ -64,9 +64,15 @@ public class UserService {
 
     public ResultDTO loginOrBind(UserDTO userDTO,HttpServletRequest request) {
         UserExample userExample = new UserExample();
-        userExample.createCriteria()
-                .andPhoneEqualTo(userDTO.getPhone())
-                .andPasswordEqualTo(MD5Utils.md5(userDTO.getPassword(),"邵梓航"));
+        if(userDTO.getAccount().contains("@")){
+            userExample.createCriteria()
+                    .andEmailEqualTo(userDTO.getAccount())
+                    .andPasswordEqualTo(MD5Utils.md5(userDTO.getPassword(),"邵梓航"));
+        }else{
+            userExample.createCriteria()
+                    .andPhoneEqualTo(userDTO.getAccount())
+                    .andPasswordEqualTo(MD5Utils.md5(userDTO.getPassword(),"邵梓航"));
+        }
         List<User> users = userMapper.selectByExample(userExample);
         if(users.size() == 0){
             return ResultDTO.errorOf(2015,"账号或密码错误");
@@ -90,8 +96,13 @@ public class UserService {
         User user = new User();
         user.setPassword(MD5Utils.md5(map.get("newPwd"),"邵梓航"));
         UserExample userExample = new UserExample();
-        userExample.createCriteria()
-                .andPhoneEqualTo(map.get("modifyAccount"));
+        if(map.get("modifyAccount").contains("@")){
+            userExample.createCriteria()
+                    .andEmailEqualTo(map.get("modifyAccount"));
+        }else{
+            userExample.createCriteria()
+                    .andPhoneEqualTo(map.get("modifyAccount"));
+        }
         userMapper.updateByExampleSelective(user, userExample);
     }
 
@@ -162,17 +173,15 @@ public class UserService {
 
     public List<User> checkAccount(String account) {
         List<User> users;
-        if(account.length() == 11){
-            UserExample example = new UserExample();
-            example.createCriteria()
-                    .andPhoneEqualTo(account);
-            users = userMapper.selectByExample(example);
-        }else{
-            UserExample example = new UserExample();
+        UserExample example = new UserExample();
+        if(account.contains("@")){
             example.createCriteria()
                     .andEmailEqualTo(account);
-            users = userMapper.selectByExample(example);
+        }else{
+            example.createCriteria()
+                    .andPhoneEqualTo(account);
         }
+        users = userMapper.selectByExample(example);
         return users;
     }
 

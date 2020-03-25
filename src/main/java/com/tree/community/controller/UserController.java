@@ -204,11 +204,13 @@ public class UserController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/getEmailCode",method = RequestMethod.POST)
-    public Object getEmailCode(@RequestBody Map<String,String> map, HttpServletRequest request) {
+    @RequestMapping(value = "/getEmailCode/{type}",method = RequestMethod.POST)
+    public Object getEmailCode(@RequestBody Map<String,String> map,@PathVariable(name = "type")Integer type, HttpServletRequest request) {
         List<User> result = userService.checkEmail(map.get("email"));
-        if(result.size() !=0){
-            return ResultDTO.errorOf(2022,"该邮箱已存在，请换一个");
+        if(type == 2){
+            if(result.size() !=0){
+                return ResultDTO.errorOf(2022,"该邮箱已存在，请换一个");
+            }
         }
         try {
             emailProvider.sendEmail(map.get("email"),request);
