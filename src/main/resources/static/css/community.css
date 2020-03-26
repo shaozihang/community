@@ -857,7 +857,7 @@ i {
 }
 
 .footer{
-    padding: 10px;
+    padding: 30px 10px;
     text-align: center;
     color: #666;
 }
@@ -915,6 +915,33 @@ i {
     box-sizing:border-box;
     -moz-box-sizing:border-box; /* Firefox */
     -webkit-box-sizing:border-box; /* Safari */
+}
+
+.autocomplete{
+    position: absolute;
+    z-index: 99;
+    left: -1px;
+    width: 100%;
+    border: 1px solid #ddd;
+    background: #fff;
+}
+
+.autocomplete li{
+    padding: 10px 12px;
+    cursor: pointer;
+    font-size: 12px;
+    color: #666;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.autocomplete li.on{
+    background: #ddd;
+}
+
+.mouseoverTarget{
+    background: #eee;
 }
 
 @media screen and (max-width: 1199px) {
@@ -1103,27 +1130,6 @@ i {
 .remember-me-span{
     color: #bbb;
     margin-left: 10px;
-}
-
-.findpwd-top{
-    padding-top: 24px;
-}
-
-.findpwd-top a{
-    color: black;
-    font-size: 12px;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.findpwd-top a:hover{
-    color: #00a7de;
-}
-
-.findpwd-top-icon{
-    font-size: 13px;
-    color: #c0c4cc;
 }
 
 /*用户界面*/

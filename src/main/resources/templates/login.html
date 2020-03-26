@@ -15,6 +15,77 @@
                 url = url.replace(/(\?|#)[^'"]*/, '');           //去除参数
                 window.history.replaceState({},0,url);
             }
+
+            $(".autocomplete ul li").each(function () {
+                $(this).bind({
+                    click:function () {
+                        $("#account").val($(this).text());
+                        $(".on").removeClass("on");
+                        $(this).addClass("on");
+                        $(".autocomplete").addClass("layui-hide");
+                    },
+                    mouseover:function () {
+                        $(this).addClass("mouseoverTarget");
+                    },
+                    mouseout:function () {
+                        $(this).removeClass("mouseoverTarget");
+                    }
+                });
+            });
+
+            $("#account").on("keydown", function (e) {
+                if(!$(".autocomplete").hasClass("layui-hide")){
+                    if(e.keyCode == 38){
+                        var size = $(".on").prevAll("li[class!='layui-hide']").length;
+                        if(size > 0){
+                            $(".on").prevAll("li[class!='layui-hide']:first").addClass("on");
+                            $(".on:last").removeClass("on");
+                        }else{
+                            $(".on:first").removeClass("on");
+                            $(".autocomplete li[class!='layui-hide']:last").addClass("on");
+                        }
+                    }else if (e.keyCode == 40){
+                        var size = $(".on").nextAll("li[class!='layui-hide']").length;
+                        if(size > 0){
+                            $(".on").nextAll("li[class!='layui-hide']:first").addClass("on");
+                            $(".on:first").removeClass("on");
+                        }else{
+                            $(".on:last").removeClass("on");
+                            $(".autocomplete li[class!='layui-hide']:first").addClass("on");
+                        }
+                    }else if(e.keyCode == 13){
+                        $("#account").val($(".on").text());
+                        $(".autocomplete").addClass("layui-hide");
+                    }
+                }
+            });
+
+            $("#account").on("keyup", function (e) {
+                var account = $("#account").val();
+                if(account.indexOf('@') != 0 && account.indexOf('@') != -1 && e.keyCode != 13 && e.keyCode != 38 && e.keyCode != 40){
+                    var prefix = account.split("@")[0];
+                    var aa = account.split("@")[1];
+                    $(".autocomplete ul li").each(function () {
+                        var suffix = $(this).text();
+                        var suffix2 = suffix.split("@")[1];
+                        if(suffix2.indexOf(aa) != -1){
+                            $(this).text(prefix + '@' + suffix2);
+                            $(this).removeClass("layui-hide");
+                        }else{
+                            $(this).addClass("layui-hide");
+                        }
+                    });
+                    $(".on").removeClass("on");
+                    $(".autocomplete li[class!='layui-hide']:first").addClass("on");
+                    if($(".autocomplete li[class!='layui-hide']").length != 0){
+                        $(".autocomplete").removeClass("layui-hide");
+                    }else{
+                        $(".autocomplete").addClass("layui-hide");
+                    }
+                }else if(e.keyCode != 38 && e.keyCode != 40){
+                    $(".autocomplete").addClass("layui-hide");
+                }
+            });
         };
 
         layui.use('element',function () {
@@ -229,9 +300,22 @@
                         </div>
                     </div>
                     <div class="login-a">
-                        <div class="form-group">
+                        <div class="form-group" style="position: relative;">
                             <input type="text" class="el-input" id="account" name="account" placeholder="你的手机号/邮箱" autocomplete="off" onkeyup="checkAccount()">
                             <p class="error-message"></p>
+                            <div class="autocomplete layui-hide" style="top: 48px;">
+                                <ul>
+                                    <li class="on">@qq.com</li>
+                                    <li>@163.com</li>
+                                    <li>@126.com</li>
+                                    <li>@gmail.com</li>
+                                    <li>@foxmail.com</li>
+                                    <li>@sina.com</li>
+                                    <li>@yeah.net</li>
+                                    <li>@sohu.com</li>
+                                    <li>@outlook.com</li>
+                                </ul>
+                            </div>
                         </div>
                         <div class="form-group">
                             <input type="password" class="el-input" id="password" name="password" placeholder="密码" autocomplete="off" onkeyup="checkPassword()">
