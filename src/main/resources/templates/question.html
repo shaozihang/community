@@ -187,7 +187,7 @@
                 $("input[name='bookmarkItem']:checked").each(function(){
                     folderId.push($(this).val());
                 });
-                if(!$(".detail-hits").children("span:last").hasClass("collected")){
+                if(!$("#detail-bookMark").children("span:last").hasClass("collected")){
                     if($("#bookMark .bookMark-checkbox").children().length == 0){
                         layer.msg("请先创建收藏夹");
                     }else if(folderId.length == 0){
