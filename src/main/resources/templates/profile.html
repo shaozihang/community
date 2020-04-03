@@ -7,7 +7,7 @@
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{/cropper/cropper.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
-    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_4wxsaib01vx.css">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_pdkxw2wuoy.css">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script th:src="@{/cropper/cropper.js}"></script>
@@ -490,6 +490,343 @@
                 }
             });
         }
+
+        //打开新增收藏夹对话框
+        var index3;
+        function addBookMarkDialog1() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                $("#name").val("");
+                $("#description").val("");
+                $("#addBookMark button:last").attr("onclick","addBookMark1()");
+                index3 = layer.open({
+                    type: 1,
+                    title:'创建收藏夹',
+                    skin: 'openAvatar',
+                    area: ['420px', 'auto'], //宽高
+                    content: $('#addBookMark')
+                });
+            });
+        }
+
+        //打开新增收藏夹对话框并关闭收藏夹对话框
+        var index5;
+        function addBookMarkDialog() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                $("#name").val("");
+                $("#description").val("");
+                $("#addBookMark button:last").attr("onclick","addBookMark()");
+                index5 = layer.open({
+                    type: 1,
+                    title:'创建收藏夹',
+                    skin: 'openAvatar',
+                    area: ['420px', 'auto'], //宽高
+                    content: $('#addBookMark')
+                });
+                closeLayer4();
+            });
+        }
+
+        function closeLayer3() {
+            layer.close(index3);
+        }
+
+        function closeLayer4() {
+            layer.close(index4);
+        }
+
+        function closeLayer5() {
+            layer.close(index5);
+        }
+
+        function addBookMark1() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                var name = $("#name").val();
+                var description = $("#description").val();
+                var isPrivate = $("input[name='isPrivate']:checked").val();
+                if (!name) {
+                    layer.msg("请输入收藏夹名称");
+                }else if(name.length > 32){
+                    layer.msg("名称最多输入32个字");
+                }else if(description.length > 256){
+                    layer.msg("描述最多输入256个字");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/addBookMark",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "name":name,
+                            "description":description,
+                            "isPrivate":isPrivate == 1?true:false
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                var liElement = $("<li/>").append($("<a/>",{
+                                    href:'/user/bookMark/'+result.data,
+                                    class:"jie-title",
+                                    html:name
+                                })).append($("<span/>",{
+                                    html:'0条内容'
+                                })).append($("<span/>",{
+                                    html:isPrivate == 1?'私密':'公开'
+                                }));
+                                if(isPrivate == 1){
+                                    liElement.prepend($("<i/>",{class:"iconfont icon-simi"}));
+                                }
+                                $(".myBookMark").prepend(liElement);
+                                closeLayer3();
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function addBookMark() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                var name = $("#name").val();
+                var description = $("#description").val();
+                var isPrivate = $("input[name='isPrivate']:checked").val();
+                if (!name) {
+                    layer.msg("请输入收藏夹名称");
+                }else if(name.length > 32){
+                    layer.msg("名称最多输入32个字");
+                }else if(description.length > 256){
+                    layer.msg("描述最多输入256个字");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/addBookMark",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "name":name,
+                            "description":description,
+                            "isPrivate":isPrivate == 1?true:false
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                var inputElement = $("<input/>",{
+                                    type:"checkbox",
+                                    name:"bookmarkItem",
+                                    title:isPrivate == 1?'(私密) '+name:name,
+                                    value:result.data
+                                });
+                                $(".bookMark-checkbox").prepend(inputElement);
+                                form.render('checkbox');
+                                $("#name").val("");
+                                $("#description").val("");
+                                var questionId = $("#question_id").val();
+                                bookMarkDialog(questionId);
+                                closeLayer5();
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function updateBookMarkDialog() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                $(".bookMark-footer button:last").attr('onclick','updateBookMark()');
+                var name = $(".tree-bookMark h3").text();
+                var description = $(".tree-bookMark h4").text();
+                var des = description.split("：")[1];
+                $("#addBookMark #name").val(name);
+                $("#addBookMark #description").val(des);
+                if($(".tree-bookMark h3").prev().length > 0){
+                    $("input[name='isPrivate']:first").attr("checked",'true');
+                }else{
+                    $("input[name='isPrivate']:last").attr('checked','true');
+                }
+                form.render('radio');
+                index3 = layer.open({
+                    type: 1,
+                    title:'修改收藏夹',
+                    skin: 'openAvatar',
+                    area: ['420px', 'auto'], //宽高
+                    content: $('#addBookMark')
+                });
+            });
+        }
+        
+        function updateBookMark(e) {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var id = $("#bookMarkId").val();
+                var name = $("#name").val();
+                var description = $("#description").val();
+                var isPrivate = $("input[name='isPrivate']:checked").val();
+                if (!name) {
+                    layer.msg("请输入收藏夹名称");
+                }else if(name.length > 32){
+                    layer.msg("名称最多输入32个字");
+                }else if(description.length > 256){
+                    layer.msg("描述最多输入256个字");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/updateBookMark",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "id":id,
+                            "name":name,
+                            "description":description,
+                            "isPrivate":isPrivate == 1?true:false
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.reload();
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function deleteBookMark() {
+            layer.confirm('确认要删除收藏夹？(注意：收藏夹下的收藏也会被删除！)', {
+                btn: ['确定','取消'] //按钮
+            }, function(index){
+                var id = $("#bookMarkId").val();
+                $.ajax({
+                    type:"post",
+                    url:"/deleteBookMark",
+                    contentType:"application/json",
+                    data: id,
+                    success:function (result) {
+                        if(result.code == 200){
+                            window.location.href="/user/profile/bookMark";
+                        }
+                    },
+                    dataType:"json"
+                });
+            });
+        }
+
+        function deleteCollection(value) {
+            layer.confirm('确认要删除收藏吗？', {
+                btn: ['确定','取消'] //按钮
+            }, function(index){
+                var id = $("#bookMarkId").val();
+                $.ajax({
+                    type:"post",
+                    url:"/deleteCollection",
+                    contentType:"application/json",
+                    data: JSON.stringify({
+                        "id":id,
+                        "questionId":value
+                    }),
+                    success:function (result) {
+                        if(result.code == 200){
+                            window.location.reload();
+                        }
+                    },
+                    dataType:"json"
+                });
+            });
+        }
+
+        var index4;
+        function bookMarkDialog(value) {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                var collectionStatus = 1;
+                $.ajax({
+                    type:"post",
+                    url:"/getBookMark",
+                    contentType:"application/json",
+                    data: JSON.stringify({
+                        "questionId":value,
+                        "collectionStatus":collectionStatus
+                    }),
+                    success:function (result) {
+                        if(result.code == 200){
+                            if($(".bookMark-checkbox").length > 0){
+                                $(".bookMark-checkbox").remove();
+                            }
+                            if(result.data != null){
+                                var bookMarkBody = $("<div/>",{
+                                    "class":"bookMark-checkbox"
+                                });
+                                $.each(result.data.reverse(),function (index, bookMark) {
+                                    var inputElement = $("<input/>",{
+                                        type:"checkbox",
+                                        name:"bookmarkItem",
+                                        title:bookMark.isPrivate == true?'(私密) '+bookMark.name:bookMark.name,
+                                        value:bookMark.id,
+                                        checked:bookMark.collected == true?true:false
+                                    });
+                                    bookMarkBody.append(inputElement);
+                                });
+                                $("#bookMark .layui-form-item").append(bookMarkBody);
+                            }
+                            form.render('checkbox');
+                            $("#question_id").val(value);
+                            index4 = layer.open({
+                                type: 1,
+                                title:'收藏',
+                                skin: 'openBookMark',
+                                area: ['420px', 'auto'], //宽高
+                                content: $('#bookMark')
+                            });
+                        }
+                    },
+                    dataType:"json"
+                });
+            });
+        }
+
+        function collection() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var questionId = $("#question_id").val();
+                var folderId =[];
+                $("input[name='bookmarkItem']:checked").each(function(){
+                    folderId.push($(this).val());
+                });
+                var folderIds;
+                if(folderId.length == 0){
+                    folderIds = "取消收藏";
+                }else{
+                    folderIds = folderId.join("-");
+                }
+                $.ajax({
+                    type:"post",
+                    url:"/updateCollection",
+                    contentType:"application/json",
+                    data:JSON.stringify({
+                        "questionId":questionId,
+                        "folderId":folderIds
+                    }),
+                    success:function (result) {
+                        if(result.code == 200){
+                            window.location.reload();
+                        }
+                    },
+                    dataType:"json"
+                });
+            });
+        }
     </script>
 </head>
 <body>
@@ -511,6 +848,9 @@
         <li class="layui-nav-item" th:classappend="${section == 'questions'}?'layui-this':''">
             <a href="/user/profile/questions"><i class="layui-icon layui-icon-tabs"></i>帖子管理</a>
         </li>
+        <li class="layui-nav-item" th:classappend="${section == 'bookMark' || section == 'collection'}?'layui-this':''">
+            <a href="/user/profile/bookMark"><i class="layui-icon layui-icon-rate"></i>收藏管理</a>
+        </li>
         <li class="layui-nav-item" th:classappend="${section == 'info'}?'layui-this':''">
             <a href="/user/set/info"><i class="layui-icon layui-icon-set-sm"></i>基本设置</a>
         </li>
@@ -520,10 +860,58 @@
     </div>
     <div class="nav-mobile-shade" onclick="shadeHide()"></div>
     <div class="profile-panel profile-panel-user">
+        <div class="layui-tab layui-tab-brief" th:if="${section == 'bookMark'}">
+            <ul class="layui-tab-title">
+                <li class="layui-this">我创建的收藏夹</li>
+            </ul>
+            <div class="layui-tab-content">
+                <div class="layui-tab-item layui-show">
+                    <button type="button" class="layui-btn" onclick="addBookMarkDialog1()">新建收藏夹</button>
+                    <ul class="mine-view jie-row myBookMark">
+                        <li th:each="bookMark:${bookMarkDTOList}">
+                            <i class="iconfont icon-simi" th:if="${bookMark.isPrivate == true}"></i>
+                            <a th:href="@{'/user/bookMark/'+${bookMark.id}}" th:text="${bookMark.name}" class="jie-title"></a>
+                            <span th:text="${bookMark.collectionCount+'条内容'}"></span>
+                            <span th:text="${bookMark.isPrivate == true?'私密':'公开'}"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="layui-tab layui-tab-brief" th:if="${section == 'collection'}">
+            <a href="/user/profile/bookMark" style="margin: 15px 0;display: inline-block;font-size: 16px;font-weight: 600;">
+                <i class="layui-icon layui-icon-left"></i><span>返回我的收藏夹列表</span>
+            </a>
+            <hr class="layui-bg-gray">
+            <div style="border-bottom: 1px solid #eee;padding-bottom: 10px;" class="tree-bookMark">
+                <i class="iconfont icon-simi" th:if="${bookMark.isPrivate == true}"></i>
+                <h3 style="font-weight: 600;margin-bottom: 10px;display: inline-block;" th:text="${bookMark.name}"></h3>
+                <h4 style="margin-bottom: 10px;color: #999;" th:if="${bookMark.description != ''}" th:text="${bookMark.description != ''?'收藏夹描述：'+bookMark.description:''}"></h4>
+                <div>
+                    <span style="color: #999;" th:text="${bookMark.collectionCount+'条内容'}"></span><span class="tree-mid"></span>
+                    <a href="javascript:updateBookMarkDialog()">编辑</a><span class="tree-mid"></span><a href="javascript:deleteBookMark()">删除</a>
+                </div>
+                <input type="text" id="bookMarkId" th:value="${bookMark.id}" hidden="hidden">
+                <input type="hidden" id="question_id">
+            </div>
+            <ul class="tree-collection" th:if="${questions != null}">
+                <li th:each="question:${questions}">
+                    <h3>
+                        <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
+                        <a th:href="@{'javascript:deleteCollection('+${question.id}+')'}" style="color: #999;float: right;font-size: 13px;margin-top: 2px;">取消收藏</a>
+                        <a th:href="@{'javascript:bookMarkDialog('+${question.id}+')'}" style="color: #999;float: right;font-size: 13px;margin-top: 2px;margin-right: 10px;">编辑</a>
+                    </h3>
+                    <span class="tree-info-color">阅读数
+                        <span style="color: #01AAED;" th:text="${question.viewCount}"></span> | 评论数
+                        <span style="color: #01AAED;" th:text="${question.commentCount}"></span> |
+                        <span class="tree-info-color" th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
+                    </span>
+                </li>
+            </ul>
+        </div>
         <div class="layui-tab layui-tab-brief" th:if="${section == 'questions' && pagination.data != null}">
             <ul class="layui-tab-title">
                 <li class="layui-this">我发的贴</li>
-                <li>收藏的贴</li>
             </ul>
             <div class="layui-tab-content">
                 <div class="layui-tab-item layui-show">
@@ -537,7 +925,6 @@
                         </li>
                     </ul>
                 </div>
-                <div class="layui-tab-item">2</div>
             </div>
         </div>
         <div class="layui-tab layui-tab-brief" th:if="${section == 'message' && pagination.data != null}" style="margin-top: 15px;">
@@ -580,7 +967,8 @@
             </div>
         </div>
         <div class="info-none" th:if="${pagination.data == null && section == 'questions' or section == 'message'}"
-             th:text="${section == 'message'?'您暂时没有最新消息':'您还没有发过帖子呢'}"></div>
+             th:text="${section == 'message'?'您暂时没有最新消息':'您还没有发过帖子呢'}">
+        </div>
         <div class="layui-tab layui-tab-brief" th:if="${section == 'info'}" lay-filter="userInfo">
             <ul class="layui-tab-title">
                 <li lay-id="info" class="layui-this">我的资料</li>
@@ -795,6 +1183,36 @@
     </div>
 </div>
 <div th:replace="footer :: foot"></div>
+<div id="bookMark" style="padding: 1rem;display: none">
+    <div class="bookMark-content layui-form" style="margin-bottom: 15px;">
+        <div class="layui-form-item">
+            <label style="display: inline-block;margin-bottom: 10px;">添加到收藏夹：</label>
+        </div>
+        <a class="new-bookmark" style="cursor: pointer" onclick="addBookMarkDialog()">+ 创建收藏夹</a>
+    </div>
+    <div class="bookMark-footer">
+        <button type="button" class="layui-btn layui-btn-primary" onclick="closeLayer4()">取消</button>
+        <button type="button" class="layui-btn" onclick="collection()">确定</button>
+    </div>
+</div>
+<div id="addBookMark" style="padding: 1rem;display: none">
+    <div class="bookMark-content layui-form" style="margin-bottom: 15px;">
+        <div class="layui-form-item">
+            <input type="text" id="name" placeholder="请输入收藏夹名称" autocomplete="off" maxlength="32" class="layui-input">
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <textarea id="description" placeholder="请输入描述" maxlength="256" class="layui-textarea"></textarea>
+        </div>
+        <div class="layui-form-item">
+            <input type="radio" name="isPrivate" value="1" title="私密" checked>
+            <input type="radio" name="isPrivate" value="0" title="公开">
+        </div>
+    </div>
+    <div class="bookMark-footer">
+        <button type="button" class="layui-btn layui-btn-primary" onclick="closeLayer3()">取消</button>
+        <button type="button" class="layui-btn" onclick="addBookMark()">确定</button>
+    </div>
+</div>
 <script type="application/javascript">
     layui.use('element',function () {
         var element = layui.element;

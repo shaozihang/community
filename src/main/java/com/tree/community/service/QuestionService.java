@@ -6,12 +6,8 @@ import com.tree.community.dto.QuestionQueryDTO;
 import com.tree.community.enums.QuestionTypeEnum;
 import com.tree.community.exception.CustomizeErrorCode;
 import com.tree.community.exception.CustomizeException;
-import com.tree.community.mapper.QuestionExtMapper;
-import com.tree.community.mapper.QuestionMapper;
-import com.tree.community.mapper.UserLikeMapper;
-import com.tree.community.mapper.UserMapper;
+import com.tree.community.mapper.*;
 import com.tree.community.model.*;
-import okhttp3.Response;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
@@ -32,6 +28,9 @@ public class QuestionService {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private CollectionExtMapper collectionExtMapper;
 
     public PaginationDTO list(String search, String tag, Integer page, Integer size,String type,String sort) {
         if(StringUtils.isNotBlank(search)){
@@ -98,6 +97,8 @@ public class QuestionService {
             BeanUtils.copyProperties(question,questionDTO);
             questionDTO.setUser(user);
             questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
+            Integer collectionCount = collectionExtMapper.getCollectionCount(question.getId());
+            questionDTO.setCollectionCount(collectionCount);
             questionDTOList.add(questionDTO);
         }
         paginationDTO.setData(questionDTOList);
@@ -164,7 +165,10 @@ public class QuestionService {
         QuestionDTO questionDTO = new QuestionDTO();
         BeanUtils.copyProperties(question,questionDTO);
         User user = userMapper.selectByPrimaryKey(question.getCreator());
+        questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
         questionDTO.setUser(user);
+        Integer collectionCount = collectionExtMapper.getCollectionCount(id);
+        questionDTO.setCollectionCount(collectionCount);
         return questionDTO;
     }
 
@@ -213,5 +217,10 @@ public class QuestionService {
                 .andCreatorEqualTo(id);
         int quCount = (int) questionMapper.countByExample(example);
         return quCount;
+    }
+
+    public List<Question> getQuestionByIds(List<Long> questionIds) {
+        List<Question> questions = questionExtMapper.getQuestionByIds(questionIds);
+        return questions;
     }
 }

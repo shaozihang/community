@@ -1520,7 +1520,58 @@ i {
 }
 
 @media screen and (max-width: 550px) {
-    .openAvatar {
+    .openAvatar,.openBookMark {
         width: 90%!important;
     }
+}
+
+#bookMark .layui-form-checkbox span{
+    max-width: 90%;
+}
+
+#bookMark .layui-form-checkbox i{
+    right: auto;
+}
+
+.bookMark-checkbox div{
+    display: block;
+}
+
+.bookMark-footer{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.collected{
+    background: #6c757d;
+}
+
+.myBookMark{
+    margin: 20px 5px;
+}
+
+.myBookMark li a{
+    max-width: 63%!important;
+}
+
+.myBookMark li i{
+    margin-right: 5px;
+    color: black;
+    font-size: 13px;
+}
+
+.myBookMark li span{
+    font-size: 14px;
+    color: #999;
+    font-style: normal;
+    float: right;
+    margin-right: 10px;
+}
+
+.tree-collection li{
+    height: auto;
+    padding: 15px 0;
+    border-bottom: 1px dotted #e2e2e2;
 }

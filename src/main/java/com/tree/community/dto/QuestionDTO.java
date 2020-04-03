@@ -18,4 +18,5 @@ public class QuestionDTO {
     private User user;
     private Integer likeStatus;
     private String typeName;
+    private Integer collectionCount;
 }

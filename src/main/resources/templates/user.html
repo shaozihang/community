@@ -53,7 +53,11 @@
                     <a style="margin-left: 8px;" th:href="@{'/users/follow'(id=${userInfo.id})}" th:text="${'关注（'+userInfo.followCount+'）'}"></a>
                 </li>
                 <li th:class="${section == 'fans'?'layui-this':''}">
-                    <a style="margin-left: 8px;" th:href="@{'/users/fans'(id=${userInfo.id})}" th:text="${'粉丝（'+userInfo.fansCount+'）'}"></a></li>
+                    <a style="margin-left: 8px;" th:href="@{'/users/fans'(id=${userInfo.id})}" th:text="${'粉丝（'+userInfo.fansCount+'）'}"></a>
+                </li>
+                <li th:class="${section == 'bookMark' || section == 'collection'?'layui-this':''}" th:if="${publicBookMarkList.size() != 0}">
+                    <a style="margin-left: 8px;" th:href="@{'/users/bookMark'(id=${userInfo.id})}" th:text="${'收藏（'+collectionCount+'）'}"></a>
+                </li>
             </ul>
             <div th:if="${section == 'question'}">
                 <ul class="tree-setType">
@@ -133,7 +137,42 @@
                 </div>
                 <h2 style="text-align: center;padding:20px 0" th:if="${userList.data == null}" th:text="${section == 'follow'?'暂无关注':'暂无粉丝'}"></h2>
             </div>
+            <div th:if="${section == 'bookMark'}">
+                <ul class="mine-view jie-row myBookMark" style="margin: 20px 20px;">
+                    <li th:each="bookMark:${publicBookMarkList}">
+                        <a th:href="@{'/user/bookMarks/'+${bookMark.id}(id=${userInfo.id})}" th:text="${bookMark.name}" class="jie-title"></a>
+                        <span th:text="${bookMark.collectionCount+'条内容'}"></span>
+                    </li>
+                </ul>
+            </div>
+            <div th:if="${section == 'collection'}" style="padding: 20px 20px;">
+                <a th:href="@{'/users/bookMark'(id=${userInfo.id})}" style="margin: 15px 0;display: inline-block;font-size: 16px;font-weight: 600;">
+                    <i class="layui-icon layui-icon-left"></i><span>返回TA创建的收藏夹列表</span>
+                </a>
+                <hr class="layui-bg-gray">
+                <div style="border-bottom: 1px solid #eee;padding-bottom: 10px;" class="tree-bookMark">
+                    <h3 style="font-weight: 600;margin-bottom: 10px;display: inline-block;" th:text="${bookMark.name}"></h3>
+                    <h4 style="margin-bottom: 10px;color: #999;" th:if="${bookMark.description != ''}" th:text="${bookMark.description != ''?'收藏夹描述：'+bookMark.description:''}"></h4>
+                    <div>
+                        <span style="color: #999;" th:text="${bookMark.collectionCount+'条内容'}"></span><span class="tree-mid"></span>
+                        <span style="color: #999;" th:text="${#dates.format(bookMark.gmtCreate,'yyyy-MM-dd')}"></span>
+                    </div>
+                </div>
+                <ul class="tree-collection" th:if="${questions != null}">
+                    <li th:each="question:${questions}">
+                        <h3>
+                            <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
+                        </h3>
+                        <span class="tree-info-color">阅读数
+                        <span style="color: #01AAED;" th:text="${question.viewCount}"></span> | 评论数
+                        <span style="color: #01AAED;" th:text="${question.commentCount}"></span> |
+                        <span class="tree-info-color" th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
+                    </span>
+                    </li>
+                </ul>
+            </div>
         </div>
+    </div>
 </div>
 <div th:replace="footer :: foot"></div>
 </body>

@@ -42,5 +42,7 @@
         <table tableName="province" domainObjectName="Province" ></table>
         <table tableName="city" domainObjectName="City" ></table>
         <table tableName="area" domainObjectName="Area" ></table>
+        <table tableName="book_mark" domainObjectName="BookMark" ></table>
+        <table tableName="collection" domainObjectName="Collection" ></table>
     </context>
 </generatorConfiguration>

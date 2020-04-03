@@ -1,5 +1,6 @@
 package com.tree.community.controller;
 
+import com.tree.community.dto.BookMarkDTO;
 import com.tree.community.dto.PaginationDTO;
 import com.tree.community.dto.ResultDTO;
 import com.tree.community.dto.UserDTO;
@@ -8,10 +9,7 @@ import com.tree.community.model.City;
 import com.tree.community.model.Province;
 import com.tree.community.model.User;
 import com.tree.community.provider.EmailProvider;
-import com.tree.community.service.FollowAndFansService;
-import com.tree.community.service.QuestionService;
-import com.tree.community.service.UserService;
-import com.tree.community.service.UseroauthsService;
+import com.tree.community.service.*;
 import com.tree.community.util.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,6 +40,9 @@ public class UserController {
     @Autowired
     private EmailProvider emailProvider;
 
+    @Autowired
+    private BookMarkService bookMarkService;
+
     @GetMapping(value = "/user/{id}")
     public String user(@PathVariable(name = "id")Long id, Model model,
                        @RequestParam(name = "page",defaultValue = "1")Integer page,
@@ -59,14 +60,21 @@ public class UserController {
                 followOtherStatus = -1;
             }
         }
+        int collectionCount = 0;
+        List<BookMarkDTO> publicBookMarkList = bookMarkService.getPublicBookMark(id);
+        for (BookMarkDTO bookMarkDTO : publicBookMarkList) {
+            collectionCount += bookMarkDTO.getCollectionCount();
+        }
         User userInfo = userService.getUserInfoById(id);
         PaginationDTO pagination = questionService.list(id, page, size);
+        model.addAttribute("publicBookMarkList",publicBookMarkList);
         model.addAttribute("userInfo",userInfo);
         model.addAttribute("pagination",pagination);
         model.addAttribute("followStatus",followStatus);
         model.addAttribute("followOtherStatus",followOtherStatus);
         model.addAttribute("section","question");
         model.addAttribute("quCount",pagination.getQuCount());
+        model.addAttribute("collectionCount",collectionCount);
         return "user";
     }
 

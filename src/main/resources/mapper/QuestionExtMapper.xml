@@ -67,6 +67,19 @@
     </choose>
   </select>
 
+  <select id="getQuestionByIds" parameterType="java.util.List" resultMap="BaseResultMap">
+    select * from question
+    where id in
+    <foreach collection="list" item="item" open="(" close=")" separator=",">
+      #{item}
+    </foreach>
+    order by field(id,
+    <foreach collection="list"  item="item" index="index" separator=",">
+      #{item}
+    </foreach>
+    ) desc
+  </select>
+
   <update id="incView" parameterType="com.tree.community.model.Question">
     update question
     set

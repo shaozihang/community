@@ -34,6 +34,206 @@
                 });
             });
         }
+
+        var index;
+        function collectionDialog() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                if($("#bookMark .layui-form-item").children().length != 1){
+                    index = layer.open({
+                        type: 1,
+                        title:'收藏',
+                        skin: 'openBookMark',
+                        area: ['420px', 'auto'], //宽高
+                        content: $('#bookMark')
+                    });
+                }else{
+                    var questionId = $("#question_id").val();
+                    var collectionStatus;
+                    if($("#detail-bookMark").children("span:last").hasClass("collected")){
+                        collectionStatus = 1;
+                    }else{
+                        collectionStatus = 0;
+                    }
+                    $.ajax({
+                        type:"post",
+                        url:"/getBookMark",
+                        contentType:"application/json",
+                        data: JSON.stringify({
+                            "questionId":questionId,
+                            "collectionStatus":collectionStatus
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                if(result.data != null){
+                                    var bookMarkBody = $("<div/>",{
+                                        "class":"bookMark-checkbox"
+                                    });
+                                    $.each(result.data.reverse(),function (index, bookMark) {
+                                        var inputElement = $("<input/>",{
+                                            type:"checkbox",
+                                            name:"bookmarkItem",
+                                            title:bookMark.isPrivate == true?'(私密) '+bookMark.name:bookMark.name,
+                                            value:bookMark.id,
+                                            checked:bookMark.collected == true?true:false
+                                        });
+                                        bookMarkBody.append(inputElement);
+                                    });
+                                    $("#bookMark .layui-form-item").append(bookMarkBody);
+                                }
+                                form.render('checkbox');
+                                index = layer.open({
+                                    type: 1,
+                                    title:'收藏',
+                                    skin: 'openBookMark',
+                                    area: ['420px', 'auto'], //宽高
+                                    content: $('#bookMark')
+                                });
+                            }else{
+                                layer.confirm(result.message, {
+                                    btn: ['确定','取消'] //按钮
+                                }, function(index){
+                                    window.open("/login");
+                                    window.localStorage.setItem("closable",true);
+                                    layer.close(index);
+                                });
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        //打开新增收藏夹对话框
+        var index2;
+        function addBookMarkDialog() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                index2 = layer.open({
+                    type: 1,
+                    title:'创建收藏夹',
+                    skin: 'openAvatar',
+                    area: ['420px', 'auto'], //宽高
+                    content: $('#addBookMark')
+                });
+                closeLayer();
+            });
+        }
+
+        //关闭收藏对话框
+        function closeLayer() {
+            layer.close(index);
+        }
+
+        function closeLayer2() {
+            layer.close(index2);
+        }
+
+        function addBookMark() {
+            layui.use(['layer','form'],function () {
+                var form = layui.form;
+                var layer = layui.layer;
+                var name = $("#name").val();
+                var description = $("#description").val();
+                var isPrivate = $("input[name='isPrivate']:checked").val();
+                if (!name) {
+                    layer.msg("请输入收藏夹名称");
+                }else if(name.length > 32){
+                    layer.msg("名称最多输入32个字");
+                }else if(description.length > 256){
+                    layer.msg("描述最多输入256个字");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/addBookMark",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "name":name,
+                            "description":description,
+                            "isPrivate":isPrivate == 1?true:false
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                var inputElement = $("<input/>",{
+                                    type:"checkbox",
+                                    name:"bookmarkItem",
+                                    title:isPrivate == 1?'(私密) '+name:name,
+                                    value:result.data
+                                });
+                                $(".bookMark-checkbox").prepend(inputElement);
+                                form.render('checkbox');
+                                $("#name").val("");
+                                $("#description").val("");
+                                collectionDialog();
+                                closeLayer2();
+                            }else{
+                                layer.msg(result.message);
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+
+        function collection() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var questionId = $("#question_id").val();
+                var folderId =[];
+                $("input[name='bookmarkItem']:checked").each(function(){
+                    folderId.push($(this).val());
+                });
+                if(!$(".detail-hits").children("span:last").hasClass("collected")){
+                    if($("#bookMark .bookMark-checkbox").children().length == 0){
+                        layer.msg("请先创建收藏夹");
+                    }else if(folderId.length == 0){
+                        layer.msg("请选择收藏夹");
+                    }else{
+                        $.ajax({
+                            type:"post",
+                            url:"/addCollection",
+                            contentType:"application/json",
+                            data:JSON.stringify({
+                                "questionId":questionId,
+                                "folderId":folderId.join("-")
+                            }),
+                            success:function (result) {
+                                if(result.code == 200){
+                                    window.location.reload();
+                                }
+                            },
+                            dataType:"json"
+                        });
+                    }
+                }else{
+                    var folderIds;
+                    if(folderId.length == 0){
+                        folderIds = "取消收藏";
+                    }else{
+                        folderIds = folderId.join("-");
+                    }
+                    $.ajax({
+                        type:"post",
+                        url:"/updateCollection",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "questionId":questionId,
+                            "folderId":folderIds
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.reload();
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -47,15 +247,11 @@
             <div class="tree-panel detail-box">
                 <h1 th:text="${question.title}"></h1>
                 <div class="tree-detail-info">
-                    <!-- <span class="layui-badge">审核中</span> -->
-                    <a class="layui-badge layui-bg-green">其它</a>
-                    <!-- <span class="layui-badge" style="background-color: #5FB878;">已结</span> -->
+                    <a class="layui-badge layui-bg-green" th:text="${question.typeName}"></a>
                     <div class="tree-admin-box" data-id="123" th:if="${session.user!=null && session.user.id==question.user.id}">
                         <span class="layui-btn layui-btn-xs">删除</span>
                         <span class="layui-btn layui-btn-xs">置顶</span>
-                        <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="stick" rank="0" style="background-color:#ccc;">取消置顶</span> -->
                         <span class="layui-btn layui-btn-xs">加精</span>
-                        <!-- <span class="layui-btn layui-btn-xs jie-admin" type="set" field="status" rank="0" style="background-color:#ccc;">取消加精</span> -->
                     </div>
                     <span class="tree-list-nums">
                         <span th:id="${'likeQu-'+question.id}" th:data-id="${question.id}" style="cursor: pointer;"
@@ -77,7 +273,7 @@
                         </a>
                         <span th:text="${#dates.format(question.gmtModified,'yyyy-MM-dd HH:mm')}"></span>更新
                     </div>
-                    <div class="detail-hits" id="LAY_jieAdmin" data-id="123">
+                    <div class="detail-hits" id="detail-bookMark">
                         <span style="padding-right: 10px; color: #FF7200">
                             有任何问题点击QQ号加站长询问：<a target="_blank" th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}">2435663184</a>
                         </span>
@@ -86,8 +282,8 @@
                                 <i class="layui-icon layui-icon-edit"></i>编辑
                             </a>
                         </span>
-                        <span data-id="126" onclick="like_question(this)" class="layui-btn layui-btn-xs layui-btn-warm">
-                            <i class="layui-icon layui-icon-star"></i>收藏(<span id="questionlikecount-126">0</span>)
+                        <span onclick="collectionDialog()" class="layui-btn layui-btn-xs layui-btn-warm" th:classappend="${collectionStatus == 1?'collected':''}">
+                            <i class="layui-icon layui-icon-star"></i><span th:text="${collectionStatus == 1?'已收藏('+question.collectionCount+')':'收藏('+question.collectionCount+')'}"></span>
                         </span>
                     </div>
                 </div>
@@ -203,5 +399,35 @@
     </div>
 </div>
 <div th:replace="footer :: foot"></div>
+<div id="bookMark" style="padding: 1rem;display: none">
+    <div class="bookMark-content layui-form" style="margin-bottom: 15px;">
+        <div class="layui-form-item">
+            <label style="display: inline-block;margin-bottom: 10px;">添加到收藏夹：</label>
+        </div>
+        <a class="new-bookmark" style="cursor: pointer" onclick="addBookMarkDialog()">+ 创建收藏夹</a>
+    </div>
+    <div class="bookMark-footer">
+        <button type="button" class="layui-btn layui-btn-primary" onclick="closeLayer()">取消</button>
+        <button type="button" class="layui-btn" onclick="collection()">确定</button>
+    </div>
+</div>
+<div id="addBookMark" style="padding: 1rem;display: none">
+    <div class="bookMark-content layui-form" style="margin-bottom: 15px;">
+        <div class="layui-form-item">
+            <input type="text" id="name" placeholder="请输入收藏夹名称" autocomplete="off" maxlength="32" class="layui-input">
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <textarea id="description" placeholder="请输入描述" maxlength="256" class="layui-textarea"></textarea>
+        </div>
+        <div class="layui-form-item">
+            <input type="radio" name="isPrivate" value="1" title="私密" checked>
+            <input type="radio" name="isPrivate" value="0" title="公开">
+        </div>
+    </div>
+    <div class="bookMark-footer">
+        <button type="button" class="layui-btn layui-btn-primary" onclick="closeLayer2()">取消</button>
+        <button type="button" class="layui-btn" onclick="addBookMark()">确定</button>
+    </div>
+</div>
 </body>
 </html>
