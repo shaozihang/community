@@ -22,26 +22,28 @@ public class RedisService {
 
     /**
      * 点赞。状态为1
+     * @param questionId
      * @param likedUserId
      * @param likedPostId
      */
-    public void saveLikedRedis(String likedUserId, String likedPostId,Integer type) {
-        String key = RedisKeyUtils.getLikedKey(likedUserId, likedPostId,type);
+    public void saveLikedRedis(String questionId,String likedUserId, String likedPostId,Integer type) {
+        String key = RedisKeyUtils.getLikedKey(questionId,likedUserId, likedPostId,type);
         redisTemplate.opsForHash().put(RedisKeyUtils.MAP_KEY_USER_LIKED, key, LikedStatusEnum.LIKE.getCode());
     }
 
     /**
      * 取消点赞。将状态改变为0
+     * @param questionId
      * @param likedUserId
      * @param likedPostId
      */
-    public void unlikeFromRedis(String likedUserId, String likedPostId,Integer type) {
-        String key = RedisKeyUtils.getLikedKey(likedUserId, likedPostId,type);
+    public void unlikeFromRedis(String questionId,String likedUserId, String likedPostId,Integer type) {
+        String key = RedisKeyUtils.getLikedKey(questionId,likedUserId, likedPostId,type);
         redisTemplate.opsForHash().put(RedisKeyUtils.MAP_KEY_USER_LIKED, key, LikedStatusEnum.UNLIKE.getCode());
     }
 
     /**
-     * 该用户的点赞数加1
+     * 点赞对象的点赞数加1
      * @param likedUserId
      */
     public void incrementLikedCount(String likedUserId,Integer type) {
@@ -50,7 +52,7 @@ public class RedisService {
     }
 
     /**
-     * 该用户的点赞数减1
+     * 点赞对象的点赞数减1
      * @param likedUserId
      */
     public void decrementLikedCount(String likedUserId,Integer type) {
@@ -68,15 +70,16 @@ public class RedisService {
         while (cursor.hasNext()){
             Map.Entry<Object, Object> entry = cursor.next();
             String key = (String) entry.getKey();
-            //分离出 likedUserId，likedPostId
+            //分离出 questionId，likedUserId，likedPostId，type
             String[] split = key.split("::");
-            String likedUserId = split[0];
-            String likedPostId = split[1];
-            Integer type = Integer.valueOf(split[2]);
+            String questionId = split[0];
+            String likedUserId = split[1];
+            String likedPostId = split[2];
+            Integer type = Integer.valueOf(split[3]);
             Integer value = (Integer) entry.getValue();
 
             //组装成 UserLike 对象
-            UserLike userLike = new UserLike(Long.valueOf(likedUserId), Long.valueOf(likedPostId),type, value);
+            UserLike userLike = new UserLike(Long.valueOf(questionId),Long.valueOf(likedUserId), Long.valueOf(likedPostId),type, value);
             list.add(userLike);
 
             //存到 list 后从 Redis 中删除
@@ -95,7 +98,7 @@ public class RedisService {
         while (cursor.hasNext()){
             Map.Entry<Object, Object> map = cursor.next();
             String key = (String)map.getKey();
-            //分离出 likedUserId，likedPostId
+            //分离出 likedUserId，type
             String[] split = key.split("::");
             String id = split[0];
             String type = split[1];
@@ -111,11 +114,11 @@ public class RedisService {
 
 
     /**
-     * 根据被点赞的id和当前用户id查询点赞状态
+     * 根据点赞所在帖子、被点赞的id和当前用户id查询点赞状态
      * @return
      */
-    public Integer selectlikeStatus(Long likedUserId, Long likedPostId,Integer type) {
-        String key = RedisKeyUtils.getLikedKey(String.valueOf(likedUserId.longValue()), String.valueOf(likedPostId.longValue()),type);
+    public Integer selectlikeStatus(Long questionId,Long likedUserId, Long likedPostId,Integer type) {
+        String key = RedisKeyUtils.getLikedKey(String.valueOf(questionId.longValue()),String.valueOf(likedUserId.longValue()), String.valueOf(likedPostId.longValue()),type);
         Integer status = (Integer) redisTemplate.opsForHash().get(RedisKeyUtils.MAP_KEY_USER_LIKED, key);
         if(status == null){
             status = 2;
@@ -131,35 +134,5 @@ public class RedisService {
         String key = RedisKeyUtils.getLikedKeyCount(String.valueOf(likedUserId),type);
         Integer likeCount = (Integer) redisTemplate.opsForHash().get(RedisKeyUtils.MAP_KEY_USER_LIKED_COUNT, key);
         return likeCount;
-    }
-
-    /**
-     * 添加关注。状态为1
-     */
-    public void saveFollowRedis(String meId, String otherId) {
-        redisTemplate.opsForZSet().add(meId+":follow",otherId,System.currentTimeMillis());
-        redisTemplate.opsForZSet().add(otherId+":fans",meId,System.currentTimeMillis());
-    }
-
-    /**
-     * 取消关注。状态为0
-     */
-    public void cancelFollowRedis(String meId, String otherId) {
-        redisTemplate.opsForZSet().remove(meId+":follow",otherId);
-        redisTemplate.opsForZSet().remove(otherId+":fans",meId);
-    }
-
-    /**
-     * 我的关注数
-     */
-    public void FollowCountRedis(String meId) {
-        redisTemplate.opsForZSet().size(meId+":follow");
-    }
-
-    /**
-     * 我的粉丝数
-     */
-    public void FansCountRedis(String meId) {
-        redisTemplate.opsForZSet().size(meId+":fans");
     }
 }

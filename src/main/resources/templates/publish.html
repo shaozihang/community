@@ -11,6 +11,7 @@
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script th:src="@{/js/comment.js}" type="application/javascript"></script>
     <script th:src="@{/js/editormd.min.js}" type="application/javascript"></script>
+    <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
     <script type="application/javascript">
         layui.use(['element','form','layer'],function () {
             var element = layui.element;
@@ -48,26 +49,47 @@
                 }else if(!options.val()){
                     layer.msg("请选择专栏");
                 }else{
-                    $.ajax({
-                        type:"post",
-                        url:"/publish",
-                        contentType:"application/json",
-                        data:JSON.stringify({
-                            "id":id,
-                            "title":title,
-                            "description":description,
-                            'tag':tag,
-                            "type":options.val()
-                        }),
-                        success:function (result) {
-                            if(result.code == 200){
-                                window.location.href="/";
-                            }else if(result.code == 2016){
-                                layer.msg(result.message);
-                            }
-                        },
-                        dataType:"json"
+                    var captcha1 = new TencentCaptcha('2077491291', function(res) {
+                        if(res.ret == 0){
+                            $.ajax({
+                                type:"post",
+                                url:"/checkCaptcha",
+                                contentType:"application/json",
+                                data:JSON.stringify({
+                                    "ticket":res.ticket,
+                                    "randstr":res.randstr
+                                }),
+                                success:function (result) {
+                                    if(result.code == 200) {
+                                        $.ajax({
+                                            type:"post",
+                                            url:"/publish",
+                                            contentType:"application/json",
+                                            data:JSON.stringify({
+                                                "id":id,
+                                                "title":title,
+                                                "description":description,
+                                                'tag':tag,
+                                                "type":options.val()
+                                            }),
+                                            success:function (result) {
+                                                if(result.code == 200){
+                                                    window.location.href="/";
+                                                }else if(result.code == 2016){
+                                                    layer.msg(result.message);
+                                                }
+                                            },
+                                            dataType:"json"
+                                        });
+                                    }else{
+                                        layer.msg(result.message);
+                                    }
+                                },
+                                dataType:"json"
+                            });
+                        }
                     });
+                    captcha1.show(); // 显示验证码
                 }
             });
         }
@@ -85,19 +107,19 @@
                 <div class="layui-tab-item layui-show">
                     <div class="layui-form layui-form-pane">
                         <div class="layui-row layui-col-space15 layui-form-item">
-                            <input type="hidden" id="id" th:value="${id}">
+                            <input type="hidden" id="id" th:value="${question.id}">
                             <div class="">
                                 <label for="title" class="layui-form-label">标题</label>
                                 <div class="layui-input-block">
                                     <input type="text" id="title" name="title" autocomplete="off"
-                                           class="layui-input" th:value="${title}">
+                                           class="layui-input" th:value="${question.title}">
                                 </div>
                             </div>
                         </div>
                         <div class="layui-form-item layui-form-text">
                             <div id="question-editor" class="layui-input-block">
                                 <textarea name="description" id="description" class="form-control" cols="30" rows="10"
-                                          style="display:none;" th:text="${description}"></textarea>
+                                          style="display:none;" th:text="${question.description}"></textarea>
                             </div>
                         </div>
                         <script type="text/javascript">
@@ -118,7 +140,7 @@
                         <div class="layui-form-item ">
                             <label for="tag">添加标签:</label>
                             <input type="text" name="tag" id="tag" class="layui-input" placeholder="点击标签，以英文逗号,分割"
-                                   autocomplete="off" th:value="${tag}" onclick="showSelectTag()">
+                                   autocomplete="off" th:value="${question.tag}" onclick="showSelectTag()">
                             <div id="select-tag" class="layui-tab publish-tag-tab">
                                 <ul class="layui-tab-title">
                                     <li th:each="selectCategory,selectCategoryStat:${tags}"
@@ -143,16 +165,16 @@
                             <div class="layui-input-block" style="width: 190px;" id="publish-select">
                                 <select id="column" name="column" lay-filter="column1">
                                     <option></option>
-                                    <option value="1">提问</option>
-                                    <option value="2">分享</option>
-                                    <option value="3">建议</option>
-                                    <option value="4">讨论</option>
-                                    <option value="5">动态</option>
-                                    <option value="6">其它</option>
+                                    <option value="1" th:selected="${question.typeName == '提问'?'true':'false'}">提问</option>
+                                    <option value="2" th:selected="${question.typeName == '分享'?'true':'false'}">分享</option>
+                                    <option value="3" th:selected="${question.typeName == '建议'?'true':'false'}">建议</option>
+                                    <option value="4" th:selected="${question.typeName == '讨论'?'true':'false'}">讨论</option>
+                                    <option value="5" th:selected="${question.typeName == '动态'?'true':'false'}">动态</option>
+                                    <option value="6" th:selected="${question.typeName == '其它'?'true':'false'}">其它</option>
                                 </select>
                             </div>
                         </div>
-                        <div class="layui-form-item">
+                        <!--<div class="layui-form-item">
                             <div class="layui-inline">
                                 <label class="layui-form-label">阅读权限</label>
                                 <div class="layui-input-inline" style="width: 190px;">
@@ -172,7 +194,7 @@
                                     <a class="tree-link" target="_blank" href="/user/set/info#userGroup">用户组权限</a>
                                 </div>
                             </div>
-                        </div>
+                        </div>-->
                         <div class="layui-form-item btn-hover">
                             <button class="layui-btn" onclick="publishCheck()">立即发布</button>
                         </div>

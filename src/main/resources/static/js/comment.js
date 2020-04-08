@@ -83,7 +83,7 @@ function collapseComments(e) {
             e.classList.add("active");
         }else{
             $.getJSON("/comment/" + id, function (data) {
-                $.each(data.data.reverse(),function (index, comment) {
+                $.each(data.data[0].reverse(),function (index, comment) {
 
                     var commentAvatar = $("<a/>",{
                         "class":"tree-avatar",
@@ -99,7 +99,23 @@ function collapseComments(e) {
                         "href":"/user/"+comment.user.id
                     }).append($("<cite/>", {
                         "html": comment.user.nickName
+                    })).append($("<i/>", {
+                        "class":"layui-badge tree-badge-vip layui-bg-gray twoLevelComment",
+                        "html": 'LV'+comment.user.grade
                     })));
+
+                    if(comment.user.id == data.data[1]){
+                        commentUser.append($("<div/>", {
+                            "class":"jieda-admin2"
+                        }).append($("<span/>", {
+                            style:"padding-right: 20px",
+                            html:"编辑"
+                        })).append($("<span/>", {
+                            style:"padding-right: 10px",
+                            html:"删除",
+                            onclick:"deleteComment2("+comment.id+","+id+")"
+                        })));
+                    }
 
                     var commentHits = $("<div/>",{
                         "class":"detail-hits"
@@ -183,20 +199,22 @@ function showSelectTag() {
 }
 
 function like_question(e) {
-    var questionId = e.getAttribute("data-id");
+    var questionId = $("#question_id").val();
+    var likedUserId = e.getAttribute("data-id");
     var likeQu = $("#likeQu-"+questionId);
     var status = likeQu.hasClass("liked")?1:0;
-    liketarget(questionId, 1, status);
+    liketarget(questionId,likedUserId, 1, status);
 }
 
 function like_comment(e) {
+    var questionId = $("#question_id").val();
     var commentId = e.getAttribute("data-id");
     var likeCom = $("#likeCom-"+commentId);
     var status = likeCom.hasClass("liked")?1:0;
-    liketarget(commentId, 2, status);
+    liketarget(questionId,commentId, 2, status);
 }
 
-function liketarget(targetId, type, status){
+function liketarget(questionId,targetId, type, status){
     layui.use('layer',function () {
         var layer = layui.layer;
         $.ajax({
@@ -204,6 +222,7 @@ function liketarget(targetId, type, status){
             url:"/like",
             contentType:"application/json",
             data:JSON.stringify({
+                "questionId":questionId,
                 "likedUserId":targetId,
                 "type":type,
                 "status":status

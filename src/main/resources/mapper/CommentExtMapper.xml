@@ -17,16 +17,49 @@
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="comment_count" jdbcType="INTEGER" property="commentCount" />
     <result column="target_id" jdbcType="BIGINT" property="targetId" />
+    <result column="addition" jdbcType="BIT" property="addition" />
+    <result column="question_id" jdbcType="BIGINT" property="questionId" />
   </resultMap>
   <select id="selectByType" parameterType="java.lang.Long" resultMap="BaseResultMap">
     select * from comment
      where parent_id = #{id} and (type = 2 or type = 3)
      order by gmt_create desc;
   </select>
+
+  <select id="getCommentatorByQuId" parameterType="java.lang.Long" resultType="java.lang.Long">
+    select commentator from comment
+    where question_id = #{questionId} and addition = 1;
+  </select>
+
   <update id="incCommentCount" parameterType="com.tree.community.model.Comment">
     update comment
     set
     comment_count = comment_count + #{commentCount,jdbcType=INTEGER}
     where id = #{id}
   </update>
+
+  <update id="incLikeCount" parameterType="com.tree.community.model.Comment">
+    update comment
+    set
+    like_count = like_count + #{likeCount}
+    where id = #{id}
+  </update>
+
+  <update id="decCommentCount" parameterType="java.lang.Long">
+    update comment
+    set
+    comment_count = comment_count - 1
+    where id = #{id}
+  </update>
+
+  <update id="updateReplyByTargetId" parameterType="com.tree.community.model.Comment">
+    update comment
+    set target_id = #{commentator}
+    where target_id = #{targetId} and type = 3;
+  </update>
+
+  <delete id="deleteByParentId" parameterType="java.lang.Long">
+    delete from COMMENT
+    where parent_id = #{commentId} and (type = 2 or type = 3);
+  </delete>
 </mapper>

@@ -8,14 +8,18 @@ import com.tree.community.exception.CustomizeErrorCode;
 import com.tree.community.exception.CustomizeException;
 import com.tree.community.mapper.*;
 import com.tree.community.model.*;
+import com.tree.community.util.ScoreToGradeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class QuestionService {
@@ -31,6 +35,27 @@ public class QuestionService {
 
     @Autowired
     private CollectionExtMapper collectionExtMapper;
+
+    @Autowired
+    private UserExtMapper userExtMapper;
+
+    @Autowired
+    private NotificationMapper notificationMapper;
+
+    @Autowired
+    private CollectionMapper collectionMapper;
+
+    @Autowired
+    private UserLikeMapper userLikeMapper;
+
+    @Autowired
+    private CommentMapper commentMapper;
+
+    @Autowired
+    private CommentExtMapper commentExtMapper;
+
+    @Autowired
+    private UserLikeService userLikeService;
 
     public PaginationDTO list(String search, String tag, Integer page, Integer size,String type,String sort) {
         if(StringUtils.isNotBlank(search)){
@@ -95,6 +120,7 @@ public class QuestionService {
             User user = userMapper.selectByPrimaryKey(question.getCreator());
             QuestionDTO questionDTO = new QuestionDTO();
             BeanUtils.copyProperties(question,questionDTO);
+            user.setGrade(ScoreToGradeUtils.scoreToGrade(user.getScore()));
             questionDTO.setUser(user);
             questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
             Integer collectionCount = collectionExtMapper.getCollectionCount(question.getId());
@@ -166,18 +192,23 @@ public class QuestionService {
         BeanUtils.copyProperties(question,questionDTO);
         User user = userMapper.selectByPrimaryKey(question.getCreator());
         questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
+        user.setGrade(ScoreToGradeUtils.scoreToGrade(user.getScore()));
         questionDTO.setUser(user);
         Integer collectionCount = collectionExtMapper.getCollectionCount(id);
         questionDTO.setCollectionCount(collectionCount);
         return questionDTO;
     }
 
-    public void createOrUpdate(Question question) {
+    public void createOrUpdate(Question question, HttpServletRequest request) {
         if(question.getId() == null){
             //创建
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(System.currentTimeMillis());
             questionMapper.insertSelective(question);
+            request.getSession().getAttribute("user");
+            userExtMapper.addScoreOfQu(question.getCreator());
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
+            request.getSession().setAttribute("user",user);
         }else{
             //更新
             question.setGmtModified(System.currentTimeMillis());
@@ -222,5 +253,37 @@ public class QuestionService {
     public List<Question> getQuestionByIds(List<Long> questionIds) {
         List<Question> questions = questionExtMapper.getQuestionByIds(questionIds);
         return questions;
+    }
+
+    public void deleteQu(Long questionId, HttpServletRequest request) {
+        userLikeService.transLikedFromRedisToDB();
+        userLikeService.transLikedCountFromRedisToDB();
+        //删除帖子
+        questionMapper.deleteByPrimaryKey(questionId);
+        //删除消息
+        NotificationExample example = new NotificationExample();
+        example.createCriteria()
+                .andOuteridEqualTo(questionId);
+        notificationMapper.deleteByExample(example);
+        //删除收藏
+        CollectionExample example1 = new CollectionExample();
+        example1.createCriteria()
+                .andQuestionIdEqualTo(questionId);
+        collectionMapper.deleteByExample(example1);
+        //删除点赞
+        UserLikeExample example2 = new UserLikeExample();
+        example2.createCriteria()
+                .andQuestionIdEqualTo(questionId);
+        userLikeMapper.deleteByExample(example2);
+        //删除作者所获积分
+        List<Long> commentatorIds = commentExtMapper.getCommentatorByQuId(questionId);
+        User user = (User) request.getSession().getAttribute("user");
+        user.setScore(10 + commentatorIds.size());
+        userExtMapper.reduceAuthorScore(user);
+        //删除评论
+        CommentExample example3 = new CommentExample();
+        example3.createCriteria()
+                .andQuestionIdEqualTo(questionId);
+        commentMapper.deleteByExample(example3);
     }
 }

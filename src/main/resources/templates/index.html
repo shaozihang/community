@@ -216,12 +216,12 @@
                             </a>
                             <h2>
                                 <a th:class="${question.typeName != '公告'?'layui-badge':'layui-badge layui-bg-green'}" th:text="${question.typeName}" ></a>
-                                <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
+                                <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}" th:class="${question.user.grade >= 5?'Highlight':''}"></a>
                             </h2>
                             <div class="tree-list-info">
                                 <a th:href="@{'/user/'+${question.user.id}}">
                                     <cite th:text="${question.user.nickName}"></cite>
-                                    <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs">站长</i>
+                                    <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs" th:text="${'LV'+question.user.grade}"></i>
                                 </a>
                                 <span th:text="${#dates.format(question.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
                                 <span class="tree-list-liulan layui-hide-xs" title="浏览">

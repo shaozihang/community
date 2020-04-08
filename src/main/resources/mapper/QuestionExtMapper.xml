@@ -93,4 +93,18 @@
     comment_count = comment_count + #{commentCount,jdbcType=INTEGER}
     where id = #{id}
   </update>
+
+  <update id="decCommentCount" parameterType="com.tree.community.model.Question">
+    update question
+    set
+    comment_count = comment_count - #{commentCount,jdbcType=INTEGER}
+    where id = #{id}
+  </update>
+
+  <update id="incLikeCount" parameterType="com.tree.community.model.Question">
+    update question
+    set
+    like_count = like_count + #{likeCount}
+    where id = #{id}
+  </update>
 </mapper>

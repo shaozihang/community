@@ -7,6 +7,7 @@ import com.tree.community.model.FollowAndFans;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
 import com.tree.community.service.*;
+import com.tree.community.util.ScoreToGradeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -69,6 +70,7 @@ public class FollowAndFansController {
             }
         }
         User userInfo = userService.getUserInfoById(id);
+        userInfo.setGrade(ScoreToGradeUtils.scoreToGrade(userInfo.getScore()));
         PaginationDTO userList = null;
         int collectionCount = 0;
         List<BookMarkDTO> publicBookMarkList = bookMarkService.getPublicBookMark(id);
@@ -123,6 +125,7 @@ public class FollowAndFansController {
             collectionCount += bookMarkDTO.getCollectionCount();
         }
         User userInfo = userService.getUserInfoById(userId);
+        userInfo.setGrade(ScoreToGradeUtils.scoreToGrade(userInfo.getScore()));
         BookMarkDTO bookMarkDTO = bookMarkService.getBookMarkById(id);
         List<Question> questions = collectionService.getCollectionByFolderId(id);
         int quCount = questionService.getQuCountById(userId);

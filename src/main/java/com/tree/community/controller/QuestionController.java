@@ -2,6 +2,7 @@ package com.tree.community.controller;
 
 import com.tree.community.dto.CommentDTO;
 import com.tree.community.dto.QuestionDTO;
+import com.tree.community.dto.ResultDTO;
 import com.tree.community.enums.CommentTypeEnum;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
@@ -9,11 +10,11 @@ import com.tree.community.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class QuestionController {
@@ -41,7 +42,7 @@ public class QuestionController {
         User user = (User) request.getSession().getAttribute("user");
         int collectionStatus;
         if(user != null){
-            Integer status = userLikeService.selectlikeStatus(id, user.getId(), 1);
+            Integer status = userLikeService.selectlikeStatus(id,id, user.getId(), 1);
             questionDTO.setLikeStatus(status);
             collectionStatus = collectionService.getCollectionStatus(id, user.getId());
         }else {
@@ -60,5 +61,12 @@ public class QuestionController {
         model.addAttribute("relatedQuestions",relatedQuestions);
         model.addAttribute("collectionStatus",collectionStatus);
         return "question";
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/deleteQu",method = RequestMethod.POST)
+    public Object deleteQu(@RequestBody Map<String,Long> map, HttpServletRequest request){
+        questionService.deleteQu(map.get("questionId"),request);
+        return ResultDTO.okOf();
     }
 }

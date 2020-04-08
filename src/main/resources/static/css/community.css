@@ -394,9 +394,13 @@ i {
     color: #5FB878;
 }
 
-.tree-list-info .tree-badge-vip {
+.tree-list-info .tree-badge-vip{
     position: relative;
     margin-left: 2px;
+}
+
+.twoLevelComment{
+    margin-left: 3px;
 }
 
 .tree-list-liulan {
@@ -669,6 +673,17 @@ i {
     position: absolute;
     right: 0;
     top: 4px;
+}
+
+.jieda-admin2 {
+    position: absolute;
+    right: 0;
+    top: 0px;
+}
+
+.jieda-admin2 span{
+    font-size: 14px;
+    cursor: pointer;
 }
 
 .rightbtn {
@@ -1501,6 +1516,9 @@ i {
     #location .layui-input-inline {
         margin-bottom: 10px;
     }
+    .help_con {
+        padding: 0px!important;
+    }
 }
 
 @media screen and (max-width: 450px) {
@@ -1574,4 +1592,37 @@ i {
     height: auto;
     padding: 15px 0;
     border-bottom: 1px dotted #e2e2e2;
+}
+
+.help_con{
+    padding: 0 44px;
+}
+
+.help_con .conbox {
+    margin: 0 0 40px 0;
+}
+
+.help_con .conbox p{
+    margin: 0 0 1em 0;
+    font-size: 14px;
+}
+
+.help_con .conbox h1 {
+    margin: 0 0 20px 0;
+    padding: 0 0 10px 0;
+    border-bottom: solid 1px #ccc;
+    font-size: 18px;
+    text-align: center;
+}
+
+.help_con .conbox ul li{
+    padding-bottom: 5px;
+}
+
+.help_con .conbox th,.help_con .conbox tbody{
+    text-align: center;
+}
+
+.Highlight{
+  color: red;
 }

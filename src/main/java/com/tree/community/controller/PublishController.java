@@ -23,6 +23,8 @@ public class PublishController {
 
     @GetMapping("/publish")
     public String publish(Model model){
+        QuestionDTO question = new QuestionDTO();
+        model.addAttribute("question",question);
         model.addAttribute("tags", TagCache.get());
         return "publish";
     }
@@ -30,10 +32,7 @@ public class PublishController {
     @GetMapping("/publish/{id}")
     public String edit(@PathVariable(name = "id")Long id,Model model){
         QuestionDTO question = questionService.getById(id);
-        model.addAttribute("title",question.getTitle());
-        model.addAttribute("description",question.getDescription());
-        model.addAttribute("tag",question.getTag());
-        model.addAttribute("id",question.getId());
+        model.addAttribute("question",question);
         model.addAttribute("tags", TagCache.get());
         return "publish";
     }
@@ -49,7 +48,7 @@ public class PublishController {
         User user = (User) request.getSession().getAttribute("user");
         question.setCreator(user.getId());
         question.setId(question.getId());
-        questionService.createOrUpdate(question);
+        questionService.createOrUpdate(question,request);
         return ResultDTO.okOf();
     }
 }

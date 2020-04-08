@@ -13,7 +13,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class CommentController {
@@ -35,6 +37,7 @@ public class CommentController {
         }
 
         Comment comment = new Comment();
+        comment.setQuestionId(commentCreateDTO.getQuestionId());
         comment.setParentId(commentCreateDTO.getParentId());
         comment.setTargetId(commentCreateDTO.getTargetId());
         comment.setContent(commentCreateDTO.getContent());
@@ -43,15 +46,39 @@ public class CommentController {
         comment.setGmtModified(System.currentTimeMillis());
         comment.setCommentator(user.getId());
 
-        ResultDTO result = commentService.insert(comment,user,commentCreateDTO.getQuestionId());
+        ResultDTO result = commentService.insert(comment,user,commentCreateDTO.getQuestionId(),request);
         return result;
     }
 
     @ResponseBody
     @RequestMapping(value = "/comment/{id}",method = RequestMethod.GET)
     public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id,HttpServletRequest request){
+        User user = (User) request.getSession().getAttribute("user");
+        Long userId;
+        if(user == null){
+            userId = -1L;
+        }else{
+            userId = user.getId();
+        }
         List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT,request);
-        return ResultDTO.okOf(commentDTOS);
+        List<Object> list = new ArrayList<>();
+        list.add(commentDTOS);
+        list.add(userId);
+        return ResultDTO.okOf(list);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/deleteComment",method = RequestMethod.POST)
+    public Object deleteComment(@RequestBody Map<String,Long> map, HttpServletRequest request){
+        commentService.deleteComment(map.get("commentId"),map.get("authorId"),request);
+        return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/deleteComment2",method = RequestMethod.POST)
+    public Object deleteComment2(@RequestBody Map<String,Long> map, HttpServletRequest request){
+        commentService.deleteComment2(map.get("commentId"),map.get("authorId"),map.get("parentId"),request);
+        return ResultDTO.okOf();
     }
 
 }

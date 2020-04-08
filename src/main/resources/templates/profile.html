@@ -11,6 +11,7 @@
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script th:src="@{/cropper/cropper.js}"></script>
+    <script src="https://ssl.captcha.qq.com/TCaptcha.js"></script>
     <script type="application/javascript">
         window.onload = function(){
             var treeNotice = $(".tree_notice").val();
@@ -118,25 +119,46 @@
                 }else if(sign.length>50){
                     layer.msg("个性签名不能大于50个字符");
                 }else {
-                    $.ajax({
-                        type:"post",
-                        url:"/updateUserInfo",
-                        contentType:"application/json",
-                        data:JSON.stringify({
-                            "nickName":nickName,
-                            "sex":sex,
-                            "sign":sign,
-                            'address':$("#address").val()
-                        }),
-                        success:function (result) {
-                            if(result.code == 200){
-                                layer.msg("恭喜您，资料修改成功！！！");
-                            }else if(result.code == 2016){
-                                layer.msg(result.message);
-                            }
-                        },
-                        dataType:"json"
+                    var captcha1 = new TencentCaptcha('2077491291', function(res) {
+                        if(res.ret == 0){
+                            $.ajax({
+                                type:"post",
+                                url:"/checkCaptcha",
+                                contentType:"application/json",
+                                data:JSON.stringify({
+                                    "ticket":res.ticket,
+                                    "randstr":res.randstr
+                                }),
+                                success:function (result) {
+                                    if(result.code == 200) {
+                                        $.ajax({
+                                            type:"post",
+                                            url:"/updateUserInfo",
+                                            contentType:"application/json",
+                                            data:JSON.stringify({
+                                                "nickName":nickName,
+                                                "sex":sex,
+                                                "sign":sign,
+                                                'address':$("#address").val()
+                                            }),
+                                            success:function (result) {
+                                                if(result.code == 200){
+                                                    layer.msg("恭喜您，资料修改成功！！！");
+                                                }else if(result.code == 2016){
+                                                    layer.msg(result.message);
+                                                }
+                                            },
+                                            dataType:"json"
+                                        });
+                                    }else{
+                                        layer.msg(result.message);
+                                    }
+                                },
+                                dataType:"json"
+                            });
+                        }
                     });
+                    captcha1.show(); // 显示验证码
                 }
             });
         }
@@ -163,23 +185,44 @@
                 }else if(newPwd != confirmPwd){
                     layer.msg("两次输入的密码不一致");
                 }else {
-                    $.ajax({
-                        type:"post",
-                        url:"/updatePwd",
-                        contentType:"application/json",
-                        data:JSON.stringify({
-                            "curPwd":curPwd,
-                            "newPwd":newPwd
-                        }),
-                        success:function (result) {
-                            if(result.code == 200){
-                                layer.msg("恭喜您，密码修改成功！！！");
-                            }else if(result.code == 2017){
-                                layer.msg(result.message);
-                            }
-                        },
-                        dataType:"json"
+                    var captcha1 = new TencentCaptcha('2077491291', function(res) {
+                        if(res.ret == 0){
+                            $.ajax({
+                                type:"post",
+                                url:"/checkCaptcha",
+                                contentType:"application/json",
+                                data:JSON.stringify({
+                                    "ticket":res.ticket,
+                                    "randstr":res.randstr
+                                }),
+                                success:function (result) {
+                                    if(result.code == 200) {
+                                        $.ajax({
+                                            type:"post",
+                                            url:"/updatePwd",
+                                            contentType:"application/json",
+                                            data:JSON.stringify({
+                                                "curPwd":curPwd,
+                                                "newPwd":newPwd
+                                            }),
+                                            success:function (result) {
+                                                if(result.code == 200){
+                                                    layer.msg("恭喜您，密码修改成功！！！");
+                                                }else if(result.code == 2017){
+                                                    layer.msg(result.message);
+                                                }
+                                            },
+                                            dataType:"json"
+                                        });
+                                    }else{
+                                        layer.msg(result.message);
+                                    }
+                                },
+                                dataType:"json"
+                            });
+                        }
                     });
+                    captcha1.show(); // 显示验证码
                 }
             });
         }
@@ -248,20 +291,41 @@
                 }else if(regExp.test(phone) == false){
                     layer.msg("请输入正确的手机号");
                 }else{
-                    $.ajax({
-                        type:"post",
-                        url:"/getCode/"+value,
-                        contentType:"application/json",
-                        data: phone,
-                        success:function (result) {
-                            if(result.code == 200){
-                                settime(obj,span);
-                            }else{
-                                layer.msg(result.message);
-                            }
-                        },
-                        dataType:"json"
+                    var captcha1 = new TencentCaptcha('2077491291', function(res) {
+                        if(res.ret == 0){
+                            $.ajax({
+                                type:"post",
+                                url:"/checkCaptcha",
+                                contentType:"application/json",
+                                data:JSON.stringify({
+                                    "ticket":res.ticket,
+                                    "randstr":res.randstr
+                                }),
+                                success:function (result) {
+                                    if(result.code == 200) {
+                                        $.ajax({
+                                            type:"post",
+                                            url:"/getCode/"+value,
+                                            contentType:"application/json",
+                                            data: phone,
+                                            success:function (result) {
+                                                if(result.code == 200){
+                                                    settime(obj,span);
+                                                }else{
+                                                    layer.msg(result.message);
+                                                }
+                                            },
+                                            dataType:"json"
+                                        });
+                                    }else{
+                                        layer.msg(result.message);
+                                    }
+                                },
+                                dataType:"json"
+                            });
+                        }
                     });
+                    captcha1.show(); // 显示验证码
                 }
             });
         }
@@ -827,6 +891,58 @@
                 });
             });
         }
+
+        function deleteMsg(value) {
+            $.ajax({
+                type:"post",
+                url:"/deleteMsg",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "notificationId":value
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
+                    }
+                },
+                dataType:"json"
+            });
+        }
+
+        function deleteMsgs() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                layer.confirm('确定要删除全部消息吗？', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    $.ajax({
+                        type:"post",
+                        url:"/deleteMsgs",
+                        contentType:"application/json",
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.reload();
+                            }
+                        },
+                        dataType:"json"
+                    });
+                });
+            });
+        }
+
+        function readMsgs() {
+            $.ajax({
+                type:"post",
+                url:"/readMsgs",
+                contentType:"application/json",
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
+                    }
+                },
+                dataType:"json"
+            });
+        }
     </script>
 </head>
 <body>
@@ -928,11 +1044,11 @@
             </div>
         </div>
         <div class="layui-tab layui-tab-brief" th:if="${section == 'message' && pagination.data != null}" style="margin-top: 15px;">
-            <button class="layui-btn" >一键已读</button>
-            <button class="layui-btn layui-btn-danger">清空全部消息</button>
+            <button class="layui-btn" onclick="readMsgs()">一键已读</button>
+            <button class="layui-btn layui-btn-danger" onclick="deleteMsgs()">清空全部消息</button>
             <div style="margin-top: 10px;">
-                <ul class="mine-msg" th:each="notification:${pagination.data}">
-                    <li data-id="123">
+                <ul class="mine-msg">
+                    <li th:each="notification:${pagination.data}">
                         <blockquote class="layui-elem-quote">
                             <a th:href="@{'/user/'+${notification.notifier}}"><cite th:text="${notification.notifierName}"></cite></a>
                             <span th:text="${notification.typeName}"></span>
@@ -940,7 +1056,7 @@
                             <span class="layui-badge layui-bg-green" th:if="${notification.status == 0}">未读</span>
                         </blockquote>
                         <p><span th:text="${#dates.format(notification.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
-                            <a href="javascript:;" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
+                            <a th:href="@{'javascript:deleteMsg('+${notification.id}+')'}" class="layui-btn layui-btn-sm layui-btn-danger">删除</a>
                         </p>
                     </li>
                 </ul>
@@ -966,14 +1082,13 @@
                 </li>
             </div>
         </div>
-        <div class="info-none" th:if="${pagination.data == null && section == 'questions' or section == 'message'}"
+        <div class="info-none" th:if="${pagination.data == null && (section == 'questions' or section == 'message')}"
              th:text="${section == 'message'?'您暂时没有最新消息':'您还没有发过帖子呢'}">
         </div>
         <div class="layui-tab layui-tab-brief" th:if="${section == 'info'}" lay-filter="userInfo">
             <ul class="layui-tab-title">
                 <li lay-id="info" class="layui-this">我的资料</li>
-                <li lay-id="score">积分</li>
-                <li lay-id="userGroup">用户组</li>
+                <li lay-id="score">积分与等级</li>
                 <li lay-id="avatar">头像</li>
                 <li lay-id="pwd">密码</li>
             </ul>
@@ -1029,8 +1144,66 @@
                         </div>
                     </div>
                 </div>
-                <div class="layui-tab-item">积分</div>
-                <div class="layui-tab-item">用户组</div>
+                <div class="layui-tab-item help_con">
+                    <div class="conbox">
+                        <h1>积分规则</h1>
+                        <p>积分是树洞社区对用户努力的认可和奖励，也是衡量用户水平的重要标准。用户等级也将由积分唯一决定。积分规则具体如下：</p>
+                        <ul>
+                            <li>1、每发布一篇帖子：可获得10分；</li>
+                            <li>2、作者的帖子每被评论一次：可获得1分；</li>
+                            <li>3、每发表一次评论：可获得1分（自己给自己评论、作者回复评论、评论者与作者不获得积分）；</li>
+                            <li>4、帖子被管理员或作者本人删除，相应减去作者基于该篇帖子所获得的分数；</li>
+                            <li>5、评论被管理员、作者或发评论者删除，相应减去发评论者和作者基于该评论各自获得的分数 ；</li>
+                            <li>6、另外会开设相应的抄袭举报功能，一旦举报证实某篇帖子抄袭，将扣除用户该篇帖子相应的得分（暂未开设）。</li>
+                        </ul>
+                    </div>
+                    <div class="conbox">
+                        <h1>用户等级</h1>
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="1">
+                                <col width="1">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>等级</th>
+                                <th>所需积分</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td>L1</td><td>0</td></tr>
+                            <tr><td>L2</td><td>200</td></tr>
+                            <tr><td>L3</td><td>1500</td></tr>
+                            <tr><td>L4</td><td>4500</td></tr>
+                            <tr><td>L5</td><td>10800</td></tr>
+                            <tr><td>L6</td><td>30000</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="conbox">
+                        <h1>等级与权益</h1>
+                        <table class="layui-table">
+                            <colgroup>
+                                <col width="1">
+                                <col width="1">
+                            </colgroup>
+                            <thead>
+                            <tr>
+                                <th>等级</th>
+                                <th>权益</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr><td>L1</td><td>暂无</td></tr>
+                            <tr><td>L2</td><td>暂无</td></tr>
+                            <tr><td>L3</td><td>暂无</td></tr>
+                            <tr><td>L4</td><td>暂无</td></tr>
+                            <tr><td>L5</td><td>发帖标题高亮</td></tr>
+                            <tr><td>L6</td><td>暂无</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
                 <div class="layui-tab-item">
                     <div class="avatar-add">
                         <p>建议尺寸168*168，支持jpg、png、gif，最大不能超过1024KB</p>

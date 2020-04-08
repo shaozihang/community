@@ -29,7 +29,7 @@
             <i class="layui-badge tree-badge-grade" th:text="${'LV'+userInfo.grade}"></i>
         </h1>
         <p class="tree-home-info">
-            <span class="iconfont icon-jifen">132</span>
+            <span class="iconfont icon-jifen" th:text="${userInfo.score}"></span>
             <span class="layui-icon layui-icon-time" th:text="${#dates.format(userInfo.gmtCreate,' yyyy-MM-dd 加入')}"></span>
             <span class="layui-icon layui-icon-location" th:text="${' 来自：'+userInfo.address}"></span>
         </p>

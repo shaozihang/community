@@ -8,6 +8,7 @@ import com.tree.community.model.User;
 import com.tree.community.model.UserExample;
 import com.tree.community.model.Useroauths;
 import com.tree.community.provider.AliyunProvider;
+import com.tree.community.provider.QQProvider;
 import com.tree.community.service.UserService;
 import com.tree.community.util.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -31,6 +33,9 @@ public class RegisterController {
 
     @Autowired
     private AliyunProvider aliyunProvider;
+
+    @Autowired
+    private QQProvider qqProvider;
 
     @GetMapping("/register")
     public String register(@ModelAttribute("oauthsInfo")String oauthsInfo,
@@ -96,6 +101,17 @@ public class RegisterController {
             return ResultDTO.errorOf(2009,"验证码发送失败，请重新发送");
         }
         return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/checkCaptcha",method = RequestMethod.POST)
+    public Object checkCaptcha(@RequestBody Map<String,String> map){
+        Long result = qqProvider.checkCaptcha(map.get("ticket"), map.get("randstr"));
+        if(result == 1){
+            return ResultDTO.okOf();
+        }else{
+            return ResultDTO.errorOf(2030,"请重新验证");
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import com.tree.community.model.User;
 import com.tree.community.provider.EmailProvider;
 import com.tree.community.service.*;
 import com.tree.community.util.MD5Utils;
+import com.tree.community.util.ScoreToGradeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -66,6 +67,7 @@ public class UserController {
             collectionCount += bookMarkDTO.getCollectionCount();
         }
         User userInfo = userService.getUserInfoById(id);
+        userInfo.setGrade(ScoreToGradeUtils.scoreToGrade(userInfo.getScore()));
         PaginationDTO pagination = questionService.list(id, page, size);
         model.addAttribute("publicBookMarkList",publicBookMarkList);
         model.addAttribute("userInfo",userInfo);

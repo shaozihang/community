@@ -1,9 +1,7 @@
 package com.tree.community.service;
 
 import com.tree.community.dto.LikedCountDTO;
-import com.tree.community.mapper.CommentMapper;
-import com.tree.community.mapper.QuestionMapper;
-import com.tree.community.mapper.UserLikeMapper;
+import com.tree.community.mapper.*;
 import com.tree.community.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,17 +19,20 @@ public class UserLikeService {
     private RedisService redisService;
 
     @Autowired
-    private QuestionMapper questionMapper;
+    private CommentMapper commentMapper;
 
     @Autowired
-    private CommentMapper commentMapper;
+    private QuestionExtMapper questionExtMapper;
+
+    @Autowired
+    private CommentExtMapper commentExtMapper;
 
     /**
      * 通过被点赞的帖子或评论id和点赞人id查询是否存在点赞记录
      */
     @Transactional
-    public Integer selectlikeStatus(Long id, Long userId, Integer type) {
-        Integer status = redisService.selectlikeStatus(id, userId, type);
+    public Integer selectlikeStatus(Long questionId,Long id, Long userId, Integer type) {
+        Integer status = redisService.selectlikeStatus(questionId,id, userId, type);
         if(status == 2){
             UserLikeExample userLikeExample = new UserLikeExample();
             userLikeExample.createCriteria()
@@ -68,11 +69,11 @@ public class UserLikeService {
                 userLikeMapper.insert(like);
             }else{
                 //有记录，需要更新
-                like.setGmtMotified(System.currentTimeMillis());
-                UserLikeExample example = new UserLikeExample();
-                example.createCriteria()
-                        .andIdEqualTo(userLikes.get(0).getId());
-                userLikeMapper.updateByExampleSelective(like, example);
+                UserLike userLike = new UserLike();
+                userLike.setId(userLikes.get(0).getId());
+                userLike.setStatus(like.getStatus());
+                userLike.setGmtMotified(System.currentTimeMillis());
+                userLikeMapper.updateByPrimaryKeySelective(userLike);
             }
         }
     }
@@ -85,23 +86,16 @@ public class UserLikeService {
         List<LikedCountDTO> list = redisService.getLikedCountFromRedis();
         for (LikedCountDTO dto : list) {
             if(dto.getType() == 1){
-                Question question = questionMapper.selectByPrimaryKey(dto.getId());
-                if(question != null){
-                    question.setLikeCount(question.getLikeCount()+dto.getLikedCount());
-                    QuestionExample questionExample = new QuestionExample();
-                    questionExample.createCriteria()
-                            .andIdEqualTo(dto.getId());
-                    questionMapper.updateByExampleSelective(question, questionExample);
-                }
+                Question qu = new Question();
+                qu.setId(dto.getId());
+                qu.setLikeCount(dto.getLikedCount());
+                questionExtMapper.incLikeCount(qu);
             }else if(dto.getType() == 2){
-                Comment comment = commentMapper.selectByPrimaryKey(dto.getId());
-                if(comment != null){
-                    comment.setLikeCount(comment.getLikeCount()+dto.getLikedCount());
-                    CommentExample commentExample = new CommentExample();
-                    commentExample.createCriteria()
-                            .andIdEqualTo(dto.getId());
-                    commentMapper.updateByExampleSelective(comment, commentExample);
-                }
+                Comment comment = new Comment();
+                comment.setId(dto.getId());
+                comment.setLikeCount(dto.getLikedCount());
+                commentExtMapper.incLikeCount(comment);
+
             }
         }
     }

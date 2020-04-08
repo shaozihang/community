@@ -17,4 +17,8 @@ public interface QuestionExtMapper {
     List<Question> selectBySearch(QuestionQueryDTO questionQueryDTO);
 
     List<Question> getQuestionByIds(List<Long> questionIds);
+
+    void incLikeCount(Question qu);
+
+    void decCommentCount(Question question);
 }

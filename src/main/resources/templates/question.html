@@ -234,6 +234,84 @@
                 }
             });
         }
+
+        function deleteQu() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var questionId = $("#question_id").val();
+                layer.confirm('确定要删除帖子吗（所获积分也将删除）？', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    $.ajax({
+                        type:"post",
+                        url:"/deleteQu",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "questionId":questionId
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.href = '/';
+                            }
+                        },
+                        dataType:"json"
+                    });
+                });
+            });
+        }
+
+        function deleteComment(value) {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var authorId = $("#authorId").val();
+                layer.confirm('确定要删除评论吗（所获积分和所有回复也将删除）？', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    $.ajax({
+                        type:"post",
+                        url:"/deleteComment",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "commentId":value,
+                            "authorId":authorId
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.href = '/';
+                            }
+                        },
+                        dataType:"json"
+                    });
+                });
+            });
+        }
+
+        function deleteComment2(value,parentId) {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var authorId = $("#authorId").val();
+                layer.confirm('确定要删除回复吗（所获积分也将删除）？', {
+                    btn: ['确定','取消'] //按钮
+                }, function(index){
+                    $.ajax({
+                        type:"post",
+                        url:"/deleteComment2",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "commentId":value,
+                            "parentId":parentId,
+                            "authorId":authorId
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.reload();
+                            }
+                        },
+                        dataType:"json"
+                    });
+                });
+            });
+        }
     </script>
 </head>
 <body>
@@ -249,7 +327,7 @@
                 <div class="tree-detail-info">
                     <a class="layui-badge layui-bg-green" th:text="${question.typeName}"></a>
                     <div class="tree-admin-box" data-id="123" th:if="${session.user!=null && session.user.id==question.user.id}">
-                        <span class="layui-btn layui-btn-xs">删除</span>
+                        <span class="layui-btn layui-btn-xs" onclick="deleteQu()">删除</span>
                         <span class="layui-btn layui-btn-xs">置顶</span>
                         <span class="layui-btn layui-btn-xs">加精</span>
                     </div>
@@ -269,7 +347,7 @@
                     <div class="tree-detail-user">
                         <a th:href="@{'/user/'+${question.user.id}}" class="tree-link">
                             <cite th:text="${question.user.nickName}"></cite>
-                            <i class="layui-badge tree-badge-vip layui-bg-gray">LV2</i>
+                            <i class="layui-badge tree-badge-vip layui-bg-gray" th:text="${'LV'+question.user.grade}"></i>
                         </a>
                         <span th:text="${#dates.format(question.gmtModified,'yyyy-MM-dd HH:mm')}"></span>更新
                     </div>
@@ -317,7 +395,7 @@
                                 <div class="tree-detail-user">
                                     <a th:href="@{'/user/'+${comment.user.id}}" class="tree-link">
                                         <cite th:text="${comment.user.nickName}"></cite>
-                                        <i class="layui-badge tree-badge-vip layui-bg-gray">LV2</i>
+                                        <i class="layui-badge tree-badge-vip layui-bg-gray" th:text="${'LV'+comment.user.grade}"></i>
                                     </a>
                                 </div>
                                 <div class="detail-hits">
@@ -335,9 +413,9 @@
                                     <i class="iconfont icon-huifu"></i>
                                     <em th:text="${comment.commentCount}"></em>
                                 </span>
-                                <div class="jieda-admin">
+                                <div class="jieda-admin" th:if="${session.user!=null && session.user.id==comment.user.id}">
                                     <span type="edit">编辑</span>
-                                    <span type="del" style="padding-right: 10px">删除</span>
+                                    <span type="del" style="padding-right: 10px" th:onclick="'deleteComment('+${comment.id}+')'">删除</span>
                                 </div>
                             </div>
                             <!--二级评论-->
@@ -354,6 +432,7 @@
                 <!--回复输入框-->
                 <div class="layui-form layui-form-pane">
                     <input type="hidden" id="question_id" th:value="${question.id}">
+                    <input type="hidden" id="authorId" th:value="${question.user.id}">
                     <div class="layui-form-item layui-form-text">
                         <div class="layui-input-block">
                             <textarea id="questionComment" class="layui-textarea" rows="6" placeholder="我来说两句..."></textarea>
