@@ -258,6 +258,16 @@ public class QuestionService {
     public void deleteQu(Long questionId, HttpServletRequest request) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
+        //删除作者所获积分
+        List<Long> commentatorIds = commentExtMapper.getCommentatorByQuId(questionId);
+        User user = (User) request.getSession().getAttribute("user");
+        user.setScore(10 + commentatorIds.size());
+        userExtMapper.reduceAuthorScore(user);
+        //删除评论
+        CommentExample example3 = new CommentExample();
+        example3.createCriteria()
+                .andQuestionIdEqualTo(questionId);
+        commentMapper.deleteByExample(example3);
         //删除帖子
         questionMapper.deleteByPrimaryKey(questionId);
         //删除消息
@@ -275,15 +285,5 @@ public class QuestionService {
         example2.createCriteria()
                 .andQuestionIdEqualTo(questionId);
         userLikeMapper.deleteByExample(example2);
-        //删除作者所获积分
-        List<Long> commentatorIds = commentExtMapper.getCommentatorByQuId(questionId);
-        User user = (User) request.getSession().getAttribute("user");
-        user.setScore(10 + commentatorIds.size());
-        userExtMapper.reduceAuthorScore(user);
-        //删除评论
-        CommentExample example3 = new CommentExample();
-        example3.createCriteria()
-                .andQuestionIdEqualTo(questionId);
-        commentMapper.deleteByExample(example3);
     }
 }

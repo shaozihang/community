@@ -192,17 +192,27 @@ public class CommentService {
     public void deleteComment(Long commentId, Long authorId, HttpServletRequest request) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
-        //删除点赞和删除消息
         List<Comment> comments = commentExtMapper.selectByType(commentId);
+        Comment comment = commentMapper.selectByPrimaryKey(commentId);
+        //删除评论
+        commentMapper.deleteByPrimaryKey(commentId);
+        commentExtMapper.deleteByParentId(commentId);
+        Question question = new Question();
+        question.setId(comment.getQuestionId());
+        question.setCommentCount(comments.size()+1);
+        questionExtMapper.decCommentCount(question);
+        //删除点赞和删除消息
         List<Long> ids = new ArrayList<>();
-        for (Comment comment : comments) {
-            ids.add(comment.getId());
+        if(comments.size() != 0){
+            for (Comment comment1 : comments) {
+                ids.add(comment1.getId());
+            }
+            NotificationExample example = new NotificationExample();
+            example.createCriteria()
+                    .andSenderIdIn(ids)
+                    .andTypeEqualTo(2);
+            notificationMapper.deleteByExample(example);
         }
-        NotificationExample example = new NotificationExample();
-        example.createCriteria()
-                .andSenderIdIn(ids)
-                .andTypeEqualTo(2);
-        notificationMapper.deleteByExample(example);
         NotificationExample example1 = new NotificationExample();
         example1.createCriteria()
                 .andSenderIdEqualTo(commentId)
@@ -211,54 +221,28 @@ public class CommentService {
         ids.add(commentId);
         userLikeExtMapper.deleteByLikedUserId(ids);
         //删除发评论者和作者所获积分
-        Comment comment = commentMapper.selectByPrimaryKey(commentId);
         int size = 0;
         if(comment.getAddition()){
             size += 1;
             userExtMapper.reduceCommentatorScore(comment.getCommentator());
         }
-        for (Comment comm : comments) {
-            if(comm.getAddition()){
-                size += 1;
+        if(comments.size() != 0){
+            for (Comment comm : comments) {
+                if(comm.getAddition()){
+                    size += 1;
+                }
             }
         }
         User user = new User();
         user.setId(authorId);
         user.setScore(size);
         userExtMapper.reduceAuthorScore(user);
-        //删除评论
-        commentMapper.deleteByPrimaryKey(commentId);
-        commentExtMapper.deleteByParentId(commentId);
-        Question question = new Question();
-        question.setId(comment.getQuestionId());
-        question.setCommentCount(comments.size()+1);
-        questionExtMapper.decCommentCount(question);
     }
 
     public void deleteComment2(Long commentId, Long authorId, Long parentId, HttpServletRequest request) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
-        //删除消息
-        NotificationExample example1 = new NotificationExample();
-        example1.createCriteria()
-                .andSenderIdEqualTo(commentId)
-                .andTypeEqualTo(2);
-        notificationMapper.deleteByExample(example1);
-        //删除点赞
-        UserLikeExample example = new UserLikeExample();
-        example.createCriteria()
-                .andLikedUserIdEqualTo(commentId)
-                .andTypeEqualTo(2);
-        userLikeMapper.deleteByExample(example);
-        //删除发评论者和作者所获积分
         Comment comment = commentMapper.selectByPrimaryKey(commentId);
-        if(comment.getAddition()){
-            userExtMapper.reduceCommentatorScore(comment.getCommentator());
-            User user = new User();
-            user.setId(authorId);
-            user.setScore(1);
-            userExtMapper.reduceAuthorScore(user);
-        }
         //删除评论
         commentMapper.deleteByPrimaryKey(commentId);
         commentExtMapper.decCommentCount(parentId);
@@ -270,5 +254,27 @@ public class CommentService {
         comment1.setCommentator(-comment.getCommentator());
         comment1.setTargetId(comment.getId());
         commentExtMapper.updateReplyByTargetId(comment1);
+        //删除消息
+        NotificationExample example1 = new NotificationExample();
+        example1.createCriteria()
+                .andSenderIdEqualTo(commentId)
+                .andTypeEqualTo(2);
+        notificationMapper.deleteByExample(example1);
+        //删除发评论者和作者所获积分
+        if(comment.getAddition()){
+            userExtMapper.reduceCommentatorScore(comment.getCommentator());
+            User user = new User();
+            user.setId(authorId);
+            user.setScore(1);
+            userExtMapper.reduceAuthorScore(user);
+        }
+        if(comment.getLikeCount() != 0){
+            //删除点赞
+            UserLikeExample example = new UserLikeExample();
+            example.createCriteria()
+                    .andLikedUserIdEqualTo(commentId)
+                    .andTypeEqualTo(2);
+            userLikeMapper.deleteByExample(example);
+        }
     }
 }
