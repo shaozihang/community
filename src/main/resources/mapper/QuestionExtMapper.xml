@@ -12,6 +12,8 @@
     <result column="like_count" jdbcType="INTEGER" property="likeCount" />
     <result column="tag" jdbcType="VARCHAR" property="tag" />
     <result column="type" jdbcType="INTEGER" property="type" />
+    <result column="essence" jdbcType="BIT" property="essence" />
+    <result column="is_top" jdbcType="BIT" property="isTop" />
   </resultMap>
   <select id="selectRelated" parameterType="com.tree.community.model.Question" resultMap="BaseResultMap">
     select * from question where id != #{id} and tag regexp #{tag} order by comment_count desc,gmt_create desc limit 10
@@ -35,6 +37,15 @@
        <if test="sort != null and sort == 0">
          and comment_count = #{sort}
        </if>
+       <if test="sort != null and sort == 2">
+         and essence = 1
+       </if>
+       <if test="quIds != null and quIds.size() > 0">
+         and id not in
+         <foreach collection="quIds" item="item" index="index" open="(" close=")" separator=",">
+           #{item}
+         </foreach>
+       </if>
      </where>
   </select>
 
@@ -55,6 +66,15 @@
       </if>
       <if test="sort != null and sort == 0">
         and comment_count = #{sort}
+      </if>
+      <if test="sort != null and sort == 2">
+        and essence = 1
+      </if>
+      <if test="quIds != null and quIds.size() > 0">
+        and id not in
+        <foreach collection="quIds" item="item" index="index" open="(" close=")" separator=",">
+          #{item}
+        </foreach>
       </if>
     </where>
     <choose>
@@ -78,6 +98,18 @@
       #{item}
     </foreach>
     ) desc
+  </select>
+
+  <select id="getQuestion" resultMap="BaseResultMap">
+    select id,title,essence,is_top,creator from question order by gmt_create desc limit #{start},#{limit};
+  </select>
+
+  <select id="getQuestionCount" resultType="java.lang.Integer">
+    select count(*) from question;
+  </select>
+
+  <select id="questionTop" resultMap="BaseResultMap">
+    select * from question where is_top = 1 order by gmt_create desc limit 3;
   </select>
 
   <update id="incView" parameterType="com.tree.community.model.Question">
@@ -105,6 +137,13 @@
     update question
     set
     like_count = like_count + #{likeCount}
+    where id = #{id}
+  </update>
+
+  <update id="questionEdit" parameterType="com.tree.community.model.Question">
+    update question
+    set
+    essence = #{essence},is_top = #{isTop}
     where id = #{id}
   </update>
 </mapper>

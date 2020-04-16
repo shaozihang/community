@@ -622,7 +622,7 @@
                 }else{
                     $.ajax({
                         type:"post",
-                        url:"/addBookMark",
+                        url:"/bookMark/addBookMark",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "name":name,
@@ -671,7 +671,7 @@
                 }else{
                     $.ajax({
                         type:"post",
-                        url:"/addBookMark",
+                        url:"/bookMark/addBookMark",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "name":name,
@@ -745,7 +745,7 @@
                 }else{
                     $.ajax({
                         type:"post",
-                        url:"/updateBookMark",
+                        url:"/bookMark/updateBookMark",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "id":id,
@@ -773,7 +773,7 @@
                 var id = $("#bookMarkId").val();
                 $.ajax({
                     type:"post",
-                    url:"/deleteBookMark",
+                    url:"/bookMark/deleteBookMark",
                     contentType:"application/json",
                     data: id,
                     success:function (result) {
@@ -793,7 +793,7 @@
                 var id = $("#bookMarkId").val();
                 $.ajax({
                     type:"post",
-                    url:"/deleteCollection",
+                    url:"/collection/deleteCollection",
                     contentType:"application/json",
                     data: JSON.stringify({
                         "id":id,
@@ -817,7 +817,7 @@
                 var collectionStatus = 1;
                 $.ajax({
                     type:"post",
-                    url:"/getBookMark",
+                    url:"/bookMark/getBookMark",
                     contentType:"application/json",
                     data: JSON.stringify({
                         "questionId":value,
@@ -876,7 +876,7 @@
                 }
                 $.ajax({
                     type:"post",
-                    url:"/updateCollection",
+                    url:"/collection/updateCollection",
                     contentType:"application/json",
                     data:JSON.stringify({
                         "questionId":questionId,
@@ -895,7 +895,7 @@
         function deleteMsg(value) {
             $.ajax({
                 type:"post",
-                url:"/deleteMsg",
+                url:"/notification/deleteMsg",
                 contentType:"application/json",
                 data:JSON.stringify({
                     "notificationId":value
@@ -917,7 +917,7 @@
                 }, function(index){
                     $.ajax({
                         type:"post",
-                        url:"/deleteMsgs",
+                        url:"/notification/deleteMsgs",
                         contentType:"application/json",
                         success:function (result) {
                             if(result.code == 200){
@@ -933,7 +933,7 @@
         function readMsgs() {
             $.ajax({
                 type:"post",
-                url:"/readMsgs",
+                url:"/notification/readMsgs",
                 contentType:"application/json",
                 success:function (result) {
                     if(result.code == 200){

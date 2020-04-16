@@ -23,7 +23,7 @@ public class BookMarkController {
     private BookMarkService bookMarkService;
 
     @ResponseBody
-    @RequestMapping(value = "/getBookMark",method = RequestMethod.POST)
+    @RequestMapping(value = "/bookMark/getBookMark",method = RequestMethod.POST)
     public Object getBookMark(@RequestBody Map<String,String> map, HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         ResultDTO result;
@@ -42,7 +42,7 @@ public class BookMarkController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/addBookMark",method = RequestMethod.POST)
+    @RequestMapping(value = "/bookMark/addBookMark",method = RequestMethod.POST)
     public Object addBookMark(@RequestBody BookMark bookMark, HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         int result = bookMarkService.addBookMark(user.getId(), bookMark);
@@ -54,7 +54,7 @@ public class BookMarkController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/updateBookMark",method = RequestMethod.POST)
+    @RequestMapping(value = "/bookMark/updateBookMark",method = RequestMethod.POST)
     public Object updateBookMark(@RequestBody BookMark bookMark, HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         int result = bookMarkService.updateBookMark(user.getId(), bookMark);
@@ -65,7 +65,7 @@ public class BookMarkController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/deleteBookMark",method = RequestMethod.POST)
+    @RequestMapping(value = "/bookMark/deleteBookMark",method = RequestMethod.POST)
     public Object deleteBookMark(@RequestBody Long id){
         bookMarkService.deleteBookMark(id);
         return ResultDTO.okOf();

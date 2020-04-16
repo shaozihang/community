@@ -15,12 +15,13 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/notification")
 public class NotificationController {
 
     @Autowired
     private NotificationService notificationService;
 
-    @GetMapping("/notification/{id}")
+    @GetMapping("/{id}")
     public String profile(@PathVariable(name = "id")Long id,
                           HttpServletRequest request, Model model){
 

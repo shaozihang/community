@@ -189,7 +189,7 @@ public class CommentService {
 
     }
 
-    public void deleteComment(Long commentId, Long authorId, HttpServletRequest request) {
+    public void deleteComment(Long commentId, Long authorId) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
         List<Comment> comments = commentExtMapper.selectByType(commentId);
@@ -239,7 +239,7 @@ public class CommentService {
         userExtMapper.reduceAuthorScore(user);
     }
 
-    public void deleteComment2(Long commentId, Long authorId, Long parentId, HttpServletRequest request) {
+    public void deleteComment2(Long commentId, Long authorId, Long parentId) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
         Comment comment = commentMapper.selectByPrimaryKey(commentId);

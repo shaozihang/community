@@ -1,0 +1,52 @@
+.background-image{
+    background-image: url(../images/background.jpg);
+    background-repeat:no-repeat;
+}
+
+.adminLogin{
+    width: 400px;
+    height: 300px;
+    margin: 0 auto;
+    margin-top: 200px;
+    background: rgba(255,255,255,0.2);
+    text-align: center;
+    box-shadow: 0px 15px 25px rgba(0,0,0,.5);
+    border-radius:15px;
+}
+
+.adminLogin h2{
+    padding-top: 20px;
+    padding-bottom: 30px;
+}
+
+.adminLogin input{
+    width: 300px;
+    height: 40px;
+    margin: 10px 0;
+    padding: 0px 12px;
+    font-size: 14px;
+    line-height: 40px;
+    color: #555;
+    background-image: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-shadow: inset 0 1px 1px rgba(0,0,0,.075);
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+.adminLogin button{
+    width: 300px;
+    margin-top: 20px;
+}
+
+.footer{
+    padding: 30px 10px;
+    text-align: center;
+}
+
+.layui-table-cell{
+    height: auto;
+}

@@ -55,29 +55,33 @@ public class CommentController {
     public ResultDTO<List<CommentDTO>> comments(@PathVariable(name = "id")Long id,HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         Long userId;
+        int userType;
         if(user == null){
             userId = -1L;
+            userType = -1;
         }else{
             userId = user.getId();
+            userType = user.getType();
         }
         List<CommentDTO> commentDTOS = commentService.listByTargetId(id, CommentTypeEnum.COMMENT,request);
         List<Object> list = new ArrayList<>();
         list.add(commentDTOS);
         list.add(userId);
+        list.add(userType);
         return ResultDTO.okOf(list);
     }
 
     @ResponseBody
-    @RequestMapping(value = "/deleteComment",method = RequestMethod.POST)
-    public Object deleteComment(@RequestBody Map<String,Long> map, HttpServletRequest request){
-        commentService.deleteComment(map.get("commentId"),map.get("authorId"),request);
+    @RequestMapping(value = "/comment/deleteComment",method = RequestMethod.POST)
+    public Object deleteComment(@RequestBody Map<String,Long> map){
+        commentService.deleteComment(map.get("commentId"),map.get("authorId"));
         return ResultDTO.okOf();
     }
 
     @ResponseBody
-    @RequestMapping(value = "/deleteComment2",method = RequestMethod.POST)
-    public Object deleteComment2(@RequestBody Map<String,Long> map, HttpServletRequest request){
-        commentService.deleteComment2(map.get("commentId"),map.get("authorId"),map.get("parentId"),request);
+    @RequestMapping(value = "/comment/deleteComment2",method = RequestMethod.POST)
+    public Object deleteComment2(@RequestBody Map<String,Long> map){
+        commentService.deleteComment2(map.get("commentId"),map.get("authorId"),map.get("parentId"));
         return ResultDTO.okOf();
     }
 

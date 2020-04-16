@@ -64,9 +64,23 @@ public class QuestionController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/deleteQu",method = RequestMethod.POST)
-    public Object deleteQu(@RequestBody Map<String,Long> map, HttpServletRequest request){
-        questionService.deleteQu(map.get("questionId"),request);
+    @RequestMapping(value = "/question/deleteQu",method = RequestMethod.POST)
+    public Object deleteQu(@RequestBody Map<String,Long> map){
+        questionService.deleteQu(map.get("questionId"),map.get("authorId"));
+        return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/question/essence",method = RequestMethod.POST)
+    public Object essence(@RequestBody Question question){
+        questionService.essence(question);
+        return ResultDTO.okOf();
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/question/quTop",method = RequestMethod.POST)
+    public Object quTop(@RequestBody Question question){
+        questionService.quTop(question);
         return ResultDTO.okOf();
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -25,7 +26,8 @@ public class SessionInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        boolean flag = false;//如果等于true表示是记住我状态登录的
+        if (handler instanceof ResourceHttpRequestHandler)
+            return true;
         User user = (User) request.getSession().getAttribute("user");
         if(user == null){
             Cookie[] cookies = request.getCookies();
@@ -38,7 +40,6 @@ public class SessionInterceptor implements HandlerInterceptor {
                                 .andTokenEqualTo(token);
                         List<User> users = userMapper.selectByExample(userExample);
                         if (users.size() != 0) {
-                            flag = true;
                             request.getSession().setAttribute("user", users.get(0));
                             Long unreadCount = notificationService.unreadCount(users.get(0).getId());
                             request.getSession().setAttribute("unreadCount",unreadCount);
@@ -47,12 +48,11 @@ public class SessionInterceptor implements HandlerInterceptor {
                     }
                 }
             }
-        }
-        if(!flag){
-            if(user != null){
-                Long unreadCount = notificationService.unreadCount(user.getId());
-                request.getSession().setAttribute("unreadCount",unreadCount);
-            }
+        }else{
+            User user1 = userMapper.selectByPrimaryKey(user.getId());
+            request.getSession().setAttribute("user", user1);
+            Long unreadCount = notificationService.unreadCount(user1.getId());
+            request.getSession().setAttribute("unreadCount",unreadCount);
         }
         return true;
     }

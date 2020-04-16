@@ -165,36 +165,15 @@
                             <div class="layui-input-block" style="width: 190px;" id="publish-select">
                                 <select id="column" name="column" lay-filter="column1">
                                     <option></option>
-                                    <option value="1" th:selected="${question.typeName == '提问'?'true':'false'}">提问</option>
-                                    <option value="2" th:selected="${question.typeName == '分享'?'true':'false'}">分享</option>
-                                    <option value="3" th:selected="${question.typeName == '建议'?'true':'false'}">建议</option>
-                                    <option value="4" th:selected="${question.typeName == '讨论'?'true':'false'}">讨论</option>
-                                    <option value="5" th:selected="${question.typeName == '动态'?'true':'false'}">动态</option>
-                                    <option value="6" th:selected="${question.typeName == '其它'?'true':'false'}">其它</option>
+                                    <option value="1" th:selected="${question.type == 1?'true':'false'}">提问</option>
+                                    <option value="2" th:selected="${question.type == 2?'true':'false'}">分享</option>
+                                    <option value="3" th:selected="${question.type == 3?'true':'false'}">建议</option>
+                                    <option value="4" th:selected="${question.type == 4?'true':'false'}">讨论</option>
+                                    <option value="5" th:selected="${question.type == 5?'true':'false'}">动态</option>
+                                    <option value="6" th:selected="${question.type == 6?'true':'false'}">其它</option>
                                 </select>
                             </div>
                         </div>
-                        <!--<div class="layui-form-item">
-                            <div class="layui-inline">
-                                <label class="layui-form-label">阅读权限</label>
-                                <div class="layui-input-inline" style="width: 190px;">
-                                    <select id="permission" name="permission">
-                                        <option value="0">默认，所有用户可见</option>
-                                        <option value="1">LV1及以上用户可见</option>
-                                        <option value="2">LV2及以上用户可见</option>
-                                        <option value="3">LV3及以上用户可见</option>
-                                        <option value="4">LV4及以上用户可见</option>
-                                        <option value="5">LV5及以上用户可见</option>
-                                        <option value="6">LV6及以上用户可见</option>
-                                        <option value="10">会员专享</option>
-                                        <option value="11">管理员可见</option>
-                                    </select>
-                                </div>
-                                <div class="layui-form-mid layui-word-aux">除非有重要信息，不然建议设置所有用户可见，这样不会影响您帖子的人气，点击查看
-                                    <a class="tree-link" target="_blank" href="/user/set/info#userGroup">用户组权限</a>
-                                </div>
-                            </div>
-                        </div>-->
                         <div class="layui-form-item btn-hover">
                             <button class="layui-btn" onclick="publishCheck()">立即发布</button>
                         </div>

@@ -829,6 +829,11 @@ i {
     .jumbotron h1{
         font-size: 36px;
     }
+    .tree-admin-box {
+        display: block;
+        margin: 0;
+        margin-top: 10px;
+    }
 }
 
 .jumbotron p {
@@ -1562,7 +1567,7 @@ i {
     justify-content: flex-end;
 }
 
-.collected{
+.collected,.applyFor{
     background: #6c757d;
 }
 

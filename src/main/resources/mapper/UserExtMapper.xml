@@ -23,6 +23,7 @@
     <result column="fans_count" jdbcType="INTEGER" property="fansCount" />
     <result column="address" jdbcType="VARCHAR" property="address" />
     <result column="score" jdbcType="INTEGER" property="score" />
+    <result column="type" jdbcType="INTEGER" property="type" />
   </resultMap>
 
   <update id="addScoreOfQu" parameterType="java.lang.Long">

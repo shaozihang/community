@@ -63,6 +63,7 @@ function comment2target(questionId,parentId,targetId, type, content) {
 function collapseComments(e) {
     var id = e.getAttribute("data-id");
     var comments = $('#comment-' + id);
+    var authorId = $("#authorId").val();
 
     var inputComments2 = $("#input-" + id);
     var btnComments2 = $("#btn-" + id);
@@ -104,7 +105,7 @@ function collapseComments(e) {
                         "html": 'LV'+comment.user.grade
                     })));
 
-                    if(comment.user.id == data.data[1]){
+                    if(comment.user.id == data.data[1] || data.data[1] == authorId || data.data[2] == 2){
                         commentUser.append($("<div/>", {
                             "class":"jieda-admin2"
                         }).append($("<span/>", {

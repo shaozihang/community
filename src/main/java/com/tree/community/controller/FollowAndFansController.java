@@ -85,8 +85,6 @@ public class FollowAndFansController {
             model.addAttribute("section","fans");
         }else if("bookMark".equals(action)){
             model.addAttribute("section","bookMark");
-        }else if("collection".equals(action)){
-            model.addAttribute("section","collection");
         }
 
         int quCount = questionService.getQuCountById(id);

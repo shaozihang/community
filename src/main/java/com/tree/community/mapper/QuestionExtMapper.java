@@ -2,6 +2,7 @@ package com.tree.community.mapper;
 
 import com.tree.community.dto.QuestionQueryDTO;
 import com.tree.community.model.Question;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,4 +22,12 @@ public interface QuestionExtMapper {
     void incLikeCount(Question qu);
 
     void decCommentCount(Question question);
+
+    List<Question> getQuestion(@Param(value = "start") Integer start, @Param(value = "limit")Integer limit);
+
+    int getQuestionCount();
+
+    void questionEdit(Question question);
+
+    List<Question> questionTop();
 }

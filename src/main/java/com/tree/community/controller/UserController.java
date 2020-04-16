@@ -167,7 +167,6 @@ public class UserController {
         User user = (User) request.getSession().getAttribute("user");
         userInfo.setId(user.getId());
         userService.updateUserInfo(userInfo);
-        userService.flushUser(user.getId(),request);
         return ResultDTO.okOf();
     }
 
@@ -181,7 +180,6 @@ public class UserController {
         }
         map.put("modifyPhone",user.getPhone());
         userService.modifyPwd(map);
-        userService.flushUser(user.getId(),request);
         return ResultDTO.okOf();
     }
 
@@ -206,7 +204,6 @@ public class UserController {
             return ResultDTO.errorOf(2013,"手机号与验证码不匹配");
         }
         userService.updatePhone(userDTO.getPhone(),user);
-        userService.flushUser(user.getId(),request);
         session.removeAttribute("userCode"+type);
         session.removeAttribute("userPhone"+type);
         session.removeAttribute("updatePhonePhone");
@@ -256,7 +253,6 @@ public class UserController {
         }else{
             User user = (User) session.getAttribute("user");
             userService.bindEmail(map.get("email"),user.getId());
-            userService.flushUser(user.getId(),request);
         }
         session.removeAttribute("sendEmailTime");
         session.removeAttribute("sendEmail");

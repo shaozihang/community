@@ -27,9 +27,6 @@ public class UserService {
     private UseroauthsService useroauthsService;
 
     @Autowired
-    private UserRoleMapper userRoleMapper;
-
-    @Autowired
     private ProvinceMapper provinceMapper;
 
     @Autowired
@@ -51,10 +48,6 @@ public class UserService {
         userExample.createCriteria()
                 .andPhoneEqualTo(userDTO.getPhone());
         List<User> users = userMapper.selectByExample(userExample);
-        UserRole userRole = new UserRole();
-        userRole.setUserId(users.get(0).getId());
-        userRole.setRoleId(1L);
-        userRoleMapper.insert(userRole);
         if(StringUtils.isNotBlank(userDTO.getOauthsId())){
             useroauthsService.oauthsBind(users.get(0).getId(),userDTO);
         }
@@ -156,12 +149,6 @@ public class UserService {
         userMapper.updateByExampleSelective(user, example);
     }
 
-
-    public void flushUser(Long id, HttpServletRequest request) {
-        User user = userMapper.selectByPrimaryKey(id);
-        request.getSession().setAttribute("user",user);
-    }
-
     public void updatePhone(String phone, User user) {
         User user1 = new User();
         user1.setPhone(phone);
@@ -200,5 +187,21 @@ public class UserService {
         example.createCriteria()
                 .andIdEqualTo(id);
         userMapper.updateByExampleSelective(user, example);
+    }
+
+    public Object adminLogin(User user,HttpServletRequest request) {
+        UserExample example = new UserExample();
+        example.createCriteria()
+                .andPhoneEqualTo(user.getPhone())
+                .andPasswordEqualTo(MD5Utils.md5(user.getPassword(),"邵梓航"));
+        List<User> users = userMapper.selectByExample(example);
+        if(users.size() == 0){
+            return ResultDTO.errorOf(2031,"用户名或密码错误");
+        }
+        if(users.get(0).getType() != 2){
+            return ResultDTO.errorOf(2032,"该账号无权访问");
+        }
+        request.getSession().setAttribute("adminUser",users.get(0));
+        return ResultDTO.okOf();
     }
 }

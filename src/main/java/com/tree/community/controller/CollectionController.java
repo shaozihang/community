@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
+@RequestMapping("/collection")
 public class CollectionController {
-
-    @Autowired
-    private BookMarkService bookMarkService;
 
     @Autowired
     private CollectionService collectionService;

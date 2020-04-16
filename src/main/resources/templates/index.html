@@ -91,98 +91,32 @@
                     <a href="#signin" class="layui-hide-sm layui-show-xs-block tree-right" style="color: #FF5722;">去签到</a>
                 </div>
                 <ul class="tree-list">
-                    <li>
+                    <li th:each="questionTop:${questionTop}">
                         <div>
-                            <a href="/user/98" class="tree-avatar">
-                                <img th:src="@{/images/test1.png}">
+                            <a th:href="@{'/user/'+${questionTop.user.id}}" class="tree-avatar">
+                                <img th:src="${questionTop.user.avatarUrl}">
                             </a>
                             <h2>
-                                <a class="layui-badge layui-bg-green">公告</a>
-                                <a href="/">欢迎来到树洞社区，一起交流学习~</a>
-                                <a class="tree-list-like layui-hide-xs" title="烫烫烫">
-                                    <i class="layui-icon layui-icon-fire" style="font-size: 20px"></i>
+                                <a th:class="${questionTop.typeName != '公告'?'layui-badge':'layui-badge layui-bg-green'}" th:text="${questionTop.typeName}" ></a>
+                                <a th:href="@{'/question/'+${questionTop.id}}" th:text="${questionTop.title}" th:class="${questionTop.user.grade >= 5?'Highlight':''}"></a>
+                                <a class="tree-list-like layui-hide-xs" title="火火火" th:if="${questionTop.viewCount >=100}">
+                                    <i class="layui-icon layui-icon-fire" style="font-size: 17px"></i>
                                 </a>
                             </h2>
                             <div class="tree-list-info">
-                                <a href="/user/98">
-                                    <cite>邵梓航131</cite>
-                                    <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs">站长</i>
+                                <a th:href="@{'/user/'+${questionTop.user.id}}">
+                                    <cite th:text="${questionTop.user.nickName}"></cite>
+                                    <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs" th:text="${'LV'+questionTop.user.grade}"></i>
                                 </a>
-                                <span>2020-02-15 10:24</span>
+                                <span th:text="${#dates.format(questionTop.gmtCreate,'yyyy-MM-dd HH:mm')}"></span>
                                 <span class="tree-list-liulan layui-hide-xs" title="浏览">
-                                    <i class="iconfont icon-liulan"></i><span>0</span>
+                                    <i class="iconfont icon-liulan"></i><span th:text="${questionTop.viewCount}"></span>
                                 </span>
                                 <span class="tree-list-like layui-hide-xs" title="收藏">
-                                    <i class="layui-icon layui-icon-star"></i><span>0</span>
+                                    <i class="layui-icon layui-icon-star"></i><span th:text="${questionTop.collectionCount}"></span>
                                 </span>
                                 <span class="tree-list-nums">
-                                    <i class="iconfont icon-pinglun1" title="回复"></i><span>0</span>
-                                </span>
-                            </div>
-                            <div class="tree-list-badge">
-                                <span class="layui-badge layui-bg-orange">置顶</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div>
-                            <a href="/user/98" class="tree-avatar">
-                                <img th:src="@{/images/test1.png}">
-                            </a>
-                            <h2>
-                                <a class="layui-badge layui-bg-green">公告</a>
-                                <a href="/">【发布】TreeDongForum 2 正式发布！赶快去下载吧</a>
-                                <a class="tree-list-like layui-hide-xs" title="烫烫烫">
-                                    <i class="layui-icon layui-icon-fire" style="font-size: 20px"></i>
-                                </a>
-                            </h2>
-                            <div class="tree-list-info">
-                                <a href="/user/98">
-                                    <cite>邵梓航131</cite>
-                                    <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs">站长</i>
-                                </a>
-                                <span>2020-02-15 10:24</span>
-                                <span class="tree-list-liulan layui-hide-xs" title="浏览">
-                                    <i class="iconfont icon-liulan"></i><span>0</span>
-                                </span>
-                                <span class="tree-list-like layui-hide-xs" title="收藏">
-                                    <i class="layui-icon layui-icon-star"></i><span>0</span>
-                                </span>
-                                <span class="tree-list-nums">
-                                    <i class="iconfont icon-pinglun1" title="回复"></i><span>0</span>
-                                </span>
-                            </div>
-                            <div class="tree-list-badge">
-                                <span class="layui-badge layui-bg-orange">置顶</span>
-                            </div>
-                        </div>
-                    </li>
-                    <li>
-                        <div>
-                            <a href="/user/98" class="tree-avatar">
-                                <img th:src="@{/images/test1.png}">
-                            </a>
-                            <h2>
-                                <a class="layui-badge layui-bg-green">公告</a>
-                                <a href="/">【更新说明】新增智能标签功能，可根据正文内容自动生成标签！（2020/2/24）</a>
-                                <a class="tree-list-like layui-hide-xs" title="烫烫烫">
-                                    <i class="layui-icon layui-icon-fire" style="font-size: 20px"></i>
-                                </a>
-                            </h2>
-                            <div class="tree-list-info">
-                                <a href="/user/98">
-                                    <cite>邵梓航131</cite>
-                                    <i class="layui-badge tree-badge-vip layui-bg-gray layui-hide-xs">站长</i>
-                                </a>
-                                <span>2020-02-15 10:24</span>
-                                <span class="tree-list-liulan layui-hide-xs" title="浏览">
-                                    <i class="iconfont icon-liulan"></i><span>0</span>
-                                </span>
-                                <span class="tree-list-like layui-hide-xs" title="收藏">
-                                    <i class="layui-icon layui-icon-star"></i><span>0</span>
-                                </span>
-                                <span class="tree-list-nums">
-                                    <i class="iconfont icon-pinglun1" title="回复"></i><span>0</span>
+                                    <i class="iconfont icon-pinglun1" title="回复"></i><span th:text="${questionTop.commentCount}"></span>
                                 </span>
                             </div>
                             <div class="tree-list-badge">
@@ -217,6 +151,9 @@
                             <h2>
                                 <a th:class="${question.typeName != '公告'?'layui-badge':'layui-badge layui-bg-green'}" th:text="${question.typeName}" ></a>
                                 <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}" th:class="${question.user.grade >= 5?'Highlight':''}"></a>
+                                <a class="tree-list-like layui-hide-xs" title="火火火" th:if="${question.viewCount >=100}">
+                                    <i class="layui-icon layui-icon-fire" style="font-size: 17px"></i>
+                                </a>
                             </h2>
                             <div class="tree-list-info">
                                 <a th:href="@{'/user/'+${question.user.id}}">
@@ -234,7 +171,8 @@
                                     <i class="iconfont icon-pinglun1" title="回复"></i><span th:text="${question.commentCount}"></span>
                                 </span>
                             </div>
-                            <div class="tree-list-badge">
+                            <div class="tree-list-badge" th:if="${question.essence == true}">
+                                <span class="layui-badge">精帖</span>
                             </div>
                         </div>
                     </li>

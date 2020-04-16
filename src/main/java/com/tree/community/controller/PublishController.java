@@ -3,6 +3,7 @@ package com.tree.community.controller;
 import com.tree.community.cache.TagCache;
 import com.tree.community.dto.QuestionDTO;
 import com.tree.community.dto.ResultDTO;
+import com.tree.community.enums.QuestionTypeEnum;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
 import com.tree.community.service.QuestionService;
@@ -23,7 +24,7 @@ public class PublishController {
 
     @GetMapping("/publish")
     public String publish(Model model){
-        QuestionDTO question = new QuestionDTO();
+        Question question = new Question();
         model.addAttribute("question",question);
         model.addAttribute("tags", TagCache.get());
         return "publish";
@@ -31,7 +32,7 @@ public class PublishController {
 
     @GetMapping("/publish/{id}")
     public String edit(@PathVariable(name = "id")Long id,Model model){
-        QuestionDTO question = questionService.getById(id);
+        Question question = questionService.getQuById(id);
         model.addAttribute("question",question);
         model.addAttribute("tags", TagCache.get());
         return "publish";

@@ -58,7 +58,7 @@
                     }
                     $.ajax({
                         type:"post",
-                        url:"/getBookMark",
+                        url:"/bookMark/getBookMark",
                         contentType:"application/json",
                         data: JSON.stringify({
                             "questionId":questionId,
@@ -148,7 +148,7 @@
                 }else{
                     $.ajax({
                         type:"post",
-                        url:"/addBookMark",
+                        url:"/bookMark/addBookMark",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "name":name,
@@ -195,7 +195,7 @@
                     }else{
                         $.ajax({
                             type:"post",
-                            url:"/addCollection",
+                            url:"/collection/addCollection",
                             contentType:"application/json",
                             data:JSON.stringify({
                                 "questionId":questionId,
@@ -218,7 +218,7 @@
                     }
                     $.ajax({
                         type:"post",
-                        url:"/updateCollection",
+                        url:"/collection/updateCollection",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "questionId":questionId,
@@ -239,15 +239,17 @@
             layui.use('layer',function () {
                 var layer = layui.layer;
                 var questionId = $("#question_id").val();
+                var authorId = $("#authorId").val();
                 layer.confirm('确定要删除帖子吗（所获积分也将删除）？', {
                     btn: ['确定','取消'] //按钮
                 }, function(index){
                     $.ajax({
                         type:"post",
-                        url:"/deleteQu",
+                        url:"/question/deleteQu",
                         contentType:"application/json",
                         data:JSON.stringify({
-                            "questionId":questionId
+                            "questionId":questionId,
+                            "authorId":authorId
                         }),
                         success:function (result) {
                             if(result.code == 200){
@@ -269,7 +271,7 @@
                 }, function(index){
                     $.ajax({
                         type:"post",
-                        url:"/deleteComment",
+                        url:"/comment/deleteComment",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "commentId":value,
@@ -295,7 +297,7 @@
                 }, function(index){
                     $.ajax({
                         type:"post",
-                        url:"/deleteComment2",
+                        url:"/comment/deleteComment2",
                         contentType:"application/json",
                         data:JSON.stringify({
                             "commentId":value,
@@ -312,6 +314,56 @@
                 });
             });
         }
+
+        function essence() {
+            var questionId = $("#question_id").val();
+            var essence;
+            if($(".tree-admin-box span:last").hasClass("applyFor")){
+                essence = false;
+            }else{
+                essence = true;
+            }
+            $.ajax({
+                type:"post",
+                url:"/question/essence",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "id":questionId,
+                    "essence":essence
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
+                    }
+                },
+                dataType:"json"
+            });
+        }
+
+        function quTop() {
+            var questionId = $("#question_id").val();
+            var isTop;
+            if($(".tree-admin-box span").eq(1).hasClass("applyFor")){
+                isTop = false;
+            }else{
+                isTop = true;
+            }
+            $.ajax({
+                type:"post",
+                url:"/question/quTop",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "id":questionId,
+                    "isTop":isTop
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
+                    }
+                },
+                dataType:"json"
+            });
+        }
     </script>
 </head>
 <body>
@@ -325,11 +377,17 @@
             <div class="tree-panel detail-box">
                 <h1 th:text="${question.title}"></h1>
                 <div class="tree-detail-info">
-                    <a class="layui-badge layui-bg-green" th:text="${question.typeName}"></a>
-                    <div class="tree-admin-box" data-id="123" th:if="${session.user!=null && session.user.id==question.user.id}">
+                    <span class="layui-badge layui-bg-green" th:text="${question.typeName}"></span>
+                    <span class="layui-badge layui-bg-orange" th:if="${question.isTop == true}">置顶</span>
+                    <span class="layui-badge" th:if="${question.essence == true}">精贴</span>
+                    <div class="tree-admin-box" th:if="${session.user!=null && (session.user.id==question.user.id || session.user.type == 2)}">
                         <span class="layui-btn layui-btn-xs" onclick="deleteQu()">删除</span>
-                        <span class="layui-btn layui-btn-xs">置顶</span>
-                        <span class="layui-btn layui-btn-xs">加精</span>
+                        <span class="layui-btn layui-btn-xs" onclick="quTop()" th:if="${session.user.type == 2}"
+                              th:classappend="${question.isTop == true?'applyFor':''}"
+                              th:text="${question.isTop == true?'取消置顶':'置顶'}"></span>
+                        <span class="layui-btn layui-btn-xs" onclick="essence()" th:if="${session.user.type == 2}"
+                              th:classappend="${question.essence == true?'applyFor':''}"
+                              th:text="${question.essence == true?'取消加精':'加精'}"></span>
                     </div>
                     <span class="tree-list-nums">
                         <span th:id="${'likeQu-'+question.id}" th:data-id="${question.id}" style="cursor: pointer;"
@@ -355,7 +413,12 @@
                         <span style="padding-right: 10px; color: #FF7200">
                             有任何问题点击QQ号加站长询问：<a target="_blank" th:href="@{'tencent://Message'(Uin=2435663184,websiteName='local.edu.com:8888=',Menu='yes')}">2435663184</a>
                         </span>
-                        <span class="layui-btn layui-btn-xs jie-admin" th:if="${session.user!=null && session.user.id==question.user.id}">
+                        <span class="layui-btn layui-btn-xs jie-admin" th:if="${session.user!=null && question.typeName == '公告' && session.user.type == 2}">
+                            <a th:href="@{'/admin/notice/'+${question.id}}" style="margin-left: -5px;">
+                                <i class="layui-icon layui-icon-edit"></i>编辑
+                            </a>
+                        </span>
+                        <span class="layui-btn layui-btn-xs jie-admin" th:if="${session.user!=null && question.typeName != '公告' && session.user.id==question.user.id}">
                             <a th:href="@{'/publish/'+${question.id}}" style="margin-left: -5px;">
                                 <i class="layui-icon layui-icon-edit"></i>编辑
                             </a>
@@ -413,7 +476,7 @@
                                     <i class="iconfont icon-huifu"></i>
                                     <em th:text="${comment.commentCount}"></em>
                                 </span>
-                                <div class="jieda-admin" th:if="${session.user!=null && session.user.id==comment.user.id}">
+                                <div class="jieda-admin" th:if="${session.user!=null && (session.user.id==comment.user.id || session.user.id==question.creator || session.user.type == 2)}">
                                     <span type="edit">编辑</span>
                                     <span type="del" style="padding-right: 10px" th:onclick="'deleteComment('+${comment.id}+')'">删除</span>
                                 </div>

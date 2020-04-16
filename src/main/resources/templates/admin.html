@@ -1,0 +1,273 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="后台管理"></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/layui/css/layui.css">
+    <link rel="stylesheet" th:href="@{/css/editormd.min.css}">
+    <link rel="stylesheet" th:href="@{/css/admin.css}">
+    <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
+    <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
+    <script th:src="@{/js/editormd.min.js}" type="application/javascript"></script>
+    <script type="application/javascript">
+        layui.use('element',function () {
+            var element = layui.element;
+        });
+
+        layui.use(['table','layer','form'], function(){
+            var table = layui.table;
+            var layer = layui.layer;
+            var form = layui.form;
+            //第一个实例
+            table.render({
+                elem: '#essence'
+                ,url: '/admin/getQuestion' //数据接口
+                ,page: true //开启分页
+                ,cols: [
+                    [ //表头
+                        {field: 'id', title: 'ID', width:"10%",align: 'center'},
+                        {field: 'title', title: '标题', width:"55%"},
+                        {field: 'essence', title: '加精状态', width:"10%",align: 'center'},
+                        {field: 'isTop', title: '置顶状态', width:"10%",align: 'center'},
+                        {field:'right', title: '操作', width:"15%",toolbar:"#barDemo",align: 'center'}
+                    ]
+                ]
+            });
+
+            //监听工具条
+            table.on('tool(essence)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+                var data = obj.data; //获得当前行数据
+                var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+
+                if(layEvent === 'detail'){ //查看
+                    layer.open({
+                        type: 2,
+                        title: '帖子详情页',
+                        shade: 0,
+                        area: ['893px', '600px'],
+                        maxmin: true,
+                        content: ['/question/'+data.id]
+                    });
+                } else if(layEvent === 'edit'){ //通过
+                    $("#questionId").val(data.id);
+                    if(data.essence == true){
+                        $("input[name='essence']:first").prop("checked",true);
+                        $("input[name='essence']:last").prop("checked",false);
+                    }else{
+                        $("input[name='essence']:first").prop("checked",false);
+                        $("input[name='essence']:last").prop("checked",true);
+                    }
+                    if(data.isTop == true){
+                        $("input[name='isTop']:first").prop("checked",true);
+                        $("input[name='isTop']:last").prop("checked",false);
+                    }else{
+                        $("input[name='isTop']:first").prop("checked",false);
+                        $("input[name='isTop']:last").prop("checked",true);
+                    }
+                    form.render('radio', 'questionEdit');
+                    layer.open({
+                        type: 1,
+                        title: "修改帖子",
+                        area: ['300px', '220px'],
+                        content: $("#questionEdit")
+                    });
+                } else if(layEvent === 'del'){ //驳回
+                    layer.confirm('确定要删除帖子吗？', {
+                        btn: ['确定','取消'] //按钮
+                    }, function(index){
+                        $.ajax({
+                            type:"post",
+                            url:"/question/deleteQu",
+                            contentType:"application/json",
+                            data:JSON.stringify({
+                                "questionId":data.id,
+                                "authorId":data.creator
+                            }),
+                            success:function (result) {
+                                if(result.code == 200){
+                                    window.location.reload();
+                                }
+                            },
+                            dataType:"json"
+                        });
+                    });
+                }
+            });
+        });
+
+        function questionEdit() {
+            var id = $("#questionId").val();
+            var essence = $("input[name='essence']:checked").val();
+            var isTop = $(".question-radio input[name='isTop']:checked").val();
+            $.ajax({
+                type:"post",
+                url:"/admin/questionEdit",
+                contentType:"application/json",
+                data:JSON.stringify({
+                    "id":id,
+                    "essence":essence,
+                    "isTop":isTop
+                }),
+                success:function (result) {
+                    if(result.code == 200){
+                        window.location.reload();
+                    }
+                },
+                dataType:"json"
+            });
+        }
+
+        function notice() {
+            layui.use('layer',function () {
+                var layer = layui.layer;
+                var id = $("#editQuId").val();
+                var title = $("#title").val();
+                var description = $("#description").val();
+                var isTop = $(".notice-radio input[name='isTop']:checked").val();
+                if(!title){
+                    layer.msg("问题标题不能为空");
+                }else if(!description){
+                    layer.msg("问题描述不能为空");
+                }else{
+                    $.ajax({
+                        type:"post",
+                        url:"/admin/notice",
+                        contentType:"application/json",
+                        data:JSON.stringify({
+                            "id":id,
+                            "title":title,
+                            "description":description,
+                            "isTop":isTop
+                        }),
+                        success:function (result) {
+                            if(result.code == 200){
+                                window.location.href="/admin/notice";
+                            }
+                        },
+                        dataType:"json"
+                    });
+                }
+            });
+        }
+    </script>
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!-- 头部区域 -->
+    <div class="layui-header">
+        <div class="layui-logo">树洞社区后台</div>
+        <ul class="layui-nav layui-layout-right" lay-filter="demo">
+            <li class="layui-nav-item" th:if="${session.adminUser!=null}">
+                <a href="javascript:;">
+                    <img th:src="${session.adminUser.avatarUrl}" class="layui-nav-img">
+                    <cite th:text="${session.adminUser.nickName}"></cite>
+                </a>
+                <dl class="layui-nav-child">
+                    <dd><a href="">基本资料</a></dd>
+                    <dd><a href="">安全设置</a></dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item"><a href="/adminLogout">退了</a></li>
+        </ul>
+    </div>
+    <!-- 左侧导航区域 -->
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed" th:classappend="${section == 'index'}?'layui-this':''">
+                    <a class="" href="/admin/index">主页</a>
+                </li>
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">帖子管理</a>
+                    <dl class="layui-nav-child">
+                        <dd th:classappend="${section == 'notice'}?'layui-this':''"><a href="/admin/notice">发布公告</a></dd>
+                        <dd th:classappend="${section == 'essence'}?'layui-this':''"><a href="/admin/essence">加精与置顶</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 内容主体区域 -->
+    <div class="layui-body">
+        <div style="padding: 15px;">
+            <div th:if="${section == 'index'}">欢迎访问树洞社区管理后台</div>
+            <div th:if="${section == 'notice'}" class="layui-form layui-form-pane">
+                <div class="layui-row layui-col-space15 layui-form-item">
+                    <input type="hidden" id="editQuId" th:value="${question.id}">
+                    <div class="">
+                        <label for="title" class="layui-form-label">标题</label>
+                        <div class="layui-input-block">
+                            <input type="text" id="title" name="title" autocomplete="off"
+                                   class="layui-input" th:value="${question.title}">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item layui-form-text">
+                    <div id="question-editor" class="layui-input-block">
+                                <textarea name="description" id="description" class="form-control" cols="30" rows="10"
+                                          style="display:none;" th:text="${question.description}"></textarea>
+                    </div>
+                </div>
+                <script type="text/javascript">
+                    $(function () {
+                        var editor = editormd("question-editor", {
+                            width: "100%",
+                            height: 350,
+                            path: "/js/lib/",
+                            delay: 0,
+                            watch: false,
+                            placeholder: "请输入问题描述",
+                            imageUpload: true,
+                            imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
+                            imageUploadURL: "/file/upload",
+                        });
+                    });
+                </script>
+                <div class="layui-form-item" pane>
+                    <label class="layui-form-label">是否置顶</label>
+                    <div class="layui-input-block notice-radio">
+                        <input type="radio" name="isTop" value="true" title="是" th:attr="checked=${(question.isTop == true || question.isTop == null)?true:false}">
+                        <input type="radio" name="isTop" value="false" title="否" th:attr="checked=${question.isTop == false?true:false}">
+                    </div>
+                </div>
+                <div class="layui-form-item btn-hover">
+                    <button class="layui-btn" onclick="notice()">立即发布</button>
+                </div>
+            </div>
+            <table id="essence" lay-filter="essence" th:if="${section == 'essence'}"></table>
+            <script type="text/html" id="barDemo">
+                <a class="layui-btn layui-btn-primary layui-btn-sm" lay-event="detail">查看</a>
+                <a class="layui-btn layui-btn-sm" lay-event="edit">编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-sm" lay-event="del">删除</a>
+            </script>
+        </div>
+    </div>
+    <!-- 帖子编辑弹出层 -->
+    <div class="layui-form" id="questionEdit" lay-filter="questionEdit" style="display: none;margin-top: 15px;">
+        <input type="hidden" id="questionId">
+        <div class="layui-form-item">
+            <label class="layui-form-label">加精</label>
+            <div class="layui-input-block">
+                <input type="radio" name="essence" value="true" title="是">
+                <input type="radio" name="essence" value="false" title="否">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">置顶</label>
+            <div class="layui-input-block question-radio">
+                <input type="radio" name="isTop" value="true" title="是">
+                <input type="radio" name="isTop" value="false" title="否">
+            </div>
+        </div>
+        <div class="layui-form-item" style="text-align: center">
+            <button class="layui-btn" onclick="questionEdit()">确认修改</button>
+        </div>
+    </div>
+    <!-- 底部固定区域 -->
+    <div class="layui-footer">
+        <div>Copyright © 2020 · 树洞社区 · <a href="http://www.beian.miit.gov.cn/" target="_blank" style="color: #666;">粤ICP备20013842号</a> · 网站程序：Spring Boot</div>
+    </div>
+</div>
+</body>
+</html>

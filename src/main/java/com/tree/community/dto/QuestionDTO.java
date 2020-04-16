@@ -19,4 +19,6 @@ public class QuestionDTO {
     private Integer likeStatus;
     private String typeName;
     private Integer collectionCount;
+    private Boolean essence;
+    private Boolean isTop;
 }

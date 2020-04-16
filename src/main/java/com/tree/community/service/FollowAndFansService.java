@@ -151,10 +151,12 @@ public class FollowAndFansService {
             FollowAndFandsDTO followAndFandsDTO = new FollowAndFandsDTO();
             followAndFandsDTO.setUser(user);
             int followStatus = 0;
-            if(type == 1){
-                followStatus = getFollowStatus(meUser.getId(), follow.getToUserId());
-            }else if(type == 2){
-                followStatus = getFollowStatus(meUser.getId(), follow.getFromUserId());
+            if(meUser != null){
+                if(type == 1){
+                    followStatus = getFollowStatus(meUser.getId(), follow.getToUserId());
+                }else if(type == 2){
+                    followStatus = getFollowStatus(meUser.getId(), follow.getFromUserId());
+                }
             }
             if(followStatus == -1){
                 followStatus = 0;

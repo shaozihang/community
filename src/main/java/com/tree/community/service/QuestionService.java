@@ -57,7 +57,7 @@ public class QuestionService {
     @Autowired
     private UserLikeService userLikeService;
 
-    public PaginationDTO list(String search, String tag, Integer page, Integer size,String type,String sort) {
+    public PaginationDTO list(String search, String tag, Integer page, Integer size,String type,String sort,List<Long> quIds) {
         if(StringUtils.isNotBlank(search)){
             search = StringUtils.replace(search, " ", "|");
         }
@@ -70,6 +70,7 @@ public class QuestionService {
         questionQueryDTO.setSearch(search);
         questionQueryDTO.setTag(tag);
         questionQueryDTO.setType(type);
+        questionQueryDTO.setQuIds(quIds);
         if(StringUtils.isNotBlank(sort)){
             if(sort.equals("hot7")){
                 questionQueryDTO.setSort(7);
@@ -77,6 +78,8 @@ public class QuestionService {
                 questionQueryDTO.setSort(32);
             }else if(sort.equals("no")){
                 questionQueryDTO.setSort(0);
+            }else if(sort.equals("good")){
+                questionQueryDTO.setSort(2);
             }
         }
         Integer totalCount = questionExtMapper.countBySearch(questionQueryDTO);
@@ -100,20 +103,7 @@ public class QuestionService {
         Integer offset = page < 1 ? 0 : size*(page-1);
         questionQueryDTO.setPage(offset);
         questionQueryDTO.setSize(size);
-        List<Question> questions = null;
-        if(StringUtils.isNotBlank(sort)){
-            if(sort.equals("hot7")){
-                questions = questionExtMapper.selectBySearch(questionQueryDTO);
-            }else if(sort.equals("hot30")){
-                questions = questionExtMapper.selectBySearch(questionQueryDTO);
-            }else if(sort.equals("no")){
-                questions = questionExtMapper.selectBySearch(questionQueryDTO);
-            }else if(sort.equals("new")){
-                questions = questionExtMapper.selectBySearch(questionQueryDTO);
-            }
-        }else{
-            questions = questionExtMapper.selectBySearch(questionQueryDTO);
-        }
+        List<Question> questions = questionExtMapper.selectBySearch(questionQueryDTO);
         List<QuestionDTO> questionDTOList = new ArrayList<>();
 
         for (Question question : questions) {
@@ -205,7 +195,6 @@ public class QuestionService {
             question.setGmtCreate(System.currentTimeMillis());
             question.setGmtModified(System.currentTimeMillis());
             questionMapper.insertSelective(question);
-            request.getSession().getAttribute("user");
             userExtMapper.addScoreOfQu(question.getCreator());
             User user = userMapper.selectByPrimaryKey(question.getCreator());
             request.getSession().setAttribute("user",user);
@@ -255,12 +244,13 @@ public class QuestionService {
         return questions;
     }
 
-    public void deleteQu(Long questionId, HttpServletRequest request) {
+    public void deleteQu(Long questionId,Long authorId) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
         //删除作者所获积分
         List<Long> commentatorIds = commentExtMapper.getCommentatorByQuId(questionId);
-        User user = (User) request.getSession().getAttribute("user");
+        User user = new User();
+        user.setId(authorId);
         user.setScore(10 + commentatorIds.size());
         userExtMapper.reduceAuthorScore(user);
         //删除评论
@@ -285,5 +275,50 @@ public class QuestionService {
         example2.createCriteria()
                 .andQuestionIdEqualTo(questionId);
         userLikeMapper.deleteByExample(example2);
+    }
+
+    public void essence(Question question) {
+        questionMapper.updateByPrimaryKeySelective(question);
+    }
+
+    public void quTop(Question question) {
+        questionMapper.updateByPrimaryKeySelective(question);
+    }
+
+    public List<Question> getQuestion(Integer page, Integer limit) {
+        int start = page * limit;
+        List<Question> essences = questionExtMapper.getQuestion(start, limit);
+        return essences;
+    }
+
+    public int getQuestionCount() {
+        int count = questionExtMapper.getQuestionCount();
+        return count;
+    }
+
+    public void questionEdit(Question question) {
+        questionExtMapper.questionEdit(question);
+    }
+
+    public Question getQuById(Long id) {
+        Question question = questionMapper.selectByPrimaryKey(id);
+        return question;
+    }
+
+    public List<QuestionDTO> questionTop() {
+        List<Question> questions = questionExtMapper.questionTop();
+        List<QuestionDTO> questionDTOList = new ArrayList<>();
+        for (Question question : questions) {
+            User user = userMapper.selectByPrimaryKey(question.getCreator());
+            QuestionDTO questionDTO = new QuestionDTO();
+            BeanUtils.copyProperties(question,questionDTO);
+            user.setGrade(ScoreToGradeUtils.scoreToGrade(user.getScore()));
+            questionDTO.setUser(user);
+            questionDTO.setTypeName(QuestionTypeEnum.nameOfType(question.getType()));
+            Integer collectionCount = collectionExtMapper.getCollectionCount(question.getId());
+            questionDTO.setCollectionCount(collectionCount);
+            questionDTOList.add(questionDTO);
+        }
+        return questionDTOList;
     }
 }
