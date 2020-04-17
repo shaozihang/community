@@ -207,7 +207,12 @@
                                             }),
                                             success:function (result) {
                                                 if(result.code == 200){
-                                                    layer.msg("恭喜您，密码修改成功！！！");
+                                                    layer.confirm("恭喜您，密码修改成功！！！", {
+                                                        closeBtn: 0,
+                                                        btn: '确定' //按钮
+                                                    }, function(index){
+                                                        window.location.reload();
+                                                    });
                                                 }else if(result.code == 2017){
                                                     layer.msg(result.message);
                                                 }

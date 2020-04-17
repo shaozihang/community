@@ -99,6 +99,15 @@ public class UserService {
         userMapper.updateByExampleSelective(user, userExample);
     }
 
+    public void updatePwd(Map<String, String> map) {
+        User user = new User();
+        user.setPassword(MD5Utils.md5(map.get("newPwd"),"邵梓航"));
+        UserExample example = new UserExample();
+        example.createCriteria()
+                .andPhoneEqualTo(map.get("modifyPhone"));
+        userMapper.updateByExampleSelective(user, example);
+    }
+
     public User getUserInfoById(Long id) {
         User user = userMapper.selectByPrimaryKey(id);
         return user;

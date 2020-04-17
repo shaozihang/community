@@ -179,7 +179,7 @@ public class UserController {
             return ResultDTO.errorOf(2017,"当前密码不正确");
         }
         map.put("modifyPhone",user.getPhone());
-        userService.modifyPwd(map);
+        userService.updatePwd(map);
         return ResultDTO.okOf();
     }
 
