@@ -50,6 +50,16 @@ i {
         background-color: rgba(0,0,0,.7);
         color: #fff;
     }
+    .editormd-preformatted-text-dialog,.editormd-code-block-dialog,.editormd-dialog-html-entities-dialog{
+        width: 98%!important;
+    }
+    .editormd-html-entities-box{
+        width: 100%!important;
+        overflow-x: auto!important;
+    }
+    .editormd-html-entities-box .editormd-grid-table{
+        width: 750px;
+    }
 }
 
 .site-mobile-shade {
@@ -568,6 +578,30 @@ i {
 .tree-detail-user a {
     padding-right: 10px;
     font-size: 14px;
+}
+
+.text-hidden{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 60%;
+    display: inline-block;
+}
+
+.text-hidden2{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 70%;
+    display: inline-block;
+}
+
+.text-hidden3{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
 }
 
 .detail-about .detail-hits {
@@ -1545,6 +1579,14 @@ i {
 @media screen and (max-width: 550px) {
     .openAvatar,.openBookMark {
         width: 90%!important;
+    }
+    .editormd-image-dialog{
+        width: 90%!important;
+        height: 406px!important;
+        top: 195px!important;
+    }
+    .editormd-file-input{
+        margin: 10px 0;
     }
 }
 

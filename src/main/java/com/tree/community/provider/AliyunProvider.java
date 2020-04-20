@@ -13,8 +13,6 @@ import com.aliyuncs.profile.DefaultProfile;
 import com.tree.community.mapper.UserMapper;
 import com.tree.community.model.User;
 import com.tree.community.model.UserExample;
-import com.tree.community.service.UserService;
-import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;

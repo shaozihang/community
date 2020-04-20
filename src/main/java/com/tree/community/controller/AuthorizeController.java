@@ -9,7 +9,6 @@ import com.tree.community.model.UserExample;
 import com.tree.community.model.Useroauths;
 import com.tree.community.provider.GithubProvider;
 import com.tree.community.provider.QQProvider;
-import com.tree.community.service.UserService;
 import com.tree.community.service.UseroauthsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

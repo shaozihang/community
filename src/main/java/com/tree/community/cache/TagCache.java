@@ -16,7 +16,7 @@ public class TagCache {
 
         TagDTO backEnd = new TagDTO();
         backEnd.setCategoryName("后端");
-        backEnd.setTags(Arrays.asList("php","java","node.js","python","C++","C","golang","spring","django","springboot","flask","后端","C#","swoole","ruby","asp.net","ruby-on-rails","scala","rust","lavarel","爬虫"));
+        backEnd.setTags(Arrays.asList("php","java","node.js","python","c++","c","golang","spring","django","springboot","flask","后端","C#","swoole","ruby","asp.net","ruby-on-rails","scala","rust","lavarel","爬虫"));
 
         TagDTO mobileTerminal = new TagDTO();
         mobileTerminal.setCategoryName("移动端");

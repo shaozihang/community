@@ -1,9 +1,7 @@
 package com.tree.community.controller;
 
 import com.tree.community.cache.TagCache;
-import com.tree.community.dto.QuestionDTO;
 import com.tree.community.dto.ResultDTO;
-import com.tree.community.enums.QuestionTypeEnum;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
 import com.tree.community.service.QuestionService;
@@ -14,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 @Controller
 public class PublishController {

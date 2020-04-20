@@ -108,6 +108,7 @@ public class CommentService {
         }
     }
 
+    @Transactional
     private void createNotify(Comment comment, Long receiver, String notifierName, String outerTitle, NotificationTypeEnum notificationType, Long outerId) {
         if(receiver == comment.getCommentator()){
             return;
@@ -189,6 +190,7 @@ public class CommentService {
 
     }
 
+    @Transactional
     public void deleteComment(Long commentId, Long authorId) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
@@ -239,6 +241,7 @@ public class CommentService {
         userExtMapper.reduceAuthorScore(user);
     }
 
+    @Transactional
     public void deleteComment2(Long commentId, Long authorId, Long parentId) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();

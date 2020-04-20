@@ -255,8 +255,8 @@
                         <a href="javascript:login()" th:text="${useroauths.type==null?'已有账号，直接登录':'已有账号，绑定并登录'}"></a>
                     </div>
                 </form>
-                <input id="oauthsId" hidden="hidden" th:value="${useroauths.accountId}">
-                <input id="oauthsType" hidden="hidden" th:value="${useroauths.type}">
+                <input type="hidden" id="oauthsId" th:value="${useroauths.accountId}">
+                <input type="hidden" id="oauthsType" th:value="${useroauths.type}">
             </div>
         </div>
     </div>

@@ -19,9 +19,6 @@ public class UserLikeService {
     private RedisService redisService;
 
     @Autowired
-    private CommentMapper commentMapper;
-
-    @Autowired
     private QuestionExtMapper questionExtMapper;
 
     @Autowired
@@ -30,7 +27,6 @@ public class UserLikeService {
     /**
      * 通过被点赞的帖子或评论id和点赞人id查询是否存在点赞记录
      */
-    @Transactional
     public Integer selectlikeStatus(Long questionId,Long id, Long userId, Integer type) {
         Integer status = redisService.selectlikeStatus(questionId,id, userId, type);
         if(status == 2){

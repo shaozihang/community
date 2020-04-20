@@ -7,11 +7,10 @@ import com.tree.community.mapper.UserMapper;
 import com.tree.community.model.FollowAndFans;
 import com.tree.community.model.FollowAndFansExample;
 import com.tree.community.model.User;
-import com.tree.community.model.UserExample;
 import org.apache.ibatis.session.RowBounds;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +24,7 @@ public class FollowAndFansService {
     @Autowired
     private UserMapper userMapper;
 
+    @Transactional
     public void addOrCancelFollow(FollowAndFans followAndFans) {
         User meUser = userMapper.selectByPrimaryKey(followAndFans.getFromUserId());
         User otherUser = userMapper.selectByPrimaryKey(followAndFans.getToUserId());
@@ -60,6 +60,7 @@ public class FollowAndFansService {
         }
     }
 
+    @Transactional
     public int getFollowStatus(Long meId, Long otherId) {
         FollowAndFansExample followAndFansExample = new FollowAndFansExample();
         followAndFansExample.createCriteria()

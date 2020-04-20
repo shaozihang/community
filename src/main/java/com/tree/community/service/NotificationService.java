@@ -14,6 +14,7 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +85,7 @@ public class NotificationService {
         return notificationMapper.countByExample(notificationExample);
     }
 
+    @Transactional
     public NotificationDTO read(Long id, User user) {
         Notification notification = notificationMapper.selectByPrimaryKey(id);
         if(notification == null){
@@ -102,6 +104,7 @@ public class NotificationService {
         return notificationDTO;
     }
 
+    @Transactional
     public void deleteMsgs(Long id) {
         NotificationExample example = new NotificationExample();
         example.createCriteria()
@@ -118,6 +121,7 @@ public class NotificationService {
         notificationMapper.updateByExampleSelective(notification, example);
     }
 
+    @Transactional
     public void deleteMsg(Long notificationId, Long id) {
         NotificationExample example = new NotificationExample();
         example.createCriteria()

@@ -2,7 +2,6 @@ package com.tree.community.service;
 
 import com.tree.community.dto.BookMarkDTO;
 import com.tree.community.mapper.BookMarkMapper;
-import com.tree.community.mapper.CollectionExtMapper;
 import com.tree.community.mapper.CollectionMapper;
 import com.tree.community.model.BookMark;
 import com.tree.community.model.BookMarkExample;
@@ -11,6 +10,7 @@ import com.tree.community.model.CollectionExample;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +68,7 @@ public class BookMarkService {
         return bookMarkDTOList;
     }
 
-
+    @Transactional
     public int addBookMark(Long id, BookMark bookMark) {//通过用户id和收藏夹名称查询用户有无同名收藏夹，没有则新增收藏夹
         BookMarkExample example = new BookMarkExample();
         example.createCriteria()
@@ -125,6 +125,7 @@ public class BookMarkService {
         return bookMarkDTO;
     }
 
+    @Transactional
     public int updateBookMark(Long id, BookMark bookMark) {
         BookMarkExample example = new BookMarkExample();
         example.createCriteria()
@@ -140,6 +141,7 @@ public class BookMarkService {
         return 1;
     }
 
+    @Transactional
     public void deleteBookMark(Long id) {
         CollectionExample example = new CollectionExample();
         example.createCriteria()

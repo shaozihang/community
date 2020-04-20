@@ -2,7 +2,6 @@ package com.tree.community.controller;
 
 import com.tree.community.dto.BookMarkDTO;
 import com.tree.community.dto.PaginationDTO;
-import com.tree.community.model.BookMark;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
 import com.tree.community.service.BookMarkService;
@@ -38,7 +37,7 @@ public class ProfileController {
     public String profile(@PathVariable(name = "action")String action,
                           HttpServletRequest request, Model model,
                           @RequestParam(name = "page",defaultValue = "1")Integer page,
-                          @RequestParam(name = "size",defaultValue = "5")Integer size){
+                          @RequestParam(name = "size",defaultValue = "10")Integer size){
 
 
         User user = (User) request.getSession().getAttribute("user");

@@ -10,7 +10,6 @@ import com.tree.community.model.Useroauths;
 import com.tree.community.provider.AliyunProvider;
 import com.tree.community.provider.QQProvider;
 import com.tree.community.service.UserService;
-import com.tree.community.util.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

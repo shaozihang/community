@@ -9,7 +9,7 @@
     <link rel="stylesheet" th:href="@{/css/admin.css}">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
-    <script th:src="@{/js/editormd.min.js}" type="application/javascript"></script>
+    <script th:src="@{/js/editormd.js}" type="application/javascript"></script>
     <script type="application/javascript">
         layui.use('element',function () {
             var element = layui.element;
@@ -126,9 +126,11 @@
                 var description = $("#description").val();
                 var isTop = $(".notice-radio input[name='isTop']:checked").val();
                 if(!title){
-                    layer.msg("问题标题不能为空");
+                    layer.msg("标题不能为空");
+                }else if(title.length >50){
+                    layer.msg("标题最多50个字符");
                 }else if(!description){
-                    layer.msg("问题描述不能为空");
+                    layer.msg("内容不能为空");
                 }else{
                     $.ajax({
                         type:"post",
@@ -217,7 +219,7 @@
                             path: "/js/lib/",
                             delay: 0,
                             watch: false,
-                            placeholder: "请输入问题描述",
+                            placeholder: "请输入内容",
                             imageUpload: true,
                             imageFormats: ["jpg", "jpeg", "gif", "png", "bmp", "webp"],
                             imageUploadURL: "/file/upload",

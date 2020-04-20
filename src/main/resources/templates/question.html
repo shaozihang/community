@@ -7,12 +7,12 @@
     <link rel="stylesheet" th:href="@{/layui/css/layui.css}">
     <link rel="stylesheet" th:href="@{/css/community.css}">
     <link rel="stylesheet" th:href="@{/css/editormd.preview.min.css}">
-    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_2z3xfp60efw.css">
+    <link rel="stylesheet" href="http://at.alicdn.com/t/font_1654155_pdkxw2wuoy.css">
     <script th:src="@{/js/jquery-3.4.1.min.js}"></script>
     <script th:src="@{/layui/layui.js}" type="application/javascript"></script>
     <script th:src="@{/js/moment.js}"></script>
     <script th:src="@{/js/comment.js}"></script>
-    <script th:src="@{/js/editormd.min.js}" type="application/javascript"></script>
+    <script th:src="@{/js/editormd.js}" type="application/javascript"></script>
     <script th:src="@{/js/lib/marked.min.js}"></script>
     <script th:src="@{/js/lib/prettify.min.js}"></script>
     <script type="application/javascript">
@@ -402,7 +402,7 @@
                     <a class="tree-avatar" th:href="@{'/user/'+${question.user.id}}">
                         <img th:src="${question.user.avatarUrl}">
                     </a>
-                    <div class="tree-detail-user">
+                    <div class="tree-detail-user" style="white-space: inherit;">
                         <a th:href="@{'/user/'+${question.user.id}}" class="tree-link">
                             <cite th:text="${question.user.nickName}"></cite>
                             <i class="layui-badge tree-badge-vip layui-bg-gray" th:text="${'LV'+question.user.grade}"></i>
@@ -477,7 +477,6 @@
                                     <em th:text="${comment.commentCount}"></em>
                                 </span>
                                 <div class="jieda-admin" th:if="${session.user!=null && (session.user.id==comment.user.id || session.user.id==question.creator || session.user.type == 2)}">
-                                    <span type="edit">编辑</span>
                                     <span type="del" style="padding-right: 10px" th:onclick="'deleteComment('+${comment.id}+')'">删除</span>
                                 </div>
                             </div>

@@ -1,19 +1,14 @@
 package com.tree.community.controller;
 
-import com.tree.community.dto.BookMarkDTO;
-import com.tree.community.dto.PaginationDTO;
+
 import com.tree.community.dto.ResultDTO;
-import com.tree.community.model.Question;
 import com.tree.community.model.User;
-import com.tree.community.service.BookMarkService;
 import com.tree.community.service.CollectionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 import java.util.Map;
 
 @Controller

@@ -1,8 +1,6 @@
 package com.tree.community.controller.admin;
 
-import com.tree.community.cache.TagCache;
 import com.tree.community.dto.ResultDTO;
-import com.tree.community.dto.TagDTO;
 import com.tree.community.model.Question;
 import com.tree.community.model.User;
 import com.tree.community.service.QuestionService;
@@ -10,9 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

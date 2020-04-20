@@ -6,12 +6,14 @@
 
 <div th:fragment="nav" class="layui-header tree-bg-black">
     <div class="layui-container">
-        <a class="tree-logo" href="/">
+        <a class="tree-logo layui-hide-xs" href="/">
             <img src="/images/logo.png" alt="树洞社区" style="height: 40px;">
+        </a>
+        <a class="tree-logo layui-hide-lg layui-hide-md layui-hide-sm" href="/">
+            <img src="/images/logo2.png" alt="树洞社区" style="height: 40px;">
         </a>
         <ul class="layui-nav tree-nav layui-hide-xs">
             <li class="layui-nav-item layui-this"><a href="/"><i class="layui-icon layui-icon-home"></i>主页</a></li>
-            <li class="layui-nav-item"><a href=""><i class="layui-icon layui-icon-read"></i>看看</a></li>
             <li class="layui-nav-item"><a href="https://github.com/shaozihang/community"><i class="layui-icon layui-icon-fonts-code"></i>源码</a></li>
         </ul>
         <ul class="layui-nav tree-nav-user">

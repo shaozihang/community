@@ -7,6 +7,7 @@ import com.tree.community.model.CollectionExample;
 import com.tree.community.model.Question;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +40,7 @@ public class CollectionService {
         return status;
     }
 
+    @Transactional
     public void addCollection(Long userId, Map<String, String> map) {
         String[] folderIds = map.get("folderId").split("-");
         List<Collection> collectionList = new ArrayList<>();
@@ -53,6 +55,7 @@ public class CollectionService {
         collectionExtMapper.addCollection(collectionList);
     }
 
+    @Transactional
     public void updateCollection(Long id, Map<String, String> map) {
         String[] folderIds = map.get("folderId").split("-");
         CollectionExample example = new CollectionExample();
@@ -114,6 +117,7 @@ public class CollectionService {
         return deleteFolderId;
     }
 
+    @Transactional
     public void deleteCollection(Long id, String questionId) {
         CollectionExample example = new CollectionExample();
         example.createCriteria()
@@ -139,6 +143,7 @@ public class CollectionService {
         return questions;
     }
 
+    @Transactional
     public void delCollection(Map<String, String> map) {
         CollectionExample example = new CollectionExample();
         example.createCriteria()

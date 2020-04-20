@@ -8,8 +8,8 @@ import com.tree.community.model.Useroauths;
 import com.tree.community.model.UseroauthsExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +57,7 @@ public class UseroauthsService {
         return map;
     }
 
+    @Transactional
     public int oauthsBind(Long uid, UserDTO userDTO){
         Useroauths useroauths = new Useroauths();
         useroauths.setUid(uid);
@@ -82,6 +83,7 @@ public class UseroauthsService {
         return 1;
     }
 
+    @Transactional
     public void unbind(Long id, int type) {
         UseroauthsExample example = new UseroauthsExample();
         example.createCriteria()

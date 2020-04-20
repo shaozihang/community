@@ -14,12 +14,13 @@ import org.apache.ibatis.session.RowBounds;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class QuestionService {
@@ -59,7 +60,13 @@ public class QuestionService {
 
     public PaginationDTO list(String search, String tag, Integer page, Integer size,String type,String sort,List<Long> quIds) {
         if(StringUtils.isNotBlank(search)){
-            search = StringUtils.replace(search, " ", "|");
+            String[] tags = StringUtils.split(search, " ");
+            search = Arrays
+                    .stream(tags)
+                    .filter(StringUtils::isNotBlank)
+                    .map(t -> t.replace("+", "").replace("*", "").replace("?", ""))
+                    .filter(StringUtils::isNotBlank)
+                    .collect(Collectors.joining("|"));
         }
 
         PaginationDTO paginationDTO = new PaginationDTO();
@@ -68,7 +75,10 @@ public class QuestionService {
 
         QuestionQueryDTO questionQueryDTO = new QuestionQueryDTO();
         questionQueryDTO.setSearch(search);
-        questionQueryDTO.setTag(tag);
+        if (StringUtils.isNotBlank(tag)) {
+            tag = tag.replace("+", "").replace("*", "").replace("?", "");
+            questionQueryDTO.setTag(tag);
+        }
         questionQueryDTO.setType(type);
         questionQueryDTO.setQuIds(quIds);
         if(StringUtils.isNotBlank(sort)){
@@ -189,6 +199,7 @@ public class QuestionService {
         return questionDTO;
     }
 
+    @Transactional
     public void createOrUpdate(Question question, HttpServletRequest request) {
         if(question.getId() == null){
             //创建
@@ -211,6 +222,7 @@ public class QuestionService {
         }
     }
 
+    @Transactional
     public void incView(Long id) {
         Question question = new Question();
         question.setId(id);
@@ -222,10 +234,16 @@ public class QuestionService {
         if(StringUtils.isBlank(questionDTO.getTag())){
             return new ArrayList<>();
         }
-        String replace = StringUtils.replace(questionDTO.getTag(), ",", "|");
+        String[] tags = StringUtils.split(questionDTO.getTag(), ",");
+        String regexpTag = Arrays
+                .stream(tags)
+                .filter(StringUtils::isNotBlank)
+                .map(t -> t.replace("+", "").replace("*", ""))
+                .filter(StringUtils::isNotBlank)
+                .collect(Collectors.joining("|"));
         Question question = new Question();
         question.setId(questionDTO.getId());
-        question.setTag(replace);
+        question.setTag(regexpTag);
 
         List<Question> questions = questionExtMapper.selectRelated(question);
         return questions;
@@ -244,6 +262,7 @@ public class QuestionService {
         return questions;
     }
 
+    @Transactional
     public void deleteQu(Long questionId,Long authorId) {
         userLikeService.transLikedFromRedisToDB();
         userLikeService.transLikedCountFromRedisToDB();
@@ -277,10 +296,12 @@ public class QuestionService {
         userLikeMapper.deleteByExample(example2);
     }
 
+    @Transactional
     public void essence(Question question) {
         questionMapper.updateByPrimaryKeySelective(question);
     }
 
+    @Transactional
     public void quTop(Question question) {
         questionMapper.updateByPrimaryKeySelective(question);
     }
@@ -296,6 +317,7 @@ public class QuestionService {
         return count;
     }
 
+    @Transactional
     public void questionEdit(Question question) {
         questionExtMapper.questionEdit(question);
     }

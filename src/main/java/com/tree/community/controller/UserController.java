@@ -47,7 +47,7 @@ public class UserController {
     @GetMapping(value = "/user/{id}")
     public String user(@PathVariable(name = "id")Long id, Model model,
                        @RequestParam(name = "page",defaultValue = "1")Integer page,
-                       @RequestParam(name = "size",defaultValue = "5")Integer size,
+                       @RequestParam(name = "size",defaultValue = "10")Integer size,
                        HttpServletRequest request){
         User user = (User) request.getSession().getAttribute("user");
         int followStatus;

@@ -1018,7 +1018,7 @@
             <ul class="tree-collection" th:if="${questions != null}">
                 <li th:each="question:${questions}">
                     <h3>
-                        <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}"></a>
+                        <a th:href="@{'/question/'+${question.id}}" th:text="${question.title}" class="text-hidden2"></a>
                         <a th:href="@{'javascript:deleteCollection('+${question.id}+')'}" style="color: #999;float: right;font-size: 13px;margin-top: 2px;">取消收藏</a>
                         <a th:href="@{'javascript:bookMarkDialog('+${question.id}+')'}" style="color: #999;float: right;font-size: 13px;margin-top: 2px;margin-right: 10px;">编辑</a>
                     </h3>
@@ -1337,18 +1337,6 @@
                         <li class="tree-bindWay" th:classappend="${github == 1?'havebind':''}">
                             <i class="iconfont icon-github"></i>
                             <span>GitHub</span>
-                            <a onclick="Unbind('0')" th:if="${github == 1}"><span>已绑定 · </span>解绑</a>
-                            <a onclick="bind('0')" th:if="${github == 0}">立即绑定</a>
-                        </li>
-                        <li class="tree-bindWay" th:classappend="${github == 1?'havebind':''}">
-                            <i class="iconfont icon-baidu" style="color: #1296db;"></i>
-                            <span>百度</span>
-                            <a onclick="Unbind('0')" th:if="${github == 1}"><span>已绑定 · </span>解绑</a>
-                            <a onclick="bind('0')" th:if="${github == 0}">立即绑定</a>
-                        </li>
-                        <li class="tree-bindWay" th:classappend="${github == 1?'havebind':''}">
-                            <i class="iconfont icon-weibo" style="color: #d81e06;"></i>
-                            <span>新浪微博</span>
                             <a onclick="Unbind('0')" th:if="${github == 1}"><span>已绑定 · </span>解绑</a>
                             <a onclick="bind('0')" th:if="${github == 0}">立即绑定</a>
                         </li>

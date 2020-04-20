@@ -21,8 +21,9 @@ function comment2target(questionId,parentId,targetId, type, content) {
         var layer = layui.layer;
         if(!content){
             layer.msg("请输入回复内容！");
-        }
-        else{
+        }else if(content.length >1000){
+            layer.msg("回复内容最多1000个字符");
+        }else{
             $.ajax({
                 type:"post",
                 url:"/comment",
@@ -96,7 +97,7 @@ function collapseComments(e) {
                     var commentUser = $("<div/>",{
                         "class":"tree-detail-user"
                     }).append($("<a/>", {
-                        "class":"tree-link",
+                        "class":"tree-link text-hidden",
                         "href":"/user/"+comment.user.id
                     }).append($("<cite/>", {
                         "html": comment.user.nickName
@@ -109,9 +110,6 @@ function collapseComments(e) {
                         commentUser.append($("<div/>", {
                             "class":"jieda-admin2"
                         }).append($("<span/>", {
-                            style:"padding-right: 20px",
-                            html:"编辑"
-                        })).append($("<span/>", {
                             style:"padding-right: 10px",
                             html:"删除",
                             onclick:"deleteComment2("+comment.id+","+id+")"

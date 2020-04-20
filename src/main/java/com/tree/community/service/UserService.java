@@ -8,14 +8,12 @@ import com.tree.community.util.MD5Utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class UserService {
@@ -35,6 +33,7 @@ public class UserService {
     @Autowired
     private AreaMapper areaMapper;
 
+    @Transactional
     public ResultDTO createOrBind(UserDTO userDTO) {
         User user = new User();
         user.setNickName(userDTO.getNickName());
@@ -85,6 +84,7 @@ public class UserService {
         return ResultDTO.okOf();
     }
 
+    @Transactional
     public void modifyPwd(Map<String, String> map) {
         User user = new User();
         user.setPassword(MD5Utils.md5(map.get("newPwd"),"邵梓航"));
@@ -99,6 +99,7 @@ public class UserService {
         userMapper.updateByExampleSelective(user, userExample);
     }
 
+    @Transactional
     public void updatePwd(Map<String, String> map) {
         User user = new User();
         user.setPassword(MD5Utils.md5(map.get("newPwd"),"邵梓航"));
@@ -148,6 +149,7 @@ public class UserService {
         return areaList;
     }
 
+    @Transactional
     public void updateUserInfo(User user) {
         if(StringUtils.isBlank(user.getAddress())){
             user.setAddress("保密");
@@ -158,6 +160,7 @@ public class UserService {
         userMapper.updateByExampleSelective(user, example);
     }
 
+    @Transactional
     public void updatePhone(String phone, User user) {
         User user1 = new User();
         user1.setPhone(phone);
@@ -189,6 +192,7 @@ public class UserService {
         return result;
     }
 
+    @Transactional
     public void bindEmail(String email, Long id) {
         User user = new User();
         user.setEmail(email);
