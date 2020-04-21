@@ -55,7 +55,7 @@ http://www.treedong.com/
   2. 排序<br/>
   3. 验证码-防灌水、攻击
   
-##快速运行
+## 快速运行
   1. 安装必备工具
   JDK，Maven
   
@@ -74,7 +74,7 @@ mvn clean compile flyway:migrate -Pdev
 http://localhost:8887/
 ```
 
-##目录结构
+## 目录结构
 ```
     ├─com.tree.community        应用目录
     │  ├─advice                 异常处理
@@ -92,18 +92,18 @@ http://localhost:8887/
     │  ├─service                业务逻辑层
     │  ├─util                   工具类
 ```
-##更多链接
-###联系我们
+## 更多链接
+### 联系我们
 树洞社区官方QQ：2435663184
 
 官方交流社区：http://www.treedong.com/
-###资料
+### 资料
 [Spring 文档](https://spring.io/guides)<br/>
 [Github deploy key](https://developer.github.com/v3/guides/managing-deploy-keys/#deploy-keys)<br/>
 [Github OAuth](https://developer.github.com/apps/building-oauth-apps/creating-an-oauth-app/)<br/>
 [Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.0/usingthymeleaf.html#setting-attribute-values)<br/>
 [Markdown 插件](http://editor.md.ipandao.com/)
-###工具
+### 工具
 [Git](https://git-scm.com/download)<br/>
 [Flyway](https://flywaydb.org/getstarted/firststeps/maven)<br/>
 [Lombok](https://www.projectlombok.org/)<br/>
