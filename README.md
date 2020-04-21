@@ -54,21 +54,25 @@ http://www.treedong.com/
   1. 搜索<br/>
   2. 排序<br/>
   3. 验证码-防灌水、攻击
+  
 ##快速运行
-1.安装必备工具
+  1. 安装必备工具
   JDK，Maven
   
-2.克隆代码到本地
+  2. 克隆代码到本地
 
-3.根据提示与说明，编辑resources目录下的application.properties文件。
+  3. 根据提示与说明，编辑resources目录下的application.properties文件。
 
-4.运行命令创建数据库脚本<br/>
-```mvn clean compile flyway:migrate -Pdev```
+  4. 运行命令创建数据库脚本<br/>
+```
+mvn clean compile flyway:migrate -Pdev
+```
+  5. 编辑resources目录下的generatorConfig.xml文件，配置数据库相关信息（只需修改数据库链接、用户名、密码）。
 
-5.编辑resources目录下的generatorConfig.xml文件，配置数据库相关信息（只需修改数据库链接、用户名、密码）。
-
-6.访问项目<br/>
-```http://localhost:8887/```
+  6. 访问项目<br/>
+```
+http://localhost:8887/
+```
 
 ##目录结构
 ```
