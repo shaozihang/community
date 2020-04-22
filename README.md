@@ -23,7 +23,7 @@ http://www.treedong.com/
   2. 编辑<br/>
   3. 点赞<br/>
   4. 收藏<br/>
-  5. 回复[（支持楼中楼回复）](http://www.treedong.com/)<br/>
+  5. 回复<br/>
   6. 帖子分类<br/>
   7. 标签<br/>
   8. 置顶帖<br/>
@@ -61,7 +61,7 @@ http://www.treedong.com/
   
   2. 克隆代码到本地
 
-  3. 根据提示与说明，编辑resources目录下的application.properties文件。
+  3. 根据[提示与说明](http://www.treedong.com/question/22)，编辑resources目录下的application.properties文件。
 
   4. 运行命令创建数据库脚本<br/>
 ```
@@ -69,7 +69,7 @@ mvn clean compile flyway:migrate -Pdev
 ```
   5. 编辑resources目录下的generatorConfig.xml文件，配置数据库相关信息（只需修改数据库链接、用户名、密码）。
 
-  6. 访问项目<br/>
+  6. 运行并访问项目<br/>
 ```
 http://localhost:8887/
 ```
